@@ -80,7 +80,7 @@ print(f"""
 # éventuelles futures notifications temps réel côté navigateur).
 # async_mode="eventlet" est requis pour tenir des connexions WebSocket
 # persistantes sous gunicorn sur Render/Railway.
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="gevent")
 
 # Configuration Flask db
 app.config['SECRET_KEY'] = 'votre_cle_secrete_tres_longue_ici'
