@@ -1,0 +1,89 @@
+{% extends "barmenu.html" %}
+
+{% block page_styles %}
+    <!-- Lien vers le fichier CSS spécifique à la documentation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/documentation.css') }}">
+    <title>Documentation </title>
+{% endblock %}
+
+{% block content %}
+<!-- IMPORTANT : On utilise la classe "content" définie dans votre style.css 
+     pour respecter la marge de 260px du menu -->
+<div class="content">
+    
+    <!-- Conteneur global de la documentation -->
+    <div class="conteneur-documentation"> 
+        
+        <!-- En-tête de la page -->
+        <header class="en-tete-doc">
+            <h1 class="titre-page">Documentation des Contrôleurs</h1>
+            <p class="sous-titre">Guide théorique sur les contrôleurs PI, PID et MPC</p>
+        </header>
+
+        <!-- Barre des onglets -->
+        <div class="conteneur-onglets">
+            <button class="bouton-onglet actif" data-cible="contenu-pi">Contrôleur PI</button>
+            <button class="bouton-onglet" data-cible="contenu-pid">Contrôleur PID</button>
+            <button class="bouton-onglet" data-cible="contenu-mpc">Contrôleur MPC</button>
+        </div>
+
+        <!-- === 1. CONTENU PI === -->
+        <div class="contenu-onglet actif" id="contenu-pi">
+            <section class="carte-info">
+                <h2 class="titre-carte">ⓘ Introduction au Contrôleur PI</h2>
+                <p>
+                    Le contrôleur PI (**P**roportionnel-**I**ntégral) est un type de contrôleur de rétroaction très utilisé. Il combine l'action proportionnelle et l'action intégrale.
+                </p>
+
+                <div class="boite-equation">
+                    <p class="etiquette-equation">Équation du contrôleur PI</p>
+                    <div class="formule-equation">
+                        u(t) = Kp × e(t) + Ki × ∫ e(t)dt
+                    </div>
+                </div>
+
+                <ul class="liste-variables">
+                    <li>
+                        <span class="nom-variable">u(t) : Signal de commande</span>
+                        <p class="desc-variable">Sortie du contrôleur envoyée au système.</p>
+                    </li>
+                    <li>
+                        <span class="nom-variable">e(t) : Erreur</span>
+                        <p class="desc-variable">Différence entre la consigne et la mesure.</p>
+                    </li>
+                </ul>
+            </section>
+            
+            <section class="carte-info carte-bas">
+                <h2 class="titre-carte">💡 Avantages et Inconvénients</h2>
+                <p>Le PI élimine l'erreur statique mais peut provoquer un dépassement (overshoot).</p>
+            </section>
+        </div>
+
+        <!-- === 2. CONTENU PID === -->
+        <div class="contenu-onglet" id="contenu-pid" style="display: none;">
+            <section class="carte-info">
+                <h2 class="titre-carte">ⓘ Contrôleur PID</h2>
+                <p>Le PID ajoute une action **Dérivée** pour anticiper les variations futures et stabiliser le système plus rapidement.</p>
+                <div class="boite-equation">
+                    <div class="formule-equation">u(t) = Kp·e(t) + Ki∫e(t) + Kd·de/dt</div>
+                </div>
+            </section>
+        </div>
+
+        <!-- === 3. CONTENU MPC === -->
+        <div class="contenu-onglet" id="contenu-mpc" style="display: none;">
+            <section class="carte-info">
+                <h2 class="titre-carte">ⓘ Contrôleur MPC</h2>
+                <p>Le MPC (Commande Prédictive) utilise un modèle mathématique du système pour prédire son comportement futur. </p>
+            </section>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Lien vers le fichier JavaScript spécifique à la documentation -->
+<script src="{{ url_for('static', filename='js/documentation.js') }}"></script>
+{% endblock %}

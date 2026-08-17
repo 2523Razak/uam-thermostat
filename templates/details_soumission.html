@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails de la soumission - Thermostat_UAM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Styles similaires à consulter_soumissions.css */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 20px;
+            color: #2c3e50;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: white;
+            padding: 25px 30px;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+        
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #6c757d;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #1a237e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <div>
+                    <h1><i class="fas fa-file-alt"></i> Détails de la soumission</h1>
+                    <p>TP: {{ tp_titre }} | Étudiant: {{ etudiant_nom }}</p>
+                </div>
+                <a href="{{ url_for('consulter_soumissions') }}" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Retour
+                </a>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Chargement des détails de la soumission...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cette page pourrait être utilisée pour une vue détaillée séparée
+            // Pour l'instant, on redirige vers la page principale
+            setTimeout(function() {
+                window.location.href = "{{ url_for('consulter_soumissions') }}";
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

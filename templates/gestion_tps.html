@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Travaux Pratiques - Thermostat_UAM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/gestion_tps.css') }}">
+</head>
+<body class="corps-page">
+    <div class="conteneur-principal">
+        <!-- En-tête académique -->
+        <header class="en-tete-academique">
+            <h1 class="titre-page">
+                <i class="fas fa-flask"></i> Gestion des Travaux Pratiques
+            </h1>
+            <p class="sous-titre-page">
+                {% if utilisateur and utilisateur.organisation %}
+                    {{ utilisateur.organisation }}
+                {% else %}
+                    Plateforme Éducative
+                {% endif %}
+            </p>
+            <span class="badge-institution">
+                <i class="fas fa-user-tie"></i> Enseignant : {{ user_prenom }} {{ user_nom }}
+            </span>
+        </header>
+
+        <!-- Contenu principal -->
+        <main class="contenu-principal">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="message-alerte message-{{ category }}">
+                            <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Statistiques -->
+            <div class="cartes-stats">
+                <div class="carte-stat">
+                    <i class="fas fa-flask icone-stat"></i>
+                    <div class="nombre-stat">{{ tps|length if tps else 0 }}</div>
+                    <div class="texte-stat">Travaux Pratiques</div>
+                </div>
+                
+                <div class="carte-stat">
+                    <i class="fas fa-calendar-alt icone-stat"></i>
+                    <div class="nombre-stat" id="date-actuelle">{{ date_actuelle }}</div>
+                    <div class="texte-stat">Date du jour</div>
+                </div>
+                
+                <div class="carte-stat">
+                    <i class="fas fa-user-graduate icone-stat"></i>
+                    <div class="nombre-stat">{{ total_etudiants if total_etudiants else 0 }}</div>
+                    <div class="texte-stat">Étudiants inscrits</div>
+                </div>
+                
+                <div class="carte-stat">
+                    <i class="fas fa-chart-line icone-stat"></i>
+                    <div class="nombre-stat">{{ tps_actifs if tps_actifs else 0 }}</div>
+                    <div class="texte-stat">TPs actifs</div>
+                </div>
+            </div>
+
+            <!-- Boutons d'action principaux -->
+            <div class="actions-principales">
+                <a href="{{ url_for('creer_tp') }}" class="bouton bouton-principal">
+                    <i class="fas fa-plus-circle"></i> Créer un Nouveau TP
+                </a>
+                
+                <a href="{{ url_for('liste_utilisateurs') }}" class="bouton bouton-retour">
+                    <i class="fas fa-arrow-left"></i> Retour à l'Administration
+                </a>
+            </div>
+            <!-- Lien vers les soumissions des étudiants -->
+            <div style="margin-bottom: 20px;">
+                <a href="{{ url_for('consulter_soumissions') }}" class="bouton bouton-principal" style="text-decoration: none;">
+                <i class="fas fa-file-alt"></i> Voir les soumissions des étudiants
+                </a>
+            </div>
+            <!-- Liste des TPs -->
+            {% if tps %}
+                <div class="liste-tps">
+                    {% for tp in tps %}
+                    <div class="carte-tp" data-tp-id="{{ tp.id }}" tabindex="0">
+                        <div class="en-tete-carte">
+                            <span class="badge-statut">
+                                {% if tp.actif %}
+                                <i class="fas fa-play-circle"></i> Actif
+                                {% else %}
+                                <i class="fas fa-pause-circle"></i> Inactif
+                                {% endif %}
+                            </span>
+                            <h2 class="titre-tp">
+                                <i class="fas fa-book"></i> {{ tp.titre }}
+                            </h2>
+                            {% if tp.module %}
+                            <div class="module-tp">{{ tp.module }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="contenu-carte">
+                            {% if tp.description %}
+                            <div class="description-tp">
+                                {{ tp.description }}
+                            </div>
+                            {% endif %}
+                            
+                            <div class="infos-tp">
+                                <div class="info-item">
+                                    <i class="fas fa-calendar-plus"></i>
+                                    <span>Créé le: {{ tp.date_creation.strftime('%d/%m/%Y') }}</span>
+                                </div>
+                                
+                                <div class="info-item cliquable" onclick="openEtudiantsModal({{ tp.id }}, '{{ tp.titre|replace("'", "\\'") }}')" title="Cliquer pour gérer les étudiants">
+                                    <i class="fas fa-users"></i>
+                                    <span class="etudiants-count">
+                                        {% if tp.nombre_etudiants_reel is defined %}
+                                            {{ tp.nombre_etudiants_reel }}
+                                        {% else %}
+                                            {{ tp.nombre_etudiants }}
+                                        {% endif %}
+                                         étudiant(s)
+                                    </span>
+                                </div>
+                                
+                                {% if tp.date_limite %}
+                                <div class="info-item cliquable" onclick="openDateLimiteModal({{ tp.id }}, '{{ tp.titre|replace("'", "\\'") }}', '{{ tp.date_limite.strftime('%Y-%m-%dT%H:%M') }}')" title="Cliquer pour modifier la date limite">
+                                    <i class="fas fa-clock"></i>
+                                    <span class="date-limite-text">
+                                        Limite: {{ tp.date_limite.strftime('%d/%m/%Y %H:%M') }}
+                                    </span>
+                                </div>
+                                {% else %}
+                                <div class="info-item cliquable" onclick="openDateLimiteModal({{ tp.id }}, '{{ tp.titre|replace("'", "\\'") }}', '')" title="Cliquer pour définir une date limite">
+                                    <i class="fas fa-clock"></i>
+                                    <span class="date-limite-text">
+                                        Limite: Non définie
+                                    </span>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="info-item">
+                                    <i class="fas fa-question-circle"></i>
+                                    <span>{{ tp.nombre_questions }} question(s)</span>
+                                </div>
+                            </div>
+                            
+                            <div class="actions-tp">
+                                <a href="{{ url_for('gestion_questions', tp_id=tp.id) }}" 
+                                   class="bouton-action questions">
+                                    <i class="fas fa-edit"></i> Gérer Questions
+                                </a>
+                                
+                                <button type="button" class="bouton-action supprimer" 
+                                        onclick="confirmerSuppression({{ tp.id }}, '{{ tp.titre|replace("'", "\\'") }}')">
+                                    <i class="fas fa-trash"></i> Supprimer TP
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <!-- État vide - Aucun TP -->
+                <div class="etat-vide">
+                    <i class="fas fa-flask icone-vide"></i>
+                    <h3 class="titre-vide">Aucun Travail Pratique</h3>
+                    <p class="texte-vide">
+                        Vous n'avez pas encore créé de travail pratique. 
+                        Commencez par créer votre premier TP pour organiser 
+                        vos activités pédagogiques et évaluer vos étudiants.
+                    </p>
+                    <a href="{{ url_for('creer_tp') }}" class="bouton bouton-principal">
+                        <i class="fas fa-plus-circle"></i> Créer Votre Premier TP
+                    </a>
+                </div>
+            {% endif %}
+        </main>
+    </div>
+
+    <!-- Modal pour gérer les étudiants -->
+    <div class="modal-overlay" id="modal-etudiants">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-users"></i>
+                    <span id="modal-etudiants-title">Gérer les étudiants</span>
+                </h3>
+                <button class="modal-close" onclick="closeEtudiantsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Ajouter un étudiant</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="new-etudiant-input" class="form-control" 
+                               placeholder="Matricule ou email de l'étudiant"
+                               onkeypress="if(event.key === 'Enter') addEtudiant()">
+                        <button class="btn-add-etudiant" onclick="addEtudiant()">
+                            <i class="fas fa-plus"></i> Ajouter
+                        </button>
+                    </div>
+                    <p style="font-size: 0.8rem; color: #6c757d; margin-top: 5px;">
+                        Format: ETU123456 ou nom.etudiant@univ-zig.sn
+                    </p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Étudiants actuellement inscrits</label>
+                    <div class="etudiants-list" id="etudiants-list">
+                        <div class="etat-vide" style="padding: 20px; border: none;" id="empty-students">
+                            <i class="fas fa-user-graduate icone-vide" style="font-size: 2rem;"></i>
+                            <p>Aucun étudiant inscrit</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="bouton bouton-secondaire" onclick="closeEtudiantsModal()">
+                    Annuler
+                </button>
+                <button type="button" class="bouton bouton-principal" onclick="saveEtudiants()">
+                    <i class="fas fa-save"></i> Enregistrer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour modifier la date limite -->
+    <div class="modal-overlay" id="modal-date-limite">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="modal-date-limite-title">Modifier la date limite</span>
+                </h3>
+                <button class="modal-close" onclick="closeDateLimiteModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Date et heure limite de rendu</label>
+                    <input type="datetime-local" id="date-limite-input" class="form-control">
+                    <p style="font-size: 0.8rem; color: #6c757d; margin-top: 5px;">
+                        La date limite est facultative. Laissez vide pour ne pas en définir.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="bouton bouton-secondaire" onclick="closeDateLimiteModal()">
+                    Annuler
+                </button>
+                <button type="button" class="bouton bouton-principal" onclick="saveDateLimite()">
+                    <i class="fas fa-save"></i> Enregistrer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation de suppression -->
+    <div class="modal-overlay" id="modal-confirmation">
+        <div class="modal">
+            <div class="modal-header" style="background: #dc3545;">
+                <h3 class="modal-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span id="modal-confirmation-title">Confirmation de suppression</span>
+                </h3>
+                <button class="modal-close" onclick="closeConfirmationModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                    <div style="background: #f8d7da; color: #721c24; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                        <i class="fas fa-exclamation"></i>
+                    </div>
+                    <div>
+                        <p id="confirmation-message" style="font-weight: 500; margin-bottom: 5px;">
+                            Êtes-vous sûr de vouloir supprimer ce TP ?
+                        </p>
+                        <p id="confirmation-details" style="color: #6c757d; font-size: 0.9rem;">
+                            Cette action est irréversible.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="message-alerte message-error" style="margin: 0;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div>
+                        <strong>Attention :</strong> Toutes les questions, réponses et inscriptions associées à ce TP seront également supprimées.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="bouton bouton-secondaire" onclick="closeConfirmationModal()">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+                <button type="button" class="bouton bouton-danger" id="confirm-delete-btn" onclick="executerSuppression()">
+                    <i class="fas fa-trash"></i> Supprimer définitivement
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bouton de débogage (visible seulement en développement) -->
+    <div id="debug-button" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: none;">
+        <button onclick="testConnexion()" style="background: #ff9800; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer;">
+            <i class="fas fa-bug"></i> Test API
+        </button>
+    </div>
+
+    <!-- Script principal -->
+    <script src="{{ url_for('static', filename='js/gestion_tps.js') }}"></script>
+    
+    <!-- Script inline pour initialisation -->
+    <script>
+    // Afficher le bouton de débogage en développement
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        document.getElementById('debug-button').style.display = 'block';
+    }
+    
+    // Fonction de test de connexion API
+    async function testConnexion() {
+        console.log('=== TEST CONNEXION API ===');
+        
+        // Tester la route de suppression
+        const testTpId = 1; // Remplacer par un ID valide
+        
+        try {
+            console.log('Test DELETE sur /api/tp/' + testTpId + '/supprimer');
+            const response = await fetch('/api/tp/' + testTpId + '/supprimer', {
+                method: 'DELETE',
+                headers: {'Content-Type': 'application/json'}
+            });
+            console.log('Status DELETE:', response.status);
+            console.log('Headers:', response.headers);
+            
+            if (response.status === 405) {
+                console.log('DELETE non supporté, test POST...');
+                const postResponse = await fetch('/api/tp/' + testTpId + '/supprimer_post', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                });
+                console.log('Status POST:', postResponse.status);
+            }
+        } catch (error) {
+            console.error('Erreur test:', error);
+        }
+    }
+    
+    // Initialiser les événements au chargement
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Page gestion_tps.html chargée');
+    });
+    </script>
+</body>
+</html>

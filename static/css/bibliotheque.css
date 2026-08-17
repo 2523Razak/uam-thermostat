@@ -1,0 +1,253 @@
+/* =========================================
+   STYLE DE LA PAGE BIBLIOTHÈQUE
+   ========================================= */
+.page-bibliotheque {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    padding: 30px;
+    margin-left: 260px; 
+    box-sizing: border-box;
+}
+
+/* EN-TÊTE */
+.entete-page {
+    margin-bottom: 25px;
+}
+
+.entete-page h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 5px;
+}
+
+.entete-page p {
+    color: #718096;
+    font-size: 0.9rem;
+}
+
+/* BARRE DE FILTRES (Le rectangle blanc en haut) */
+.zone-filtres {
+    background: #ffffff;
+    padding: 15px 20px;
+    border-radius: 12px;
+    border: 1px solid #eef2f7;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.texte-filtre {
+    font-size: 0.9rem;
+    color: #718096;
+    font-weight: 500;
+}
+
+.groupe-boutons {
+    display: flex;
+    gap: 10px;
+}
+
+.bouton-filtre {
+    padding: 6px 16px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px; 
+    color: #4a5568;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.bouton-filtre:hover {
+    background-color: #f7fafc;
+}
+
+.bouton-filtre.actif {
+    background-color: #333; 
+    color: #ffffff;
+    border-color: #333;
+}
+
+/* GRILLE DES CARTES */
+.grille-documents {
+    display: grid;
+    /* FORCE 3 COLONNES */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 20px;
+}
+
+/* CARTE INDIVIDUELLE */
+.carte-document {
+    background: #ffffff;
+    border-radius: 15px;
+    border: 1px solid #eef2f7;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    transition: transform 0.2s;
+}
+
+.carte-document:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* HAUT DE CARTE (Icone + Tag) */
+.haut-carte {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.boite-icone {
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.boite-icone svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* COULEURS ICONES */
+.fond-bleu { background-color: #ebf4ff; color: #4a55ff; }
+.fond-vert { background-color: #f0fff4; color: #38a169; }
+.fond-violet { background-color: #faf5ff; color: #805ad5; }
+
+/* TAGS (Cours, TP, etc.) */
+.tag {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+}
+
+.tag-cours { background-color: #ebf8ff; color: #3182ce; }
+.tag-tp { background-color: #f0fff4; color: #38a169; }
+.tag-projet { background-color: #faf5ff; color: #805ad5; }
+
+/* TEXTES DE LA CARTE */
+.corps-carte {
+    margin-bottom: 15px;
+    flex-grow: 1; /* Pousse le bas vers le bas */
+}
+
+.corps-carte h3 {
+    font-size: 1rem; 
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.corps-carte p {
+    font-size: 0.8rem;
+    color: #718096;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* INFOS (Pages / MB) */
+.infos-carte {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #a0aec0;
+    padding-top: 15px;
+    margin-bottom: 15px;
+    border-top: 1px solid #f7fafc; 
+}
+
+/* BOUTON TÉLÉCHARGER */
+.bouton-telecharger {
+    width: 100%;
+    padding: 10px;
+    background-color: #4a55ff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+}
+
+.bouton-telecharger:hover {
+    background-color: #342B98;
+}
+
+/* =========================================
+   STYLES POUR LE FILTRAGE
+   ========================================= */
+
+/* Animation pour l'apparition des cartes filtrées */
+.carte-document {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Style pour le tag référence */
+.tag-reference { 
+    background-color: #fff5f5; 
+    color: #e53e3e; 
+}
+
+/* Classe pour cacher les éléments */
+.cache {
+    display: none !important;
+}
+
+/* Animation lors du filtrage */
+.grille-documents {
+    transition: all 0.3s ease;
+}
+
+/* Pour une transition plus fluide */
+.carte-document {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- RESPONSIVE (POUR GERER LES PETITS ECRANS) --- */
+
+/* Si l'écran est moyen (ex: petite tablette), on passe à 2 colonnes */
+@media (max-width: 1200px) {
+    .grille-documents {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Si l'écran est petit (Mobile), on réduit la marge du menu et on passe à 1 colonne */
+@media (max-width: 768px) {
+    .page-bibliotheque {
+        margin-left: 200px; /* Taille sidebar mobile */
+        padding: 15px;
+    }
+    .grille-documents {
+        grid-template-columns: 1fr;
+    }
+}

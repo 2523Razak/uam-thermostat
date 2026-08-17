@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Système de Tunnel HTTP - Thermostat UAM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Cartes */
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 25px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .card-footer {
+            padding: 15px 25px;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 25px 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header h1 .emoji {
+            font-size: 36px;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #f8f9fa;
+            padding: 8px 20px;
+            border-radius: 50px;
+        }
+
+        .user-name {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        /* Alertes */
+        .alert {
+            padding: 18px 22px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 5px solid #28a745;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 5px solid #ffc107;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 5px solid #dc3545;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 5px solid #17a2b8;
+        }
+
+        .alert-icon {
+            font-size: 32px;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        /* Grille */
+        .row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 900px) {
+            .row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Tableaux */
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .stats-table tr {
+            border-bottom: 1px solid #eee;
+        }
+
+        .stats-table td {
+            padding: 12px 0;
+        }
+
+        .stats-table td:first-child {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .stats-table td:last-child {
+            text-align: right;
+            color: #333;
+            font-family: monospace;
+        }
+
+        /* Input group */
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            background: #f8f9fa;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Boutons */
+        .btn {
+            padding: 10px 22px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        /* QR Code */
+        .qr-container {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            margin-top: 15px;
+        }
+
+        #qrcode {
+            display: inline-block;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        /* Logs */
+        .logs-container {
+            background: #1e1e1e;
+            border-radius: 12px;
+            padding: 15px;
+            max-height: 350px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            padding: 8px 12px;
+            border-bottom: 1px solid #333;
+            color: #d4d4d4;
+            font-family: monospace;
+        }
+
+        .log-time {
+            color: #6a9955;
+        }
+
+        .log-info {
+            color: #9cdcfe;
+        }
+
+        .log-success {
+            color: #4ec9b0;
+        }
+
+        .log-error {
+            color: #f48771;
+        }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Live badge */
+        .live-badge {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #4caf50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: white;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* Instructions */
+        .instructions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .instruction-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .instruction-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            line-height: 30px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1>
+                    <span class="emoji">🚇</span>
+                    Système de Tunnel HTTP
+                </h1>
+                <div class="subtitle">Ngrok Light PRO - Accès public sécurisé</div>
+            </div>
+            <div class="user-info">
+                <span>👤 <span class="user-name">{{ user_prenom }} {{ user_nom }}</span></span>
+                <a href="{{ url_for('deconnexion') }}" class="logout-btn">Déconnexion</a>
+            </div>
+        </div>
+
+        <!-- Statut général -->
+        <div class="alert {% if status.server_running and status.client_running %}alert-success{% else %}alert-warning{% endif %}">
+            <div class="alert-icon">
+                {% if status.server_running and status.client_running %}
+                    ✅
+                {% elif status.server_running %}
+                    ⚠️
+                {% else %}
+                    ❌
+                {% endif %}
+            </div>
+            <div>
+                <strong class="fs-5">
+                    {% if status.server_running and status.client_running %}
+                        Tunnel actif et opérationnel
+                    {% elif status.server_running %}
+                        Serveur actif, client en attente
+                    {% else %}
+                        Tunnel inactif
+                    {% endif %}
+                </strong>
+                <br>
+                <small>
+                    {% if status.server_running and status.client_running %}
+                        Le tunnel est prêt à recevoir des connexions externes
+                    {% elif status.server_running %}
+                        Le client tunnel n'est pas connecté au serveur
+                    {% else %}
+                        Démarrez le tunnel pour activer l'accès public
+                    {% endif %}
+                </small>
+            </div>
+        </div>
+
+        <!-- Lien public -->
+        {% if status.public_url %}
+        <div class="card">
+            <div class="card-header" style="background: linear-gradient(135deg, #28a745, #20c997); color: white;">
+                <i class="fas fa-link"></i> 🔗 Lien public partageable
+            </div>
+            <div class="card-body">
+                <div class="input-group">
+                    <input type="text" id="publicUrl" value="{{ status.public_url }}" readonly>
+                    <button class="btn btn-primary" onclick="copyUrl()">📋 Copier</button>
+                    <a href="{{ status.public_url }}" class="btn btn-success" target="_blank">🌐 Ouvrir</a>
+                </div>
+                <div class="qr-container" id="qrContainer">
+                    <div class="mb-2"><strong>📱 Scanner le QR code</strong></div>
+                    <div id="qrcode"></div>
+                </div>
+                <div class="alert alert-info mt-3">
+                    <span>💡</span>
+                    <div>
+                        <strong>Comment partager ce lien ?</strong><br>
+                        Copiez le lien ci-dessus et envoyez-le par email, WhatsApp, ou tout autre moyen.
+                        Vos étudiants/personnel pourront accéder à l'application depuis n'importe où.
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Statistiques et contrôles -->
+        <div class="row">
+            <!-- Serveur -->
+            <div class="card">
+                <div class="card-header" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
+                    🖥️ Serveur Central (FastAPI)
+                </div>
+                <div class="card-body">
+                    <table class="stats-table">
+                        <tr>
+                            <td>📌 Statut</td>
+                            <td>
+                                {% if status.server_running %}
+                                    <span class="badge badge-success">🟢 Actif</span>
+                                {% else %}
+                                    <span class="badge badge-danger">🔴 Inactif</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>🔌 Port</td>
+                            <td>8000</td>
+                        </tr>
+                        <tr>
+                            <td>🌐 Dashboard</td>
+                            <td><a href="http://localhost:8000" target="_blank">http://localhost:8000</a></td>
+                        </tr>
+                        {% if status.server_stats %}
+                        <tr>
+                            <td>📊 Tunnels actifs</td>
+                            <td>{{ status.server_stats.active_tunnels }}</td>
+                        </tr>
+                        <tr>
+                            <td>📈 Requêtes totales</td>
+                            <td>{{ status.server_stats.total_requests }}</td>
+                        </tr>
+                        <tr>
+                            <td>❌ Erreurs</td>
+                            <td>{{ status.server_stats.total_errors }}</td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                </div>
+            </div>
+
+            <!-- Client -->
+            <div class="card">
+                <div class="card-header" style="background: linear-gradient(135deg, #11998e, #38ef7d); color: white;">
+                    💻 Client Tunnel
+                </div>
+                <div class="card-body">
+                    <table class="stats-table">
+                        <tr>
+                            <td>📌 Statut</td>
+                            <td>
+                                {% if status.client_running %}
+                                    <span class="badge badge-success">🟢 Connecté</span>
+                                {% else %}
+                                    <span class="badge badge-danger">🔴 Déconnecté</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>📝 Projet</td>
+                            <td>thermostat_uam</td>
+                        </tr>
+                        <tr>
+                            <td>📍 Application locale</td>
+                            <td>http://localhost:5000</td>
+                        </tr>
+                        <tr>
+                            <td>🔄 Reconnexion auto</td>
+                            <td><span class="badge badge-success">✅ Activée</span></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contrôles -->
+        <div class="card">
+            <div class="card-header" style="background: linear-gradient(135deg, #f093fb, #f5576c); color: white;">
+                🎮 Contrôles du tunnel
+            </div>
+            <div class="card-body">
+                <div class="btn-group">
+                    {% if not status.server_running or not status.client_running %}
+                        <button class="btn btn-success" onclick="startTunnel()" id="startBtn">
+                            🚀 Démarrer le tunnel
+                        </button>
+                    {% else %}
+                        <button class="btn btn-danger" onclick="stopTunnel()" id="stopBtn">
+                            🛑 Arrêter le tunnel
+                        </button>
+                    {% endif %}
+                    <button class="btn btn-warning" onclick="restartTunnel()" id="restartBtn">
+                        🔄 Redémarrer
+                    </button>
+                    <button class="btn btn-secondary" onclick="refreshStatus()">
+                        🔄 Rafraîchir
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="card">
+            <div class="card-header" style="background: linear-gradient(135deg, #4facfe, #00f2fe); color: white;">
+                📖 Guide d'utilisation
+            </div>
+            <div class="card-body">
+                <div class="instructions">
+                    <div class="instruction-item">
+                        <div class="instruction-number">1</div>
+                        <strong>Démarrer le tunnel</strong><br>
+                        <small>Cliquez sur "Démarrer le tunnel" pour activer l'accès public</small>
+                    </div>
+                    <div class="instruction-item">
+                        <div class="instruction-number">2</div>
+                        <strong>Copier le lien</strong><br>
+                        <small>Utilisez le bouton "Copier" pour obtenir le lien public</small>
+                    </div>
+                    <div class="instruction-item">
+                        <div class="instruction-number">3</div>
+                        <strong>Partager</strong><br>
+                        <small>Envoyez le lien à vos étudiants par email ou messagerie</small>
+                    </div>
+                    <div class="instruction-item">
+                        <div class="instruction-number">4</div>
+                        <strong>Accès</strong><br>
+                        <small>Les utilisateurs accèdent directement à l'application</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs -->
+        <div class="card">
+            <div class="card-header" style="background: #1e1e1e; color: white;">
+                <span class="live-badge"></span>
+                📋 Logs d'activité en temps réel
+            </div>
+            <div class="card-body" style="padding: 0;">
+                <div class="logs-container" id="logsContainer">
+                    <div class="log-entry">🟢 Tunnel prêt - En attente d'activité...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>🔒 Tunnel HTTP sécurisé | © 2025 Thermostat UAM - Université Abdou Moumouni / FAST</p>
+            <p>⚠️ Le lien reste actif tant que l'application est en cours d'exécution</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script>
+        let refreshInterval = null;
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            startAutoRefresh();
+            
+            // Générer QR code si le tunnel est actif
+            {% if status.active and status.public_url %}
+                generateQRCode('{{ status.public_url }}');
+            {% elif status.public_url %}
+                generateQRCode('{{ status.public_url }}');
+            {% endif %}
+        });
+
+        // Mise à jour automatique des statistiques
+        function startAutoRefresh() {
+            refreshInterval = setInterval(refreshStatus, 5000);
+        }
+
+        // Rafraîchir le statut
+        async function refreshStatus() {
+            try {
+                const response = await fetch('/api/tunnel_system/status');
+                const data = await response.json();
+                updateUI(data);
+            } catch (error) {
+                console.error('Erreur refresh status:', error);
+            }
+        }
+
+        // Mettre à jour l'interface
+        function updateUI(data) {
+            // Mettre à jour l'URL publique
+            const urlInput = document.getElementById('publicUrl');
+            if (urlInput && data.public_url && urlInput.value !== data.public_url) {
+                urlInput.value = data.public_url;
+                generateQRCode(data.public_url);
+            }
+        }
+
+        // Démarrer le tunnel
+        async function startTunnel() {
+            const startBtn = document.getElementById('startBtn');
+            if (!startBtn) return;
+            
+            const originalText = startBtn.innerHTML;
+            startBtn.innerHTML = '<div class="loading"></div> Démarrage...';
+            startBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/tunnel_system/start', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    addLogEntry({
+                        level: 'INFO',
+                        message: 'Tunnel démarré avec succès',
+                        timestamp: new Date().toISOString()
+                    });
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    alert('Erreur: ' + (data.message || 'Impossible de démarrer le tunnel'));
+                    startBtn.innerHTML = originalText;
+                    startBtn.disabled = false;
+                }
+            } catch (error) {
+                alert('Erreur: ' + error.message);
+                startBtn.innerHTML = originalText;
+                startBtn.disabled = false;
+            }
+        }
+
+        // Arrêter le tunnel
+        async function stopTunnel() {
+            if (!confirm('⚠️ Êtes-vous sûr de vouloir arrêter le tunnel ?\n\nLe lien public ne fonctionnera plus jusqu\'au redémarrage.')) {
+                return;
+            }
+            
+            const stopBtn = document.getElementById('stopBtn');
+            if (!stopBtn) return;
+            
+            const originalText = stopBtn.innerHTML;
+            stopBtn.innerHTML = '<div class="loading"></div> Arrêt...';
+            stopBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/tunnel_system/stop', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    addLogEntry({
+                        level: 'WARNING',
+                        message: 'Tunnel arrêté par l\'administrateur',
+                        timestamp: new Date().toISOString()
+                    });
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    alert('Erreur: ' + (data.message || 'Impossible d\'arrêter le tunnel'));
+                    stopBtn.innerHTML = originalText;
+                    stopBtn.disabled = false;
+                }
+            } catch (error) {
+                alert('Erreur: ' + error.message);
+                stopBtn.innerHTML = originalText;
+                stopBtn.disabled = false;
+            }
+        }
+
+        // Redémarrer le tunnel
+        async function restartTunnel() {
+            if (!confirm('🔄 Redémarrer le tunnel ?\n\nLes connexions actives seront temporairement interrompues.')) {
+                return;
+            }
+            
+            const restartBtn = document.getElementById('restartBtn');
+            if (!restartBtn) return;
+            
+            const originalText = restartBtn.innerHTML;
+            restartBtn.innerHTML = '<div class="loading"></div> Redémarrage...';
+            restartBtn.disabled = true;
+            
+            try {
+                // D'abord arrêter
+                await fetch('/api/tunnel_system/stop', {method: 'POST'});
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Puis démarrer
+                const response = await fetch('/api/tunnel_system/start', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    addLogEntry({
+                        level: 'INFO',
+                        message: 'Tunnel redémarré avec succès',
+                        timestamp: new Date().toISOString()
+                    });
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    alert('Erreur: ' + (data.message || 'Impossible de redémarrer le tunnel'));
+                    restartBtn.innerHTML = originalText;
+                    restartBtn.disabled = false;
+                }
+            } catch (error) {
+                alert('Erreur: ' + error.message);
+                restartBtn.innerHTML = originalText;
+                restartBtn.disabled = false;
+            }
+        }
+
+        // Copier l'URL
+        function copyUrl() {
+            const urlInput = document.getElementById('publicUrl');
+            if (urlInput) {
+                urlInput.select();
+                document.execCommand('copy');
+                
+                // Feedback visuel
+                alert('✅ Lien copié dans le presse-papier !');
+                
+                addLogEntry({
+                    level: 'INFO',
+                    message: 'Lien public copié dans le presse-papier',
+                    timestamp: new Date().toISOString()
+                });
+            }
+        }
+
+        // Ajouter une entrée de log
+        function addLogEntry(log) {
+            const logsContainer = document.getElementById('logsContainer');
+            if (!logsContainer) return;
+            
+            const logDiv = document.createElement('div');
+            logDiv.className = 'log-entry';
+            
+            let levelClass = 'log-info';
+            if (log.level === 'ERROR') levelClass = 'log-error';
+            else if (log.status_code && log.status_code < 300) levelClass = 'log-success';
+            
+            const timestamp = log.timestamp ? new Date(log.timestamp).toLocaleTimeString() : new Date().toLocaleTimeString();
+            
+            logDiv.innerHTML = `
+                <span class="log-time">[${timestamp}]</span>
+                <span class="${levelClass}">[TUNNEL]</span>
+                ${log.message || `${log.method} ${log.path} -> ${log.status_code}`}
+            `;
+            
+            logsContainer.insertBefore(logDiv, logsContainer.firstChild);
+            
+            // Garder seulement les 100 derniers logs
+            while (logsContainer.children.length > 100) {
+                logsContainer.removeChild(logsContainer.lastChild);
+            }
+        }
+
+        // Générer QR code
+        function generateQRCode(url) {
+            const qrContainer = document.getElementById('qrcode');
+            if (qrContainer && typeof QRCode !== 'undefined') {
+                qrContainer.innerHTML = '';
+                try {
+                    new QRCode(qrContainer, {
+                        text: url,
+                        width: 150,
+                        height: 150,
+                        colorDark: '#000000',
+                        colorLight: '#ffffff',
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                } catch (e) {
+                    console.error('Erreur QR code:', e);
+                }
+            }
+        }
+
+        // Nettoyage avant fermeture
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+    </script>
+</body>
+</html>

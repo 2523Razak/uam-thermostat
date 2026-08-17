@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Correction Rapide - Thermostat_UAM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* En-tête */
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 20px 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .header h1 i {
+            color: #667eea;
+            margin-right: 10px;
+        }
+
+        .header p {
+            color: #718096;
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        /* Sélection TP */
+        .tp-selection {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .tp-selection h3 {
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+
+        .tp-select-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .tp-select-group select {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .tp-select-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+        }
+
+        .btn-warning {
+            background: #ed8936;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #dd6b20;
+        }
+
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+
+        /* Zone de correction */
+        .correction-area {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        /* Navigation */
+        .navigation {
+            background: #f7fafc;
+            padding: 15px 25px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .progress-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-badge {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .student-info {
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Corps de la correction */
+        .correction-body {
+            padding: 30px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        /* Questions */
+        .question-card {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .question-title {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .question-points {
+            background: #e2e8f0;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .question-text {
+            margin-bottom: 15px;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        .question-image {
+            margin-bottom: 15px;
+        }
+
+        .question-image img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .student-answer {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .student-answer-label {
+            font-weight: 500;
+            color: #667eea;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .student-answer-content {
+            color: #2d3748;
+            line-height: 1.5;
+        }
+
+        .student-answer-image {
+            margin-top: 10px;
+        }
+
+        .student-answer-image img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+        }
+
+        .correction-area-input {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #e2e8f0;
+        }
+
+        .correction-area-input label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #4a5568;
+        }
+
+        .note-input {
+            width: 120px;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .note-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .comment-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            resize: vertical;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Pied de page */
+        .correction-footer {
+            background: #f7fafc;
+            padding: 20px 25px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .summary-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .summary-stat {
+            text-align: center;
+        }
+
+        .summary-stat .label {
+            font-size: 0.8rem;
+            color: #718096;
+        }
+
+        .summary-stat .value {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Indicateur de chargement */
+        .loading {
+            text-align: center;
+            padding: 50px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Message vide */
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #a0aec0;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        /* Alertes */
+        .alert {
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .alert-info {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .correction-body {
+                padding: 15px;
+            }
+            
+            .navigation {
+                flex-direction: column;
+            }
+            
+            .nav-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .correction-footer {
+                flex-direction: column;
+            }
+            
+            .summary-stats {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- En-tête -->
+        <div class="header">
+            <h1>
+                <i class="fas fa-edit"></i> Correction Rapide des Travaux Pratiques
+            </h1>
+            <p>Parcourez et corrigez facilement toutes les copies des étudiants</p>
+            <div class="header-actions">
+                <a href="{{ url_for('consulter_soumissions') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour aux soumissions
+                </a>
+                <a href="{{ url_for('gestion_tps') }}" class="btn btn-secondary">
+                    <i class="fas fa-flask"></i> Gestion des TP
+                </a>
+            </div>
+        </div>
+
+        <!-- Sélection du TP -->
+        <div class="tp-selection" id="tp-selection">
+            <h3><i class="fas fa-flask"></i> Sélectionner un travail pratique</h3>
+            <div class="tp-select-group">
+                <select id="tp-select">
+                    <option value="">-- Choisissez un TP --</option>
+                    {% for tp in tps %}
+                    <option value="{{ tp.id }}" data-titre="{{ tp.titre }}" data-module="{{ tp.module }}">
+                        {{ tp.titre }} {% if tp.module %}({{ tp.module }}){% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+                <button class="btn btn-primary" id="charger-tp-btn" onclick="chargerCopies()">
+                    <i class="fas fa-play"></i> Commencer la correction
+                </button>
+            </div>
+        </div>
+
+        <!-- Zone de correction (cachée au départ) -->
+        <div id="correction-container" style="display: none;">
+            <div class="correction-area">
+                <!-- Navigation -->
+                <div class="navigation">
+                    <div class="progress-info">
+                        <span class="progress-badge" id="progress-badge">Étudiant 1 / 10</span>
+                        <span class="student-info" id="student-info">Chargement...</span>
+                    </div>
+                    <div class="nav-buttons">
+                        <button class="nav-btn" id="prev-btn" onclick="previousCopy()" disabled>
+                            <i class="fas fa-chevron-left"></i> Précédent
+                        </button>
+                        <button class="nav-btn" id="next-btn" onclick="nextCopy()">
+                            Suivant <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Corps -->
+                <div class="correction-body" id="correction-body">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Chargement des copies...</p>
+                    </div>
+                </div>
+
+                <!-- Pied de page -->
+                <div class="correction-footer">
+                    <div class="summary-stats">
+                        <div class="summary-stat">
+                            <div class="label">Note totale</div>
+                            <div class="value" id="total-note">0</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="label">Note max</div>
+                            <div class="value" id="total-max">0</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="label">Pourcentage</div>
+                            <div class="value" id="total-percent">0%</div>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-success" onclick="sauvegarderCorrection()">
+                            <i class="fas fa-save"></i> Sauvegarder cette copie
+                        </button>
+                        <button class="btn btn-primary" onclick="sauvegarderEtSuivant()">
+                            <i class="fas fa-check-double"></i> Sauvegarder et Suivant
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let tpId = null;
+        let tpTitre = null;
+        let tpModule = null;
+        let copies = [];
+        let currentIndex = 0;
+        let currentCorrection = {};
+        let totalQuestions = 0;
+        let totalPoints = 0;
+
+        // Éléments DOM
+        const correctionContainer = document.getElementById('correction-container');
+        const tpSelection = document.getElementById('tp-selection');
+        const tpSelect = document.getElementById('tp-select');
+
+        // Charger les copies du TP sélectionné
+        async function chargerCopies() {
+            tpId = tpSelect.value;
+            if (!tpId) {
+                alert('Veuillez sélectionner un TP');
+                return;
+            }
+
+            const selectedOption = tpSelect.options[tpSelect.selectedIndex];
+            tpTitre = selectedOption.getAttribute('data-titre');
+            tpModule = selectedOption.getAttribute('data-module');
+
+            // Afficher le chargement
+            correctionContainer.style.display = 'block';
+            correctionContainer.scrollIntoView({ behavior: 'smooth' });
+            
+            const correctionBody = document.getElementById('correction-body');
+            correctionBody.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Chargement des copies du TP "${tpTitre}"...</p>
+                </div>
+            `;
+
+            try {
+                // Récupérer la liste des soumissions pour ce TP
+                const params = new URLSearchParams({
+                    tp_id: tpId,
+                    statut: 'all',
+                    per_page: 100
+                });
+                
+                const response = await fetch(`/api/soumissions?${params}`);
+                const data = await response.json();
+                
+                if (data.success && data.soumissions && data.soumissions.length > 0) {
+                    // Filtrer uniquement les soumissions soumises
+                    copies = data.soumissions.filter(s => s.statut === 'soumis' || s.reponses_count > 0);
+                    
+                    if (copies.length === 0) {
+                        correctionBody.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <h3>Aucune copie soumise</h3>
+                                <p>Aucun étudiant n'a encore soumis ce TP.</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    // Charger la première copie
+                    currentIndex = 0;
+                    await chargerCopieDetails(currentIndex);
+                    
+                    // Mettre à jour l'affichage
+                    updateNavigationButtons();
+                    
+                } else {
+                    correctionBody.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <h3>Aucune soumission</h3>
+                            <p>Aucun étudiant n'est inscrit à ce TP ou aucune soumission n'a été faite.</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                correctionBody.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Erreur de chargement</h3>
+                        <p>Impossible de charger les copies. Veuillez réessayer.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Charger les détails d'une copie
+        async function chargerCopieDetails(index) {
+            const copy = copies[index];
+            if (!copy) return;
+
+            const correctionBody = document.getElementById('correction-body');
+            correctionBody.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Chargement de la copie de ${copy.etudiant_prenom} ${copy.etudiant_nom}...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(`/api/soumissions/${tpId}/${copy.etudiant_id}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Stocker les données de la soumission
+                    copies[index].details = data;
+                    
+                    // Calculer les totaux
+                    totalPoints = data.statistiques.note_max || 0;
+                    totalQuestions = data.questions.length;
+                    
+                    // Initialiser les corrections
+                    currentCorrection = {
+                        tp_id: tpId,
+                        etudiant_id: copy.etudiant_id,
+                        corrections: [],
+                        commentaire: ''
+                    };
+                    
+                    // Préparer les corrections à partir des données existantes
+                    data.questions.forEach(question => {
+                        currentCorrection.corrections.push({
+                            question_id: question.id,
+                            note: question.note || 0,
+                            max_points: question.points,
+                            commentaire: question.commentaire_correction || ''
+                        });
+                    });
+                    
+                    // Afficher le formulaire de correction
+                    afficherFormulaireCorrection(data, index);
+                    
+                    // Mettre à jour le résumé
+                    mettreAJourResume();
+                    
+                    // Mettre à jour les informations de navigation
+                    const progressBadge = document.getElementById('progress-badge');
+                    progressBadge.innerHTML = `Étudiant ${index + 1} / ${copies.length}`;
+                    
+                    const studentInfo = document.getElementById('student-info');
+                    studentInfo.innerHTML = `<i class="fas fa-user-graduate"></i> ${copy.etudiant_prenom} ${copy.etudiant_nom} - ${copy.etudiant_matricule}`;
+                    
+                } else {
+                    correctionBody.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>Erreur</h3>
+                            <p>Impossible de charger les détails de la soumission.</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                correctionBody.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Erreur</h3>
+                        <p>Une erreur est survenue lors du chargement.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Afficher le formulaire de correction
+        function afficherFormulaireCorrection(data, index) {
+            const copy = copies[index];
+            const correctionBody = document.getElementById('correction-body');
+            
+            let questionsHtml = '';
+            
+            data.questions.forEach((question, qIndex) => {
+                const correction = currentCorrection.corrections.find(c => c.question_id === question.id) || { note: 0, commentaire: '' };
+                const hasImage = question.image_url && question.image_url !== 'null';
+                const hasFile = question.fichier_url;
+                
+                questionsHtml += `
+                    <div class="question-card" data-question-id="${question.id}">
+                        <div class="question-header">
+                            <span class="question-title">
+                                Question ${qIndex + 1}
+                                ${question.type_question === 'qcm' ? '<i class="fas fa-check-circle" style="color:#48bb78;"></i>' : ''}
+                                ${question.type_question === 'ouverte' ? '<i class="fas fa-pencil-alt" style="color:#ed8936;"></i>' : ''}
+                            </span>
+                            <span class="question-points">${question.points} point(s)</span>
+                        </div>
+                        
+                        <div class="question-text">
+                            <strong>Énoncé :</strong><br>
+                            ${question.enonce || 'Pas d\'énoncé'}
+                        </div>
+                        
+                        ${hasImage ? `
+                        <div class="question-image">
+                            <img src="${question.image_url}" alt="Image de la question" onclick="window.open(this.src)">
+                        </div>
+                        ` : ''}
+                        
+                        <div class="student-answer">
+                            <div class="student-answer-label">
+                                <i class="fas fa-user-graduate"></i> Réponse de l'étudiant :
+                            </div>
+                            <div class="student-answer-content">
+                                ${question.reponse_etudiant ? question.reponse_etudiant.replace(/\n/g, '<br>') : '<em>Aucune réponse texte</em>'}
+                            </div>
+                            ${hasFile ? `
+                            <div class="student-answer-image">
+                                <a href="${question.fichier_url}" target="_blank" class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.85rem;">
+                                    <i class="fas fa-download"></i> Voir le fichier joint
+                                </a>
+                            </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="correction-area-input">
+                            <label><i class="fas fa-star"></i> Note (sur ${question.points}) :</label>
+                            <input type="number" class="note-input" id="note-${question.id}" 
+                                   value="${correction.note}" min="0" max="${question.points}" 
+                                   step="0.5" onchange="mettreAJourNote(${question.id}, ${question.points})">
+                            
+                            <label style="margin-top: 10px;"><i class="fas fa-comment"></i> Commentaire de correction :</label>
+                            <textarea class="comment-input" id="comment-${question.id}" 
+                                      rows="3" placeholder="Ajoutez un commentaire pour l'étudiant...">${correction.commentaire || ''}</textarea>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            // Ajouter le commentaire général
+            questionsHtml += `
+                <div class="question-card" style="border-left-color: #48bb78;">
+                    <div class="question-header">
+                        <span class="question-title">
+                            <i class="fas fa-comment-dots"></i> Commentaire général
+                        </span>
+                    </div>
+                    <div class="correction-area-input">
+                        <textarea class="comment-input" id="commentaire-general" 
+                                  rows="4" placeholder="Ajoutez un commentaire général pour l'étudiant...">${currentCorrection.commentaire || ''}</textarea>
+                    </div>
+                </div>
+            `;
+            
+            correctionBody.innerHTML = questionsHtml;
+        }
+
+        // Mettre à jour une note
+        function mettreAJourNote(questionId, maxPoints) {
+            const noteInput = document.getElementById(`note-${questionId}`);
+            let note = parseFloat(noteInput.value);
+            
+            if (isNaN(note)) note = 0;
+            if (note < 0) note = 0;
+            if (note > maxPoints) note = maxPoints;
+            
+            noteInput.value = note;
+            
+            // Mettre à jour currentCorrection
+            const correction = currentCorrection.corrections.find(c => c.question_id === questionId);
+            if (correction) {
+                correction.note = note;
+            }
+            
+            // Mettre à jour le résumé
+            mettreAJourResume();
+        }
+
+        // Mettre à jour le résumé
+        function mettreAJourResume() {
+            let totalNote = 0;
+            let totalMax = 0;
+            
+            currentCorrection.corrections.forEach(correction => {
+                totalNote += correction.note || 0;
+                totalMax += correction.max_points || 0;
+            });
+            
+            const percentage = totalMax > 0 ? (totalNote / totalMax * 100).toFixed(1) : 0;
+            
+            document.getElementById('total-note').innerHTML = totalNote.toFixed(1);
+            document.getElementById('total-max').innerHTML = totalMax;
+            document.getElementById('total-percent').innerHTML = `${percentage}%`;
+        }
+
+        // Sauvegarder la correction actuelle
+        async function sauvegarderCorrection() {
+            // Récupérer toutes les notes et commentaires
+            currentCorrection.corrections.forEach(correction => {
+                const noteInput = document.getElementById(`note-${correction.question_id}`);
+                const commentInput = document.getElementById(`comment-${correction.question_id}`);
+                
+                if (noteInput) {
+                    correction.note = parseFloat(noteInput.value) || 0;
+                }
+                if (commentInput) {
+                    correction.commentaire = commentInput.value;
+                }
+            });
+            
+            const commentaireGeneral = document.getElementById('commentaire-general');
+            if (commentaireGeneral) {
+                currentCorrection.commentaire = commentaireGeneral.value;
+            }
+            
+            // Afficher le chargement
+            showToast('Sauvegarde en cours...', 'info');
+            
+            try {
+                const response = await fetch('/api/soumissions/correction', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(currentCorrection)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showToast(`Correction sauvegardée ! Note: ${result.note_totale}/${result.note_max}`, 'success');
+                    
+                    // Mettre à jour la copie dans le tableau
+                    if (copies[currentIndex]) {
+                        copies[currentIndex].note_valeur = result.note_totale;
+                        if (copies[currentIndex].details) {
+                            copies[currentIndex].details.statistiques.note_totale = result.note_totale;
+                        }
+                    }
+                } else {
+                    showToast(`Erreur: ${result.message}`, 'error');
+                }
+            } catch (error) {
+                console.error('Erreur sauvegarde:', error);
+                showToast('Erreur lors de la sauvegarde', 'error');
+            }
+        }
+
+        // Sauvegarder et passer à la copie suivante
+        async function sauvegarderEtSuivant() {
+            await sauvegarderCorrection();
+            nextCopy();
+        }
+
+        // Passer à la copie suivante
+        function nextCopy() {
+            if (currentIndex + 1 < copies.length) {
+                currentIndex++;
+                chargerCopieDetails(currentIndex);
+                updateNavigationButtons();
+            } else {
+                showToast('Vous avez terminé toutes les corrections !', 'success');
+            }
+        }
+
+        // Revenir à la copie précédente
+        function previousCopy() {
+            if (currentIndex - 1 >= 0) {
+                currentIndex--;
+                chargerCopieDetails(currentIndex);
+                updateNavigationButtons();
+            }
+        }
+
+        // Mettre à jour l'état des boutons de navigation
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === copies.length - 1;
+            
+            if (nextBtn.disabled) {
+                nextBtn.innerHTML = 'Terminer <i class="fas fa-check"></i>';
+            } else {
+                nextBtn.innerHTML = 'Suivant <i class="fas fa-chevron-right"></i>';
+            }
+        }
+
+        // Afficher une notification toast
+        function showToast(message, type = 'info') {
+            // Créer un élément toast
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type}`;
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.right = '20px';
+            toast.style.zIndex = '9999';
+            toast.style.minWidth = '250px';
+            toast.style.maxWidth = '350px';
+            toast.style.animation = 'slideIn 0.3s ease';
+            
+            const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle');
+            toast.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Ajouter les animations CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Gérer la touche Entrée pour sauvegarder
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+Enter pour sauvegarder et suivant
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                sauvegarderEtSuivant();
+            }
+            // Ctrl+S pour sauvegarder uniquement
+            else if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                sauvegarderCorrection();
+            }
+            // Flèche droite pour suivant
+            else if (e.key === 'ArrowRight' && !e.ctrlKey && !e.altKey) {
+                e.preventDefault();
+                nextCopy();
+            }
+            // Flèche gauche pour précédent
+            else if (e.key === 'ArrowLeft' && !e.ctrlKey && !e.altKey) {
+                e.preventDefault();
+                previousCopy();
+            }
+        });
+    </script>
+</body>
+</html>

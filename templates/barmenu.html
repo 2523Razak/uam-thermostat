@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="/website/css/uicons-solid-rounded.css" rel="stylesheet">
+    <link rel="icon" href="{{ url_for('static', filename='image/thermostat.png') }}" type="image/png">
+
+    {% block page_styles %}{% endblock %}
+
+    <title>Thermostat Control</title>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='image/thermostat.png') }}" alt="Thermostat Icon" class="header-icon">
+            <div class="header-title">
+                <h2>TP Thermostat</h2>
+                <p>Systeme Embarque</p>
+            </div>
+            <!-- Cloche de notification DANS LE HEADER -->
+            <div class="notification-bell" onclick="toggleNotifications(event)">
+                <i class="fas fa-bell"></i>
+                <span class="notification-count" id="notificationCount"></span>
+            </div>
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li class="{{ 'active-page' if request.endpoint == 'index' else '' }}">
+                    <img src="{{ url_for('static', filename='image/temperature.png') }}" alt="Thermostat Control Icon" width="20">
+                    <a href="{{ url_for('index') }}">Contrôle Thermostat</a>
+                </li>
+            </ul>
+            <hr style="border-color: #342B98; border-style: solid; margin: 10px 0;">
+            <h3>RESOURCES</h3>
+            <hr style="border-color: #342B98; border-style: solid; margin: 10px 0;">
+            <ul>
+                <li class="{{ 'active-page' if request.endpoint == 'documentation' else '' }}">
+                    <img src="{{ url_for('static', filename='image/etude.png') }}" alt="Documentation Icon" width="20">
+                    <a href="{{ url_for('documentation') }}">Documentation</a>
+                </li>
+                <li class="{{ 'active-page' if request.endpoint == 'bibliotheque' else '' }}">
+                    <img src="{{ url_for('static', filename='image/livre.png') }}" alt="Library Icon" width="20">
+                    <a href="{{url_for('bibliotheque')}}">Bibliothéque</a>
+                </li>
+            </ul>
+
+            <hr style="border-color: #342B98; border-style: solid; margin: 10px 0;">
+            <h3>OUTILS</h3>
+            <hr style="border-color: #342B98; border-style: solid; margin: 10px 0;">
+            <ul>
+                <li class="{{ 'active-page' if request.endpoint == 'simulation' else '' }}">
+                    <img src="{{ url_for('static', filename='image/signes-vitaux.png') }}" alt="Simulation Icon" width="20">
+                    <a href="#">Simulation</a>
+                </li>
+                <li class="{{ 'active-page' if request.endpoint == 'code_personnalise' else '' }}">
+                    <img src="{{ url_for('static', filename='image/code.png') }}" alt="Custom Code Icon" width="20">
+                    <a href="{{url_for('code_personnalise')}}">Code Personnalisé</a>
+                </li>
+            </ul>
+
+            <!-- NOUVELLE SECTION TRAVAUX PRATIQUES -->
+            <hr style="border-color: #342B98; border-style: solid; margin: 10px 0;">
+            <h3>TRAVAUX PRATIQUES</h3>
+            <hr style="border-color: #342B98; border-style: solid; margin: 10px 0;">
+            <ul>
+                <li class="{{ 'active-page' if request.endpoint == 'liste_tps_etudiant' else '' }}">
+                    <img src="{{ url_for('static', filename='image/travail.png') }}" alt="TP Icon" width="20">
+                    <a href="{{ url_for('liste_tps_etudiant') }}">Liste des TP</a>
+                </li>
+            </ul>
+
+            <hr style="border-color: #342B98; border-style: solid; margin: 10px 0;">
+            <h3>Profil</h3>
+            <hr style="border-color: #342B98; border-style: solid; margin: 10px 0;">
+            <ul>
+                <li class="{{ 'active-page' if request.endpoint == 'profil' else '' }}">
+                    <img src="{{ url_for('static', filename='image/etudiant.png') }}" alt="Paramètres" width="20">
+                    <a href="{{url_for('profil')}}">Profil</a>
+                </li>
+            </ul>
+
+            <!-- Section Administrateur (Visible seulement pour les admins) -->
+            {% if user_statut == 'admin' %}
+            <hr style="border-color: #342B98; border-style: solid; margin: 10px 0;">
+            <h3>ADMINISTRATION</h3>
+            <hr style="border-color: #342B98; border-style: solid; margin: 10px 0;">
+            <ul>
+                <li class="{{ 'active-page' if request.endpoint == 'liste_utilisateurs' else '' }}">
+                <img src="{{ url_for('static', filename='image/work.png') }}" alt="Admin Icon" width="20">
+                    <a href="{{ url_for('liste_utilisateurs') }}">Administration</a>
+                </li>
+            </ul>
+            {% endif %}
+        </nav>
+        
+        <div class="sidebar-footer">
+            <a href="{{ url_for('deconnexion') }}" class="{{ 'active-page' if request.endpoint == 'deconnexion' else '' }}">
+                <img src="{{ url_for('static', filename='image/deconnecter_Out.png') }}" alt="Déconnecter Icon" width="30">
+                <span>Déconnexion</span>
+            </a>
+        </div>
+    </aside>
+    
+    <!-- Dropdown des notifications EN DEHORS DE LA SIDEBAR, À DROITE -->
+    <div class="notification-dropdown" id="notificationDropdown">
+        <div class="notification-header">
+            <h4>Notifications</h4>
+            <span class="mark-all-read" onclick="markAllAsRead()">Tout marquer comme lu</span>
+        </div>
+        <div class="notification-list" id="notificationList">
+            <!-- Les notifications seront chargées ici dynamiquement -->
+            <div class="notification-empty">Aucune notification</div>
+        </div>
+    </div>
+    
+    <!-- Pop-up de détail de notification -->
+    <div class="notification-detail-popup" id="notificationDetailPopup">
+        <div class="notification-detail-content">
+            <button class="close-detail-popup" onclick="closeNotificationDetail()">&times;</button>
+            <h3 id="notificationDetailTitle"></h3>
+            <div class="notification-detail-body" id="notificationDetailBody"></div>
+            <div class="notification-detail-footer">
+                <span id="notificationDetailDate"></span>
+                <button class="btn-mark-read" id="markAsReadBtn" onclick="markNotificationAsRead()">Marquer comme lu</button>
+            </div>
+        </div>
+    </div>
+    {% block content %}{% endblock %}
+    
+    <!-- Inclure le fichier JavaScript des notifications -->
+    <script src="{{ url_for('static', filename='js/barmenu.js') }}"></script>
+    
+    {% block scripts %}{% endblock %}
+   
+</body>
+</html>

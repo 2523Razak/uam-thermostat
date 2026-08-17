@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérification réussie - Thermostat_UAM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .success-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: fadeIn 0.5s ease-out;
+        }
+        .success-icon {
+            font-size: 80px;
+            color: #28a745;
+            margin-bottom: 20px;
+            animation: bounce 0.5s ease-out;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        .btn-login {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: transform 0.3s;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+        }
+        .countdown {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #999;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="success-card">
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h1>Email vérifié !</h1>
+        <p>
+            <strong>Félicitations !</strong> Votre adresse email a été vérifiée avec succès.<br>
+            Votre compte est maintenant activé.
+        </p>
+        <p>
+            Vous pouvez dès maintenant vous connecter à la plateforme 
+            Thermostat_UAM et accéder à toutes les fonctionnalités.
+        </p>
+        <a href="{{ url_for('connections') }}" class="btn-login">
+            <i class="fas fa-sign-in-alt"></i> Se connecter
+        </a>
+        <div class="countdown">
+            Redirection automatique dans <span id="countdown">5</span> secondes...
+        </div>
+    </div>
+
+    <script>
+        let seconds = 5;
+        const countdownEl = document.getElementById('countdown');
+        
+        const interval = setInterval(() => {
+            seconds--;
+            countdownEl.textContent = seconds;
+            if (seconds <= 0) {
+                clearInterval(interval);
+                window.location.href = "{{ url_for('connections') }}";
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

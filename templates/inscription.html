@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/inscription.css') }}">
+    <style>
+        /* Styles supplémentaires pour l'option admin */
+        .admin-option {
+            background-color: #2a2a2a;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #1ea95e;
+        }
+        
+        .admin-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .admin-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .admin-checkbox label {
+            cursor: pointer;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        
+        .admin-help {
+            font-size: 0.85rem;
+            color: #aaa;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+        
+        .admin-badge {
+            background-color: #1ea95e;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        
+        .flash-message {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .flash-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .flash-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .flash-message.warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .flash-message.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .password-strength {
+            margin-top: 5px;
+            font-size: 0.8rem;
+        }
+        
+        .strength-bar {
+            height: 5px;
+            border-radius: 3px;
+            margin-top: 3px;
+            transition: width 0.3s;
+        }
+        
+        .strength-weak {
+            background-color: #dc3545;
+            width: 25%;
+        }
+        
+        .strength-medium {
+            background-color: #ffc107;
+            width: 50%;
+        }
+        
+        .strength-strong {
+            background-color: #28a745;
+            width: 75%;
+        }
+        
+        .strength-very-strong {
+            background-color: #1ea95e;
+            width: 100%;
+        }
+        
+        .requirements {
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-top: 5px;
+        }
+        
+        .requirement-met {
+            color: #28a745;
+        }
+        
+        .requirement-not-met {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="left-panel">
+            <div class="logos-wrapper-left">
+                <div class="logo-circle">
+                    <img src="{{url_for('static',filename='image/uam.jpg')}}" alt="Logo Unversité Abdou Moumouni">
+                </div>
+                <div class="logo-circle logo-secondary">
+                    <img src="{{url_for('static',filename='image/fast.jpg')}}" alt="Logo Faculte des Sciences et Techniques">
+                </div>
+            </div>
+            <h1 class="brand-name">UAM/FAST</h1>
+            <h3 class="brand-subtitle">
+                {% if est_admin %}
+                <span class="admin-badge">ADMIN</span> Création de compte
+                {% else %}
+                Plateforme d'Apprentissage
+                {% endif %}
+            </h3>
+            <p class="description">
+                {% if est_admin %}
+                Créez un nouveau compte utilisateur pour la plateforme Thermostat_UAM. Vous pouvez choisir d'activer le compte immédiatement.
+                {% else %}
+                Plateforme Thermostat Intelligent Procédez à votre inscription afin de constituer un compte utilisateur et d'accéder aux fonctionnalités avancées de gestion du système de thermostat intelligent.
+                {% endif %}
+            </p>
+            <div class="secure-badge">
+                <i class="fas fa-check-circle"></i> Inscription Sécurisée
+            </div>
+            <a href="{% if est_admin %}{{ url_for('liste_utilisateurs') }}{% else %}{{ url_for('connections') }}{% endif %}" class="switch-link">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
+        </div>
+
+        <div class="right-panel">
+            
+            <h2 class="form-title">
+                {% if est_admin %}
+                <i class="fas fa-user-plus"></i> Créer un compte utilisateur
+                {% else %}
+                Créer votre compte
+                {% endif %}
+            </h2>
+            <p class="form-subtitle">
+                {% if est_admin %}
+                Créez un compte pour un nouvel utilisateur
+                {% else %}
+                Rejoignez la communauté
+                {% endif %}
+            </p>
+
+            <!-- Messages Flash -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash-message {{ category }}">
+                                <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-circle{% elif category == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('inscription') }}" id="inscriptionForm">
+    
+                <div class="form-row">
+                    <div class="form-group half-width">
+                        <label for="nom">Nom</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user icon-field"></i>
+                            <input type="text" id="nom" name="nom" placeholder="Votre Nom" required>
+                        </div>
+                    </div>
+                    <div class="form-group half-width">
+                        <label for="prenom">Prénom</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user icon-field"></i>
+                            <input type="text" id="prenom" name="prenom" placeholder="Votre Prénom" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group half-width">
+                        <label for="date-naissance">Date de naissance</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-calendar-alt icon-field"></i>
+                            <input type="date" id="date-naissance" name="date_naissance" required>
+                        </div>
+                    </div>
+                    <div class="form-group half-width">
+                        <label for="lieu-naissance">Lieu de naissance</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-map-marker-alt icon-field"></i>
+                            <input type="text" id="lieu-naissance" name="lieu_naissance" placeholder="Ville/Pays" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="organisation">Établissement / Organisation</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-building icon-field"></i>
+                        <input type="text" id="organisation" name="organisation" placeholder="Nom de l'établissement" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="matricule">Matricule Scolaire</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-graduation-cap icon-field"></i>
+                        <input type="text" id="matricule" name="matricule" placeholder="Votre matricule" required>
+                    </div>
+                </div>
+    
+                <div class="form-group">
+                    <label for="email">Adresse email</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope icon-field"></i>
+                        <input type="email" id="email" name="email" placeholder="Votre Adresse email" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock icon-field"></i>
+                        <input type="password" id="password" name="password" placeholder="Créer un mot de passe" required>
+                        <i class="fas fa-eye eye-icon" id="togglePassword"></i>
+                    </div>
+                    <div class="password-strength" id="passwordStrength">
+                        <div class="strength-bar" id="strengthBar"></div>
+                    </div>
+                    <div class="requirements" id="passwordRequirements">
+                        <div><span id="lengthReq" class="requirement-not-met">• 8 caractères minimum</span></div>
+                        <div><span id="lowerReq" class="requirement-not-met">• Une lettre minuscule</span></div>
+                        <div><span id="upperReq" class="requirement-not-met">• Une lettre majuscule</span></div>
+                        <div><span id="numberReq" class="requirement-not-met">• Un chiffre</span></div>
+                        <div><span id="specialReq" class="requirement-not-met">• Un caractère spécial</span></div>
+                    </div>
+                </div>
+
+                <!-- Option admin (seulement visible pour les administrateurs) -->
+                {% if est_admin %}
+                <div class="admin-option">
+                    <div class="admin-checkbox">
+                        <input type="checkbox" id="skip_verification" name="skip_verification" value="1">
+                        <label for="skip_verification">
+                            <strong><i class="fas fa-bolt"></i> Activer le compte immédiatement</strong>
+                        </label>
+                    </div>
+                    <p class="admin-help">
+                        Si coché : L'utilisateur pourra se connecter directement (pas de vérification email requise).
+                        Sinon : L'utilisateur recevra un email de vérification.
+                    </p>
+                </div>
+                {% endif %}
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <i class="fas fa-user-plus"></i>
+                    {% if est_admin %}
+                    Créer le compte
+                    {% else %}
+                    S'inscrire
+                    {% endif %}
+                </button>
+            </form>
+            
+            <div class="form-footer">
+                {% if est_admin %}
+                <a href="{{ url_for('liste_utilisateurs') }}"><i class="fas fa-arrow-left"></i> Retour à l'administration</a>
+                {% else %}
+                <p>Déjà un compte ? <a href="{{ url_for('connections') }}">Connectez-vous</a></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle password visibility
+        const togglePasswordBtn = document.querySelector('#togglePassword');
+        const passwordInput = document.querySelector('#password');
+
+        togglePasswordBtn.addEventListener('click', function () {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+
+        // Auto-focus sur le premier champ
+        document.addEventListener('DOMContentLoaded', function() {
+            const nomInput = document.getElementById('nom');
+            if (nomInput) nomInput.focus();
+            
+            // Définir la date maximale pour la date de naissance (aujourd'hui - 10 ans)
+            const dateNaissanceInput = document.getElementById('date-naissance');
+            if (dateNaissanceInput) {
+                const aujourdhui = new Date();
+                const anneeMin = aujourdhui.getFullYear() - 100; // 100 ans maximum
+                const anneeMax = aujourdhui.getFullYear() - 10; // Au moins 10 ans
+                const dateMin = `${anneeMin}-01-01`;
+                const dateMax = `${anneeMax}-12-31`;
+                
+                dateNaissanceInput.setAttribute('min', dateMin);
+                dateNaissanceInput.setAttribute('max', dateMax);
+                
+                // Définir une date par défaut (18 ans)
+                const anneeDefaut = aujourdhui.getFullYear() - 18;
+                dateNaissanceInput.value = `${anneeDefaut}-01-01`;
+            }
+        });
+        
+        // Validation de la force du mot de passe
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            const requirements = {
+                length: password.length >= 8,
+                lower: /[a-z]/.test(password),
+                upper: /[A-Z]/.test(password),
+                number: /\d/.test(password),
+                special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+            };
+            
+            // Mettre à jour les indicateurs de validation
+            document.getElementById('lengthReq').className = requirements.length ? 'requirement-met' : 'requirement-not-met';
+            document.getElementById('lowerReq').className = requirements.lower ? 'requirement-met' : 'requirement-not-met';
+            document.getElementById('upperReq').className = requirements.upper ? 'requirement-met' : 'requirement-not-met';
+            document.getElementById('numberReq').className = requirements.number ? 'requirement-met' : 'requirement-not-met';
+            document.getElementById('specialReq').className = requirements.special ? 'requirement-met' : 'requirement-not-met';
+            
+            // Calculer la force
+            if (requirements.length) strength += 20;
+            if (requirements.lower) strength += 20;
+            if (requirements.upper) strength += 20;
+            if (requirements.number) strength += 20;
+            if (requirements.special) strength += 20;
+            
+            // Mettre à jour la barre de force
+            const strengthBar = document.getElementById('strengthBar');
+            strengthBar.className = 'strength-bar';
+            
+            if (strength <= 20) {
+                strengthBar.classList.add('strength-weak');
+            } else if (strength <= 40) {
+                strengthBar.classList.add('strength-medium');
+            } else if (strength <= 80) {
+                strengthBar.classList.add('strength-strong');
+            } else {
+                strengthBar.classList.add('strength-very-strong');
+            }
+            
+            return strength >= 60; // Au moins 60% de force
+        }
+        
+        // Écouter les changements du mot de passe
+        passwordInput.addEventListener('input', function() {
+            checkPasswordStrength(this.value);
+        });
+        
+        // Validation du formulaire
+        document.getElementById('inscriptionForm').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value;
+            const matricule = document.getElementById('matricule').value;
+            const nom = document.getElementById('nom').value;
+            const prenom = document.getElementById('prenom').value;
+            
+            // Vérifier la force du mot de passe
+            if (!checkPasswordStrength(password)) {
+                alert('Veuillez choisir un mot de passe plus fort. Il doit contenir au moins 8 caractères, avec majuscules, minuscules, chiffres et caractères spéciaux.');
+                e.preventDefault();
+                return false;
+            }
+            
+            // Validation de l'email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Veuillez entrer une adresse email valide');
+                e.preventDefault();
+                return false;
+            }
+            
+            // Validation du matricule (au moins 3 caractères)
+            if (matricule.length < 3) {
+                alert('Le matricule doit contenir au moins 3 caractères');
+                e.preventDefault();
+                return false;
+            }
+            
+            // Validation du nom et prénom
+            if (nom.length < 2) {
+                alert('Le nom doit contenir au moins 2 caractères');
+                e.preventDefault();
+                return false;
+            }
+            
+            if (prenom.length < 2) {
+                alert('Le prénom doit contenir au moins 2 caractères');
+                e.preventDefault();
+                return false;
+            }
+            
+            // Vérifier l'âge (au moins 10 ans)
+            const dateNaissance = new Date(document.getElementById('date-naissance').value);
+            const aujourdhui = new Date();
+            const age = aujourdhui.getFullYear() - dateNaissance.getFullYear();
+            
+            if (age < 10) {
+                alert('Vous devez avoir au moins 10 ans pour vous inscrire');
+                e.preventDefault();
+                return false;
+            }
+            
+            // Désactiver le bouton pour éviter les doubles soumissions
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Création du compte...';
+            
+            return true;
+        });
+        
+        // Vérifier si l'email existe déjà (AJAX)
+        document.getElementById('email').addEventListener('blur', function() {
+            const email = this.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (email && emailRegex.test(email)) {
+                // Ici vous pourriez faire une requête AJAX pour vérifier si l'email existe
+                // Pour l'instant, on laisse la validation côté serveur
+            }
+        });
+    </script>
+
+</body>
+</html>

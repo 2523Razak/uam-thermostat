@@ -1,0 +1,197 @@
+{% extends "barmenu.html" %}
+
+{% block page_styles %}
+    <title>Tableau de Bord - Contrôle du Thermostat</title>
+{% endblock %}
+
+{% block content %}
+<main class="content">
+    <div class="dashboard-grid">
+        <!-- COLONNE GAUCHE -->
+        <div class="left-column">
+            <!-- Bloc Type de contrôleur - Positionné en haut à gauche -->
+            <div class="card" id="type-controleur">
+                <h4>Type de contrôleur</h4>
+                <select id="controller-select" name="controller-select">
+                    <option value="none">Boucle Ouverte</option>
+                    <option value="pi">PI</option>
+                    <option value="pid">PID</option>
+                    <option value="custom">Personnalisé</option>
+                </select>
+            </div>
+
+            <!-- Bloc Paramètres du Contrôleur - Apparaît dynamiquement -->
+            <div class="card" id="parametres-controleur" style="display: none;">
+                <h4>Paramètres du Contrôleur</h4>
+                <div id="parametres-pi" class="parametres-groupe" style="display: none;">
+                    <div class="param-item">
+                        <label for="kp-pi">Kp (Gain proportionnel)</label>
+                        <input type="number" id="kp-pi" step="0.1" min="0" value="1.0">
+                    </div>
+                    <div class="param-item">
+                        <label for="ki-pi">Ki (Gain intégral)</label>
+                        <input type="number" id="ki-pi" step="0.01" min="0" value="0.1">
+                    </div>
+                </div>
+                <div id="parametres-pid" class="parametres-groupe" style="display: none;">
+                    <div class="param-item">
+                        <label for="kp-pid">Kp (Gain proportionnel)</label>
+                        <input type="number" id="kp-pid" step="0.1" min="0" value="1.0">
+                    </div>
+                    <div class="param-item">
+                        <label for="ki-pid">Ki (Gain intégral)</label>
+                        <input type="number" id="ki-pid" step="0.01" min="0" value="0.1">
+                    </div>
+                    <div class="param-item">
+                        <label for="kd-pid">Kd (Gain dérivé)</label>
+                        <input type="number" id="kd-pid" step="0.01" min="0" value="0.05">
+                    </div>
+                </div>
+                <button type="button" id="appliquer-parametres" class="apply-btn" style="margin-top: 15px;">
+                    Appliquer les paramètres
+                </button>
+            </div>
+
+            <!-- Bloc Configuration Arduino - Positionné en bas à gauche -->
+            <div class="card" id="config-arduino">
+                <h4>Configuration Arduino</h4>
+                <div class="config-item">
+                    <label for="port-select">Port Arduino</label>
+                    <select id="port-select" name="port-select">
+                        <option value="">Sélectionnez un port</option>
+                        <!-- Les ports Arduino seront chargés dynamiquement -->
+                    </select>
+                </div>
+                <div class="config-item">
+                    <span>Vitesse (Baud Rate)</span>
+                    <span style="font-weight: 500; color: #2d3748;">115200</span>
+                </div>
+                <hr>
+                <div class="connection-status">
+                    <span>État de connexion</span>
+                    <span class="status-circle disconnected" id="connection-status" title="Déconnecté"></span>
+                </div>
+                <p class="connection-state-text" id="connection-text">Non connecté</p>
+                <button type="button" id="refresh-ports" class="refresh-btn">
+                    🔄 Actualiser les ports
+                </button>
+            </div>
+        </div>
+
+        <!-- COLONNE CENTRALE - Bloc principal pour le graphique -->
+        <div class="center-column">
+            <div class="card large" id="evolution-temperature">
+                <h4>Évolution de la Température</h4>
+                <div class="chart-container">
+                    <canvas id="temperatureChart"></canvas>
+                </div>
+                <div class="chart-controls">
+                    <button type="button" id="chart-first" class="chart-nav-btn" title="Aller au début">
+                        <img src="{{ url_for('static', filename='image/deux-fleches-gauche.png') }}" alt="Aller au debut" >
+                    </button>
+                    <button type="button" id="chart-prev" class="chart-nav-btn" title="Défiler vers la gauche" disabled>
+                        <img src="{{ url_for('static', filename='image/fleche-gauche.png') }}" alt="Defiler vers la gauche" >
+                    </button>
+                    <button type="button" id="chart-play" class="chart-nav-btn" title="Reprendre le monitoring">
+                        <img src="{{ url_for('static', filename='image/jouer.png') }}" alt="Reprendre le monitoring" >
+                    </button>
+                    <button type="button" id="chart-next" class="chart-nav-btn" title="Défiler vers la droite" disabled>
+                        <img src="{{ url_for('static', filename='image/fleche-droite.png') }}" alt="Fleche Reculer" >
+                    </button>
+                    <button type="button" id="chart-last" class="chart-nav-btn" title="Aller à la fin">
+                        <img src="{{ url_for('static', filename='image/double-fleche.png') }}" alt="Fleche Reculer" >
+                    </button>
+                    <button type="button" id="chart-zoom-out" class="chart-nav-btn" title="Zoom arrière">
+                        <img src="{{ url_for('static', filename='image/dezoomer.png') }}" alt="Fleche Reculer" >
+                    </button>
+                    <button type="button" id="chart-zoom-in" class="chart-nav-btn" title="Zoom avant">
+                        <img src="{{ url_for('static', filename='image/zoomer.png') }}" alt="Fleche Reculer" >
+                    </button>
+                    <button type="button" id="chart-reset" class="chart-nav-btn" title="Réinitialiser la vue">
+                        <img src="{{ url_for('static', filename='image/retour.png') }}" alt="Fleche Reculer" >
+                    </button>
+                </div>
+                <div class="chart-legend">
+                    <div><span class="legend-color temp"></span> Température</div>
+                    <div><span class="legend-color consigne"></span> Consigne</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLONNE DROITE -->
+        <div class="right-column">
+            <!-- Bloc Consigne - Positionné en haut à droite -->
+            <div class="card" id="consigne">
+                <h4>Température de consigne</h4>
+                <label for="temp-slider">Consigne (°C)</label>
+                <div class="slider-container">
+                    <input type="range" id="temp-slider" min="0" max="100" value="25" step="1">
+                    <span id="slider-value">25°C</span>
+                </div>
+                <button type="button" id="apply-consigne" class="apply-btn">
+                    Appliquer la consigne
+                </button>
+            </div>
+
+            <!-- Bloc Contrôle -->
+            <div class="card" id="controle-buttons">
+                <h4>Contrôle</h4>
+                <div class="actions-container">
+                    <button type="button" class="action-item" title="Démarrer/Connecter" id="start-btn">
+                        <img src="{{ url_for('static', filename='image/bouton-jouer.png') }}" alt="Play" width="20">
+                    </button>
+                    <button type="button" class="action-item" title="Arrêter le monitoring" id="stop-monitoring-btn" disabled>
+                        <img src="{{ url_for('static', filename='image/arret.png') }}" alt="Stop" width="20">
+                    </button>
+                    <button type="button" class="action-item" title="Déconnecter" id="disconnect-btn" disabled>
+                        <img src="{{ url_for('static', filename='image/deconnecter.png') }}" alt="Disconnect" width="20">
+                    </button>
+                    <button type="button" class="action-item" title="Exporter les données" id="export-btn">
+                        <img src="{{ url_for('static', filename='image/exportation.png') }}" alt="Export" width="20">
+                    </button>
+                    <button type="button" class="action-item" title="Éditeur de code personnalisé" id="custom-code-btn">
+                        <img src="{{ url_for('static', filename='image/code.png') }}" alt="Code" width="20">
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bloc Température Actuelle -->
+            <div class="card" id="temperature-actuelle">
+                <h4>Température Actuelle</h4>
+                <div class="current-temp-display">
+                    <span class="temp-value" id="current-temp">0.0°C</span>
+                </div>
+                <div class="thermometer-container">
+                    <div class="thermometer-bar" id="thermometer-bar"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bloc Données en Temps Réel - Positionné en bas sur toute la largeur -->
+        <div class="card large" id="donnees-reelles">
+            <h4>Données en Temps Réel</h4>
+            <div class="data-grid">
+                <div class="data-item color-1">
+                    <h5>Temperature Actuelle</h5>
+                    <p id="data-temp-actuelle">0.0°C</p>
+                </div>
+                <div class="data-item color-2">
+                    <h5>Temperature Cible</h5>
+                    <p id="data-temp-cible">25.0°C</p>
+                </div>
+                <div class="data-item color-3">
+                    <h5>Erreur</h5>
+                    <p id="data-erreur">0.0°C</p>
+                </div>
+                <div class="data-item color-4">
+                    <h5>Mode Contrôle</h5>
+                    <p id="data-mode">Boucle ouverte</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% endblock %}

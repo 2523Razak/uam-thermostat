@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Thermostat_UAM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/connections.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='image/thermostat.png') }}" type="image/png">
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="left-panel">
+            <div class="logos-wrapper-left">
+                <div class="logo-circle">
+                    <img src="{{ url_for('static', filename='image/uam.jpg') }}" alt="Logo Université Abdou Moumouni">
+                </div>
+                <div class="logo-circle logo-secondary">
+                    <img src="{{ url_for('static', filename='image/fast.jpg') }}" alt="Logo Faculté des Sciences et Techniques">
+                </div>
+            </div>
+            <h1 class="brand-name">UAM/FAST</h1>
+            <h3 class="brand-subtitle">Plateforme Thermostat Intelligent</h3>
+            <p class="description">
+                Connectez-vous pour gérer votre système de thermostat intelligent et accéder à toutes les fonctionnalités de contrôle.
+            </p>
+            <div class="secure-badge">
+                <i class="fas fa-check-circle"></i> Connexion Sécurisée
+            </div>
+            <a href="{{ url_for('inscription') }}" class="switch-link">
+                <i class="fas fa-user-plus"></i> Créer un compte
+            </a>
+        </div>
+
+        <div class="right-panel">
+            <h2 class="form-title">Connexion</h2>
+            <p class="form-subtitle">Accédez à votre espace personnel</p>
+
+            <!-- Messages Flash -->
+            <div class="flash-messages-container">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="flash-message {{ category }}">
+                                {{ message|safe }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <!-- Formulaire de connexion -->
+            <form method="POST" action="{{ url_for('connections') }}">
+                <div class="form-group">
+                    <label for="identifiant">Email ou Matricule</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user icon-field"></i>
+                        <input type="text" id="identifiant" name="identifiant" 
+                               placeholder="Votre email ou matricule" required
+                               value="{{ request.form.identifiant if request.form }}">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock icon-field"></i>
+                        <input type="password" id="password" name="password" 
+                               placeholder="Votre mot de passe" required>
+                        <button type="button" class="eye-icon" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-sign-in-alt"></i> Se connecter
+                </button>
+            </form>
+
+            <!-- Alerte pour email non vérifié -->
+            {% if email_non_verifie %}
+            <div class="verification-alert">
+                <div class="alert-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="alert-content">
+                    <h3>Email non vérifié</h3>
+                    <p>Vous devez vérifier votre adresse email avant de pouvoir vous connecter.</p>
+                    <p>Un lien de vérification a été envoyé à : <span class="email-highlight">{{ email }}</span></p>
+                    
+                    <form method="POST" action="{{ url_for('renvoyer_verification') }}">
+                        <input type="hidden" name="email" value="{{ email }}">
+                        <button type="submit" class="btn-resend">
+                            <i class="fas fa-redo"></i> Renvoyer le lien de vérification
+                        </button>
+                    </form>
+                    
+                    <p class="small-text">
+                        <i class="fas fa-info-circle"></i>
+                        Si vous ne recevez pas l'email, vérifiez votre dossier spam.
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="form-footer">
+                <a href="#" id="resendLinkBtn">
+                    <i class="fas fa-envelope"></i> Renvoyer le lien de vérification
+                </a>
+                <a href="{{ url_for('mot_de_passe_oublie') }}">
+                    <i class="fas fa-key"></i> Mot de passe oublié ?
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup pour renvoyer le lien de vérification -->
+    <div id="resendModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-envelope"></i> Renvoyer le lien de vérification</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Entrez votre adresse email pour recevoir un nouveau lien de vérification.</p>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label for="resend_email">Adresse email</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope icon-field"></i>
+                        <input type="email" id="resend_email" name="resend_email" 
+                               placeholder="votre@email.com" required>
+                    </div>
+                </div>
+                <div id="resendMessage" class="resend-message" style="display: none;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" id="cancelResendBtn">Annuler</button>
+                <button type="button" class="btn-submit-modal" id="confirmResendBtn">
+                    <i class="fas fa-paper-plane"></i> Renvoyer le lien
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading spinner -->
+    <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+        <div class="spinner"></div>
+        <p>Envoi en cours...</p>
+    </div>
+
+    <script>
+        // Fonction pour basculer la visibilité du mot de passe
+        const togglePasswordBtn = document.querySelector('#togglePassword');
+        const passwordInput = document.querySelector('#password');
+
+        if (togglePasswordBtn && passwordInput) {
+            togglePasswordBtn.addEventListener('click', function () {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Change l'icône
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('fa-eye')) {
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        }
+
+        // Fonction pour afficher temporairement les messages flash
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            
+            flashMessages.forEach(function(message) {
+                setTimeout(function() {
+                    message.style.opacity = '0';
+                    setTimeout(function() {
+                        if (message.parentNode) {
+                            message.parentNode.removeChild(message);
+                        }
+                    }, 500);
+                }, 5000);
+            });
+
+            // Auto-focus sur le champ identifiant
+            const identifiantInput = document.getElementById('identifiant');
+            if (identifiantInput) {
+                identifiantInput.focus();
+            }
+            
+            // Assurer que le texte ne chevauche pas les icônes
+            const inputs = document.querySelectorAll('.input-wrapper input');
+            inputs.forEach(function(input) {
+                input.style.paddingLeft = '45px';
+                input.style.paddingRight = '45px';
+            });
+        });
+
+        // Gestion du popup pour renvoyer le lien de vérification
+        const resendLinkBtn = document.getElementById('resendLinkBtn');
+        const resendModal = document.getElementById('resendModal');
+        const closeModal = document.querySelector('.close-modal');
+        const cancelResendBtn = document.getElementById('cancelResendBtn');
+        const confirmResendBtn = document.getElementById('confirmResendBtn');
+        const resendEmailInput = document.getElementById('resend_email');
+        const resendMessage = document.getElementById('resendMessage');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        
+        // Ouvrir le modal
+        if (resendLinkBtn) {
+            resendLinkBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                resendModal.style.display = 'flex';
+                resendEmailInput.value = '';
+                resendMessage.style.display = 'none';
+                resendMessage.className = 'resend-message';
+                // Auto-focus sur le champ email
+                setTimeout(() => resendEmailInput.focus(), 100);
+            });
+        }
+        
+        // Fermer le modal
+        function closeResendModal() {
+            resendModal.style.display = 'none';
+        }
+        
+        if (closeModal) closeModal.addEventListener('click', closeResendModal);
+        if (cancelResendBtn) cancelResendBtn.addEventListener('click', closeResendModal);
+        
+        // Fermer en cliquant en dehors du modal
+        window.addEventListener('click', function(e) {
+            if (e.target === resendModal) {
+                closeResendModal();
+            }
+        });
+        
+        // Envoyer la demande de renvoi de lien
+        if (confirmResendBtn) {
+            confirmResendBtn.addEventListener('click', async function() {
+                const email = resendEmailInput.value.trim();
+                
+                // Validation email
+                if (!email) {
+                    showResendMessage('Veuillez entrer votre adresse email', 'error');
+                    return;
+                }
+                
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    showResendMessage('Veuillez entrer une adresse email valide', 'error');
+                    return;
+                }
+                
+                // Afficher le loading
+                loadingSpinner.style.display = 'flex';
+                
+                try {
+                    const response = await fetch("/renvoyer-lien-verification", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email: email })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        showResendMessage(data.message, 'success');
+                        // Vider le champ après succès
+                        resendEmailInput.value = '';
+                        // Fermer le modal après 2 secondes
+                        setTimeout(() => {
+                            closeResendModal();
+                            // Afficher un message flash dans la page
+                            showFlashMessage(data.message, 'success');
+                        }, 2000);
+                    } else {
+                        showResendMessage(data.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    showResendMessage('Une erreur est survenue. Veuillez réessayer.', 'error');
+                } finally {
+                    loadingSpinner.style.display = 'none';
+                }
+            });
+        }
+        
+        // Fonction pour afficher les messages dans le modal
+        function showResendMessage(message, type) {
+            resendMessage.textContent = message;
+            resendMessage.className = `resend-message ${type}`;
+            resendMessage.style.display = 'block';
+            
+            // Auto-effacement après 5 secondes
+            setTimeout(() => {
+                if (resendMessage.style.display === 'block') {
+                    resendMessage.style.display = 'none';
+                }
+            }, 5000);
+        }
+        
+        // Fonction pour afficher un message flash temporaire
+        function showFlashMessage(message, category) {
+            const flashContainer = document.querySelector('.flash-messages-container');
+            if (!flashContainer) return;
+            
+            const flashDiv = document.createElement('div');
+            flashDiv.className = `flash-message ${category}`;
+            flashDiv.innerHTML = message;
+            flashContainer.appendChild(flashDiv);
+            
+            setTimeout(() => {
+                flashDiv.style.opacity = '0';
+                setTimeout(() => {
+                    if (flashDiv.parentNode) flashDiv.remove();
+                }, 500);
+            }, 5000);
+        }
+        
+        // Permettre l'envoi avec la touche Entrée
+        if (resendEmailInput) {
+            resendEmailInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    confirmResendBtn.click();
+                }
+            });
+        }
+    </script>
+</body>
+</html>

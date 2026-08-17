@@ -1,0 +1,35 @@
+# Ce fichier liste toutes les bibliothèques Python nécessaires 
+# pour faire fonctionner l'application.
+# Installez toutes les dépendances :
+#    pip install -r requirements.txt
+
+# Ce fichier liste toutes les bibliothèques Python nécessaires
+# pour faire fonctionner LE SERVEUR (hébergé sur Render/Railway).
+# Installez toutes les dépendances :
+#    pip install -r requirements.txt
+#
+# NOTE : pyserial n'est plus nécessaire ici (le serveur ne parle plus
+# directement aux cartes Arduino). Voir agent_local/requirements_agent.txt
+# pour les dépendances de l'agent local qui, lui, gère le port série.
+
+Flask==3.1.2
+Flask-WTF==1.2.1
+Flask-Login==0.6.3
+Flask-SQLAlchemy==3.1.1
+Pillow==12.0.0
+email-validator==2.0.0
+WTForms==3.0.1
+weasyprint==61.2
+flask-migrate==4.0.4
+psycopg2-binary==2.9.6
+apscheduler==3.10.4
+requests==2.33.1
+
+# Communication temps réel avec l'agent local (cartes Arduino)
+flask-socketio==5.3.6
+python-socketio==5.11.2
+python-engineio==4.9.1
+eventlet==0.36.1
+
+# Serveur de production (Render/Railway) : voir Procfile
+gunicorn==22.0.0

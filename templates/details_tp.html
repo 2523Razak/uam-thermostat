@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails du TP - Thermostat_UAM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/details_tp.css') }}">
+</head>
+<body>
+    {% extends "barmenu.html" %}
+    
+    {% block content %}
+    <div class="content">
+        <div class="conteneur-principal">
+            <!-- En-tête -->
+            <header class="en-tete-details">
+                <div class="header-top">
+                    <a href="{{ url_for('liste_tps_etudiant') }}" class="btn-retour">
+                        <i class="fas fa-arrow-left"></i> Retour
+                    </a>
+                    <h1 class="titre-details">
+                        <i class="fas fa-info-circle"></i> Détails du TP
+                    </h1>
+                </div>
+                
+                <div class="header-info">
+                    <h2 class="titre-tp-details">
+                        {{ tp.titre }}
+                        {% if is_new %}
+                        <span class="badge-nouveau">
+                            <i class="fas fa-star"></i> Nouveau
+                        </span>
+                        {% endif %}
+                    </h2>
+                    
+                    <div class="infos-header">
+                        <span class="statut-badge statut-{{ statut }}">
+                            {% if statut == 'disponible' %}
+                                <i class="fas fa-play-circle"></i> Disponible
+                            {% elif statut == 'en_cours' %}
+                                <i class="fas fa-clock"></i> En cours
+                            {% elif statut == 'soumis' %}
+                                <i class="fas fa-check-circle"></i> Soumis
+                            {% elif statut == 'expire' %}
+                                <i class="fas fa-ban"></i> Expiré
+                            {% endif %}
+                        </span>
+                        
+                        {% if tp.module %}
+                        <span class="badge-module">
+                            <i class="fas fa-layer-group"></i> {{ tp.module }}
+                        </span>
+                        {% endif %}
+                        
+                        <span class="info-prof-header">
+                            <i class="fas fa-user-tie"></i> {{ professeur.prenom }} {{ professeur.nom }}
+                        </span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Contenu principal -->
+            <main class="contenu-details">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="message-alerte message-{{ category }}">
+                                <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Cartes d'informations -->
+                <div class="grid-details">
+                    <!-- Carte Description -->
+                    <div class="card card-description">
+                        <h3><i class="fas fa-align-left"></i> Description</h3>
+                        <div class="description-content">
+                            {% if tp.description %}
+                                {{ tp.description|safe }}
+                            {% else %}
+                                <p class="no-description">Aucune description disponible pour ce TP.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Carte Informations -->
+                    <div class="card card-infos">
+                        <h3><i class="fas fa-info-circle"></i> Informations</h3>
+                        <div class="infos-list">
+                            <div class="info-item-detail">
+                                <i class="fas fa-user-tie"></i>
+                                <div class="info-content">
+                                    <span class="info-label">Professeur</span>
+                                    <span class="info-value">{{ professeur.prenom }} {{ professeur.nom }}</span>
+                                    {% if professeur.email %}
+                                    <span class="info-sub">{{ professeur.email }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="info-item-detail">
+                                <i class="fas fa-calendar-plus"></i>
+                                <div class="info-content">
+                                    <span class="info-label">Date de création</span>
+                                    <span class="info-value">{{ tp.date_creation.strftime('%d/%m/%Y à %H:%M') if tp.date_creation else 'Non spécifiée' }}</span>
+                                </div>
+                            </div>
+                            
+                            {% if tp.date_limite %}
+                            <div class="info-item-detail">
+                                <i class="fas fa-calendar-times"></i>
+                                <div class="info-content">
+                                    <span class="info-label">Date limite</span>
+                                    <span class="info-value">{{ tp.date_limite.strftime('%d/%m/%Y à %H:%M') if tp.date_limite else 'Sans limite' }}</span>
+                                    {% if jours_restants is defined %}
+                                    <span class="info-sub {% if jours_restants <= 0 %}expire{% elif jours_restants <= 2 %}urgent{% else %}normal{% endif %}">
+                                        {% if jours_restants > 0 %}
+                                            {{ jours_restants }} jour(s) restant(s)
+                                        {% else %}
+                                            Expiré
+                                        {% endif %}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="info-item-detail">
+                                <i class="fas fa-question-circle"></i>
+                                <div class="info-content">
+                                    <span class="info-label">Nombre de questions</span>
+                                    <span class="info-value">{{ questions_count }}</span>
+                                </div>
+                            </div>
+                            
+                            {% if reponses_count > 0 %}
+                            <div class="info-item-detail">
+                                <i class="fas fa-paper-plane"></i>
+                                <div class="info-content">
+                                    <span class="info-label">Réponses soumises</span>
+                                    <span class="info-value">{{ reponses_count }}/{{ questions_count }}</span>
+                                </div>
+                            </div>
+                            
+                            {% if date_soumission %}
+                            <div class="info-item-detail">
+                                <i class="fas fa-calendar-check"></i>
+                                <div class="info-content">
+                                    <span class="info-label">Date de soumission</span>
+                                    <span class="info-value">{{ date_soumission.strftime('%d/%m/%Y à %H:%M') if date_soumission else 'Non soumis' }}</span>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Carte Progression -->
+                    <div class="card card-progression">
+                        <h3><i class="fas fa-chart-line"></i> Progression</h3>
+                        <div class="progression-content">
+                            <div class="progress-stats">
+                                <div class="stat-number">{{ reponses_count }}/{{ questions_count }}</div>
+                                <div class="stat-percent">{{ "%.0f"|format(progress) }}%</div>
+                            </div>
+                            
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{ progress }}%"></div>
+                            </div>
+                            
+                            <div class="progress-status">
+                                {% if statut == 'disponible' %}
+                                    <p><i class="fas fa-info-circle"></i> Vous n'avez pas encore commencé ce TP.</p>
+                                {% elif statut == 'en_cours' %}
+                                    <p><i class="fas fa-clock"></i> Vous avez commencé ce TP. Continuez pour le terminer !</p>
+                                {% elif statut == 'soumis' %}
+                                    <p><i class="fas fa-check-circle"></i> Félicitations ! Vous avez terminé ce TP.</p>
+                                {% elif statut == 'expire' %}
+                                    <p><i class="fas fa-exclamation-triangle"></i> Ce TP est expiré et ne peut plus être soumis.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Carte Questions -->
+                    <div class="card card-questions">
+                        <h3><i class="fas fa-list-check"></i> Questions ({{ questions_count }})</h3>
+                        <div class="questions-list">
+                            {% if questions %}
+                                {% for question in questions %}
+                                {% set reponse = reponses_dict.get(question.id) %}
+                                <div class="question-item {% if reponse %}repondu{% else %}non-repondu{% endif %}">
+                                    <div class="question-header">
+                                        <div>
+                                            <span class="question-num">Question {{ loop.index }}</span>
+                                            <span class="question-type-badge">
+                                                {% if question.type_question == 'qcm' %}
+                                                    <i class="fas fa-list-check"></i> QCM
+                                                {% elif question.type_question == 'case_cocher' %}
+                                                    <i class="fas fa-check-square"></i> Cases à cocher
+                                                {% elif question.type_question == 'ouverte' %}
+                                                    <i class="fas fa-font"></i> Texte libre
+                                                {% elif question.type_question == 'image_reponse' %}
+                                                    <i class="fas fa-image"></i> Réponse avec image
+                                                {% elif question.type_question == 'image_question' %}
+                                                    <i class="fas fa-image"></i> Question avec image
+                                                {% else %}
+                                                    <i class="fas fa-question"></i> {{ question.type_question }}
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                        <span class="question-points">{{ question.points }} point(s)</span>
+                                    </div>
+                                    
+                                    <div class="question-content">
+                                        <p>{{ question.enonce }}</p>
+                                        
+                                        <!-- Image de la question -->
+                                        {% if question.type_question == 'image_question' and question.image_url %}
+                                        <div class="image-section image-question">
+                                            <div class="image-header">
+                                                <i class="fas fa-image"></i>
+                                                <strong>Image jointe à la question :</strong>
+                                            </div>
+                                            <div class="image-container">
+                                                <a href="{{ question.image_url }}" target="_blank" class="image-link">
+                                                    <img src="{{ question.image_url }}" 
+                                                         alt="Image de la question" 
+                                                         class="question-image">
+                                                    <span class="image-zoom-icon">
+                                                        <i class="fas fa-search-plus"></i> Agrandir
+                                                    </span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        <!-- Réponse de l'étudiant -->
+                                        {% if reponse %}
+                                            <div class="reponse-content">
+                                                <div class="reponse-header">
+                                                    <i class="fas fa-user-graduate"></i>
+                                                    <strong>Votre réponse :</strong>
+                                                </div>
+                                                
+                                                <!-- RÉPONSE AVEC IMAGE (type image_reponse) -->
+                                                {% if question.type_question == 'image_reponse' %}
+                                                    <div class="image-section image-reponse">
+                                                        {% if reponse.fichier_path %}
+                                                            <div class="image-subheader">
+                                                                <i class="fas fa-image"></i>
+                                                                <strong>Image soumise :</strong>
+                                                            </div>
+                                                            
+                                                            <div class="image-container">
+                                                                {% set corrected_path = reponse.fichier_path.replace('\\', '/') %}
+                                                                {% set image_url = url_for('serve_tp_file', filename=corrected_path) %}
+                                                                <a href="{{ image_url }}" target="_blank" class="image-link">
+                                                                    <img src="{{ image_url }}" 
+                                                                         alt="Image de la réponse" 
+                                                                         class="reponse-image">
+                                                                    <span class="image-zoom-icon">
+                                                                        <i class="fas fa-search-plus"></i> Agrandir
+                                                                    </span>
+                                                                </a>
+                                                            </div>
+                                                        {% else %}
+                                                            <div class="no-image-message">
+                                                                <i class="fas fa-exclamation-circle"></i> Aucune image soumise
+                                                            </div>
+                                                        {% endif %}
+                                                        
+                                                        <!-- AFFICHAGE DU COMMENTAIRE TEXTUEL DE L'ÉTUDIANT -->
+                                                        {% set has_comment = reponse.reponse and reponse.reponse.strip() and reponse.reponse != '[]' and reponse.reponse != 'null' %}
+                                                        
+                                                        {% if has_comment %}
+                                                            <div class="reponse-texte-etudiant">
+                                                                <div class="reponse-texte-header">
+                                                                    <i class="fas fa-comment-dots"></i>
+                                                                    <strong>Votre commentaire :</strong>
+                                                                </div>
+                                                                <div class="reponse-texte-content">
+                                                                    {{ reponse.reponse|replace('\n', '<br>')|safe }}
+                                                                </div>
+                                                            </div>
+                                                        {% else %}
+                                                            <div class="no-comment-message">
+                                                                <i class="fas fa-comment-slash"></i>
+                                                                <span>Aucun commentaire ajouté</span>
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                
+                                                <!-- QCM -->
+                                                {% elif question.type_question == 'qcm' %}
+                                                    <div class="reponse-options">
+                                                        {% set reponse_texte = reponse.reponse %}
+                                                        {% if reponse_texte and reponse_texte.strip() %}
+                                                            <div class="options-title">Votre réponse :</div>
+                                                            <div class="option-item selected">
+                                                                <div class="option-content">
+                                                                    <i class="fas fa-dot-circle"></i>
+                                                                    <span>{{ reponse_texte }}</span>
+                                                                </div>
+                                                            </div>
+                                                        {% else %}
+                                                            <p class="reponse-texte">Aucune réponse</p>
+                                                        {% endif %}
+                                                    </div>
+                                                
+                                                <!-- Cases à cocher -->
+                                                {% elif question.type_question == 'case_cocher' %}
+                                                    <div class="reponse-options">
+                                                        {% set reponse_texte = reponse.reponse %}
+                                                        {% if reponse_texte and reponse_texte.strip() and reponse_texte != '[]' %}
+                                                            <div class="options-title">Vos sélections :</div>
+                                                            {% if reponse_texte.startswith('[') %}
+                                                                {# Format JSON - extraire les textes entre guillemets #}
+                                                                {% set items = reponse_texte[1:-1].split(',') %}
+                                                                {% for item in items %}
+                                                                    {% set item_clean = item.strip().strip('"').strip("'") %}
+                                                                    {% if item_clean %}
+                                                                    <div class="option-item selected">
+                                                                        <div class="option-content">
+                                                                            <i class="fas fa-check-square"></i>
+                                                                            <span>{{ item_clean }}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            {% else %}
+                                                                {# Format texte simple #}
+                                                                {% set items = reponse_texte.split(',') %}
+                                                                {% for item in items %}
+                                                                    {% set item_clean = item.strip() %}
+                                                                    {% if item_clean %}
+                                                                    <div class="option-item selected">
+                                                                        <div class="option-content">
+                                                                            <i class="fas fa-check-square"></i>
+                                                                            <span>{{ item_clean }}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                        {% else %}
+                                                            <p class="reponse-texte">Aucune réponse</p>
+                                                        {% endif %}
+                                                    </div>
+                                                
+                                                <!-- Autres types (questions ouvertes) -->
+                                                {% else %}
+                                                    <div class="reponse-texte-wrapper">
+                                                        <p class="reponse-texte">
+                                                            {% if reponse.reponse and reponse.reponse.strip() and reponse.reponse != '[]' %}
+                                                                {{ reponse.reponse|replace('\n', '<br>')|safe }}
+                                                            {% else %}
+                                                                Aucune réponse textuelle
+                                                            {% endif %}
+                                                        </p>
+                                                    </div>
+                                                {% endif %}
+                                                
+                                                <!-- Commentaire du professeur -->
+                                                {% if reponse.commentaire_correction %}
+                                                <div class="commentaire-section">
+                                                    <div class="commentaire-label">
+                                                        <i class="fas fa-chalkboard-teacher"></i> Commentaire du professeur :
+                                                    </div>
+                                                    <div class="commentaire-content">
+                                                        {{ reponse.commentaire_correction }}
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                                
+                                                <!-- Note -->
+                                                {% if reponse.note is not none %}
+                                                <div class="note-section">
+                                                    <i class="fas fa-star"></i>
+                                                    <strong>Note :</strong>
+                                                    <span class="note-value">{{ reponse.note }}/{{ question.points }}</span>
+                                                    {% if reponse.note == question.points %}
+                                                    <span class="note-perfect">
+                                                        <i class="fas fa-check"></i> Parfait !
+                                                    </span>
+                                                    {% endif %}
+                                                </div>
+                                                {% endif %}
+                                                
+                                                <!-- Date -->
+                                                <div class="reponse-date">
+                                                    <i class="fas fa-clock"></i> Soumis le : {{ reponse.date_soumission.strftime('%d/%m/%Y à %H:%M') if reponse.date_soumission else 'Date inconnue' }}
+                                                </div>
+                                            </div>
+                                        {% elif statut == 'soumis' %}
+                                            <div class="no-reponse-message">
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                                <span>Aucune réponse enregistrée pour cette question</span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="question-status">
+                                        {% if reponse %}
+                                            <span class="status-repondu"><i class="fas fa-check-circle"></i> Répondu</span>
+                                            {% if reponse.note is not none %}
+                                            <span class="status-note">{{ reponse.note }}/{{ question.points }}</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="status-non-repondu"><i class="fas fa-clock"></i> Non répondu</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="no-questions">
+                                    <i class="fas fa-inbox"></i>
+                                    <p>Aucune question n'a été ajoutée à ce TP.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="actions-details">
+                    {% if statut == 'disponible' and not (tp.date_limite and jours_restants <= 0) %}
+                    <a href="{{ url_for('commencer_tp', tp_id=tp.id) }}" class="btn-action btn-principal">
+                        <i class="fas fa-play"></i> Commencer le TP
+                    </a>
+                    {% endif %}
+                    
+                    {% if statut == 'en_cours' and not (tp.date_limite and jours_restants <= 0) %}
+                    <a href="{{ url_for('continuer_tp', tp_id=tp.id) }}" class="btn-action btn-principal">
+                        <i class="fas fa-forward"></i> Continuer
+                    </a>
+                    {% endif %}
+                    
+                    {% if statut == 'soumis' %}
+                    <a href="{{ url_for('voir_correction', tp_id=tp.id) }}" class="btn-action btn-secondaire">
+                        <i class="fas fa-eye"></i> Voir la correction complète
+                    </a>
+                    {% endif %}
+                    
+                    <a href="{{ url_for('liste_tps_etudiant') }}" class="btn-action btn-retour">
+                        <i class="fas fa-list"></i> Retour à la liste
+                    </a>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/details_tp.js') }}"></script>
+    {% endblock %}
+</body>
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travaux Pratiques</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/liste_tps_etudiant.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='image/thermostat.png') }}" type="image/png">
+    <style>
+        /* Style pour les nouveaux TPs */
+        .badge-nouveau {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: linear-gradient(135deg, #FF5722 0%, #E64A19 100%);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            z-index: 2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        
+        /* Animation pour les nouveaux TPs */
+        @keyframes pulseNouveau {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .carte-tp.nouveau .badge-nouveau {
+            animation: pulseNouveau 2s infinite;
+        }
+        
+        /* Style pour les TPs expirés */
+        .carte-tp.expire .en-tete-carte {
+            background: linear-gradient(135deg, #757575 0%, #616161 100%) !important;
+            opacity: 0.9;
+        }
+        
+        .carte-tp.expire .badge-statut {
+            background: rgba(97, 97, 97, 0.95) !important;
+        }
+        
+        .carte-tp.expire .actions-etudiant .bouton-action.commencer,
+        .carte-tp.expire .actions-etudiant .bouton-action.continuer {
+            background: #9e9e9e !important;
+            color: #e0e0e0 !important;
+            cursor: not-allowed;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .message-expire {
+            font-size: 0.8rem;
+            color: #f44336;
+            font-weight: 600;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    {% extends "barmenu.html" %}
+    
+    {% block content %}
+    <div class="content">
+        <div class="conteneur-principal">
+            <!-- En-tête académique pour étudiant -->
+            <header class="en-tete-academique">
+                <h1 class="titre-page">
+                    <i class="fas fa-list-check"></i> Mes Travaux Pratiques
+                </h1>
+                <p class="sous-titre-page">
+                    {% if utilisateur and utilisateur.organisation %}
+                        {{ utilisateur.organisation }}
+                    {% else %}
+                        Plateforme Éducative
+                    {% endif %}
+                </p>
+                <span class="badge-institution">
+                    <i class="fas fa-user-graduate"></i> Étudiant : {{ user_prenom }} {{ user_nom }}
+                </span>
+            </header>
+
+            <!-- Contenu principal -->
+            <main class="contenu-principal">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="message-alerte message-{{ category }}">
+                                <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Statistiques étudiant -->
+                <div class="cartes-stats">
+                    <div class="carte-stat">
+                        <i class="fas fa-book-open icone-stat"></i>
+                        <div class="nombre-stat">{{ tps_total if tps_total else 0 }}</div>
+                        <div class="texte-stat">TPs Disponibles</div>
+                    </div>
+                    
+                    <div class="carte-stat">
+                        <i class="fas fa-clock icone-stat"></i>
+                        <div class="nombre-stat">{{ tps_en_cours if tps_en_cours else 0 }}</div>
+                        <div class="texte-stat">TPs en Cours</div>
+                    </div>
+                    
+                    <div class="carte-stat">
+                        <i class="fas fa-check-circle icone-stat"></i>
+                        <div class="nombre-stat">{{ tps_soumis if tps_soumis else 0 }}</div>
+                        <div class="texte-stat">TPs Soumis</div>
+                    </div>
+                    
+                    <div class="carte-stat">
+                        <i class="fas fa-hourglass-end icone-stat"></i>
+                        <div class="nombre-stat">{{ tps_expires if tps_expires else 0 }}</div>
+                        <div class="texte-stat">TPs Expirés</div>
+                    </div>
+                </div>
+
+                <!-- Barre de filtres -->
+                <div class="barre-filtres">
+                    <div class="filtres-gauche">
+                        <div class="filtre-item">
+                            <label for="filtre-statut" class="filtre-label">
+                                <i class="fas fa-filter"></i>
+                            </label>
+                            <select id="filtre-statut" class="filtre-select">
+                                <option value="tous">Tous les statuts</option>
+                                <option value="disponible">Disponibles</option>
+                                <option value="en_cours">En cours</option>
+                                <option value="soumis">Soumis</option>
+                                <option value="expire">Expirés</option>
+                                <option value="nouveau">Nouveaux</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filtre-item">
+                            <label for="filtre-module" class="filtre-label">
+                                <i class="fas fa-layer-group"></i>
+                            </label>
+                            <select id="filtre-module" class="filtre-select">
+                                <option value="tous">Tous les modules</option>
+                                {% if modules %}
+                                    {% for module in modules %}
+                                        <option value="{{ module }}">{{ module }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="filtres-droite">
+                        <button class="bouton-filtre" onclick="reinitialiserFiltres()" title="Réinitialiser les filtres">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                        <div class="compteur-resultats" id="compteur-resultats">
+                            {{ tps_total }} résultat(s)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Liste des TPs -->
+                {% if tps %}
+                    <div class="liste-tps">
+                        {% for tp in tps %}
+                        <div class="carte-tp {{ 'nouveau' if tp.is_new else '' }} {{ 'expire' if tp.statut == 'expire' else '' }} {{ 'soumis' if tp.statut == 'soumis' or (tp.statut == 'expire' and tp.date_soumission) else '' }}" 
+                             data-tp-id="{{ tp.id }}" 
+                             data-statut="{{ tp.statut }}" 
+                             data-module="{{ tp.module if tp.module else '' }}"
+                             data-nouveau="{{ 'true' if tp.is_new else 'false' }}"
+                             data-date-soumission="{{ tp.date_soumission if tp.date_soumission else '' }}">
+                            <div class="en-tete-carte">
+                                <!-- Badge "Nouveau" -->
+                                {% if tp.is_new %}
+                                <span class="badge-nouveau">
+                                    <i class="fas fa-star"></i> Nouveau
+                                </span>
+                                {% endif %}
+                                
+                                <!-- Badge statut -->
+                                <span class="badge-statut 
+                                    {% if tp.statut == 'expire' and tp.date_soumission %}
+                                        badge-soumis-expire
+                                    {% else %}
+                                        badge-{{ tp.statut }}
+                                    {% endif %}">
+                                    
+                                    {% if tp.statut == 'expire' and tp.date_soumission %}
+                                        <i class="fas fa-check-circle"></i> Terminé (Note disponible)
+                                    {% elif tp.statut == 'expire' %}
+                                        <i class="fas fa-ban"></i> Expiré
+                                    {% elif tp.statut == 'disponible' %}
+                                        <i class="fas fa-play-circle"></i> Disponible
+                                    {% elif tp.statut == 'en_cours' %}
+                                        <i class="fas fa-clock"></i> En cours
+                                    {% elif tp.statut == 'soumis' %}
+                                        <i class="fas fa-check-circle"></i> Soumis
+                                    {% else %}
+                                        <i class="fas fa-question-circle"></i> Indéfini
+                                    {% endif %}
+                                </span>
+                                
+                                <div class="header-tp">
+                                    <h2 class="titre-tp">
+                                        <i class="fas fa-flask"></i> {{ tp.titre }}
+                                    </h2>
+                                    {% if tp.module %}
+                                    <div class="module-tp">{{ tp.module }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="contenu-carte">
+                                <!-- Informations compactes -->
+                                <div class="infos-compactes">
+                                    <div class="info-ligne">
+                                        <div class="info-item">
+                                            <i class="fas fa-user-tie"></i>
+                                            <span class="info-text">Professeur: {{ tp.professeur_nom if tp.professeur_nom else 'Professeur' }}</span>
+                                        </div>
+                                        
+                                        <div class="info-item">
+                                            <i class="fas fa-calendar-plus"></i>
+                                            <span class="info-text">{{ tp.date_creation.strftime('%d/%m/%Y') if tp.date_creation else 'N/A' }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="info-ligne">
+                                        {% if tp.date_limite %}
+                                        <div class="info-item">
+                                            <i class="fas fa-calendar-times"></i>
+                                            <span class="info-text">
+                                                {{ tp.date_limite.strftime('%d/%m/%Y') if tp.date_limite else 'Sans limite' }}
+                                                {% if tp.jours_restants is defined %}
+                                                <span class="jours-restants {% if tp.jours_restants <= 0 %}expire{% elif tp.jours_restants <= 2 %}urgent{% else %}normal{% endif %}">
+                                                    {% if tp.jours_restants > 0 %}
+                                                        ({{ tp.jours_restants }}j)
+                                                    {% else %}
+                                                        (expiré)
+                                                    {% endif %}
+                                                </span>
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        <div class="info-item">
+                                            <i class="fas fa-question-circle"></i>
+                                            <span class="info-text">{{ tp.nombre_questions }} question(s)</span>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if tp.date_soumission %}
+                                    <div class="info-ligne">
+                                        <div class="info-item">
+                                            <i class="fas fa-paper-plane"></i>
+                                            <span class="info-text">Soumis le {{ tp.date_soumission.strftime('%d/%m/%Y') if tp.date_soumission else 'Non soumis' }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if tp.statut == 'expire' and not tp.date_soumission %}
+                                    <div class="message-expire">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        <span>Ce TP est expiré et ne peut plus être soumis</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Conteneur pour les mises à jour en temps réel -->
+                                <div class="maj-temps-reel" data-tp-id="{{ tp.id }}"></div>
+                                
+                                <!-- Description raccourcie -->
+                                {% if tp.description %}
+                                <div class="description-courte">
+                                    <p>{{ tp.description }}</p>
+                                </div>
+                                {% endif %}
+                                
+                                <!-- Actions étudiant -->
+                                <div class="actions-etudiant">
+                                    {% if tp.statut == 'disponible' %}
+                                    <a href="{{ url_for('commencer_tp', tp_id=tp.id) }}" class="bouton-action commencer">
+                                        <i class="fas fa-play"></i> Commencer
+                                    </a>
+                                    {% endif %}
+                                    
+                                    {% if tp.statut == 'en_cours' %}
+                                    <a href="{{ url_for('continuer_tp', tp_id=tp.id) }}" class="bouton-action continuer">
+                                        <i class="fas fa-forward"></i> Continuer
+                                    </a>
+                                    {% endif %}
+                                    
+                                    {% if tp.statut == 'soumis' %}
+                                    <a href="{{ url_for('voir_correction', tp_id=tp.id) }}" class="bouton-action correction">
+                                        <i class="fas fa-eye"></i> Voir ma note
+                                    </a>
+                                    {% endif %}
+                                    
+                                    {% if tp.statut == 'expire' %}
+                                        {% if tp.date_soumission %}
+                                        <!-- TP expiré mais déjà soumis -->
+                                        <a href="{{ url_for('voir_correction', tp_id=tp.id) }}" class="bouton-action correction">
+                                            <i class="fas fa-star"></i> Voir ma note
+                                        </a>
+                                        {% else %}
+                                        <!-- TP expiré non soumis -->
+                                        <button class="bouton-action expire" disabled>
+                                            <i class="fas fa-ban"></i> Expiré
+                                        </button>
+                                        {% endif %}
+                                    {% endif %}
+                                    
+                                    <a href="{{ url_for('details_tp', tp_id=tp.id) }}" class="bouton-action details">
+                                        <i class="fas fa-info-circle"></i> Détails
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <!-- État vide -->
+                    <div class="etat-vide">
+                        <div class="vide-content">
+                            <i class="fas fa-book-open-reader icone-vide"></i>
+                            <h3 class="titre-vide">Aucun Travail Pratique</h3>
+                            <p class="texte-vide">
+                                Vous n'êtes actuellement inscrit à aucun travail pratique.
+                                Les TPs apparaîtront ici dès que vos professeurs vous y inscriront.
+                            </p>
+                        </div>
+                    </div>
+                {% endif %}
+            </main>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/liste_tps_etudiant.js') }}"></script>
+    {% endblock %}
+</body>
+</html>

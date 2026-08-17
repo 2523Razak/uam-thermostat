@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Inscrits - Thermostat_UAM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* === RÉINITIALISATION === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* === STYLES GÉNÉRAUX === */
+        .corps-page {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #010207 0%, #cbc4d1 100%);
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        /* Conteneur principal */
+        .conteneur-principal {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* === EN-TÊTE PRINCIPALE === */
+        .en-tete-principal {
+            text-align: center;
+            margin-bottom: 25px;
+            color: white;
+        }
+
+        .titre-principal {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .sous-titre {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* === CARTES DE STATISTIQUES === */
+        .cartes-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .carte-stat {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .icone-stat {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            color: #c1332f;
+        }
+
+        .nombre-stat {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .texte-stat {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        /* === CONTENEUR DU TABLEAU === */
+        .conteneur-tableau {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* === EN-TÊTE DU TABLEAU === */
+        .en-tete-tableau {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px; /* Ajout d'espace entre les éléments */
+        }
+
+        .titre-et-filtres {
+            display: flex;
+            align-items: center;
+            gap: 20px; /* Augmenté de 15px à 20px */
+            flex-wrap: wrap;
+        }
+
+        .titre-tableau {
+            color: #333;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* NOUVEAU : Conteneur pour les boutons d'action principale */
+        .boutons-actions-principales {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .boutons-actions {
+            display: flex;
+            gap: 10px; /* Augmenté de 8px à 10px */
+            align-items: center;
+        }
+
+        /* Conteneur des filtres et recherche */
+        .filtres-et-recherche {
+            display: flex; 
+            align-items: center; 
+            gap: 20px; /* Augmenté de 15px à 20px */
+            flex-wrap: wrap;
+            margin-left: 10px; /* Ajout d'une marge à gauche */
+        }
+
+        /* Style pour le sélecteur de filtre Organisation */
+        .filtre-organisation-group {
+            position: relative;
+        }
+
+        .select-organisation {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            width: 200px;
+            transition: all 0.3s ease;
+            background: white;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287%2069.8L146.2%20210.6%205.4%2069.8c-3.7-3.7-9.8-3.7-13.5%200s-3.7%209.8%200%2013.5l140.7%20140.7c3.7%203.7%209.8%203.7%2013.5%200L287%2083.3c3.7-3.7%203.7-9.8%200-13.5z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 10px;
+            cursor: pointer;
+        }
+
+        .select-organisation:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        /* === BARRE DE RECHERCHE === */
+        .barre-recherche {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .champ-recherche {
+            padding: 10px 40px 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            width: 250px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .champ-recherche:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        .icone-recherche {
+            position: absolute;
+            right: 15px;
+            color: #666;
+            pointer-events: none;
+        }
+
+        /* === FILTRES STATUT === */
+        .filtres-statut {
+            display: flex;
+            gap: 10px; /* Augmenté de 8px à 10px */
+        }
+
+        /* === BOUTONS === */
+        .bouton {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+
+        .bouton-principal {
+            background: #47e55f;
+            color: white;
+        }
+
+        /* NOUVEAU : Style pour le bouton Créer TP */
+        .bouton-tp {
+            background: #9c27b0; /* Violet */
+            color: white;
+        }
+
+        .bouton-secondaire {
+            background: #6c757d;
+            color: white;
+        }
+
+        .bouton-admin {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .bouton-user {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .bouton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .bouton-tp:hover {
+            background: #7b1fa2; /* Violet plus foncé au survol */
+        }
+
+        /* === TABLEAU === */
+        .tableau-utilisateurs {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            font-size: 0.85rem;
+        }
+
+        /* En-tête du tableau */
+        .en-tete-colonnes {
+            background: linear-gradient(135deg, #f6b606, #4ba24b);
+            color: white;
+        }
+
+        .cellule-entete {
+            padding: 12px;
+            text-align: left;
+            font-weight: 500;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .cellule-donnee {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #555;
+            font-size: 0.85rem;
+            position: relative;
+        }
+
+        /* Lignes du tableau avec couleurs selon le statut */
+        .ligne-utilisateur {
+            transition: all 0.3s ease;
+        }
+
+        .ligne-utilisateur[data-statut="admin"] {
+            background: linear-gradient(135deg, #fff9e6, #fff3cd);
+            border-left: 4px solid #ffc107;
+        }
+
+        .ligne-utilisateur[data-statut="bloque"] {
+            background: linear-gradient(135deg, #fdeaea, #f8d7da);
+            border-left: 4px solid #dc3545;
+        }
+
+        .ligne-utilisateur[data-statut="user"] {
+            background: white;
+            border-left: 4px solid transparent;
+        }
+
+        .ligne-utilisateur:hover {
+            transform: translateX(3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .ligne-utilisateur[data-statut="admin"]:hover {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+        }
+
+        .ligne-utilisateur[data-statut="bloque"]:hover {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+        }
+
+        .ligne-utilisateur[data-statut="user"]:hover {
+            background: #f8f9fa;
+        }
+
+        /* === AVATAR UTILISATEUR === */
+        .avatar-utilisateur {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .info-utilisateur {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nom-utilisateur {
+            font-weight: 500;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .id-utilisateur {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        /* === BADGE STATUT === */
+        .badge {
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .badge-succes {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-admin {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-bloque {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* === MENU D'ACTIONS HORIZONTAL === */
+        .menu-actions {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            gap: 5px;
+        }
+
+        .ligne-utilisateur:hover .menu-actions {
+            opacity: 1;
+        }
+
+        .bouton-action {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            font-size: 0.8rem;
+        }
+
+        .bouton-supprimer {
+            background: #dc3545;
+        }
+
+        .bouton-bloquer {
+            background: #ffc107;
+        }
+
+        .bouton-admin-action {
+            background: #007bff;
+        }
+
+        .bouton-user-action {
+            background: #17a2b8;
+        }
+
+        .bouton-action:hover {
+            transform: scale(1.1);
+        }
+
+        /* Message de notification simple */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #28a745;
+        }
+
+        .notification.error {
+            background: #dc3545;
+        }
+
+        .notification.info {
+            background: #17a2b8;
+        }
+
+        /* === ÉTAT VIDE (QUAND AUCUN UTILISATEUR) === */
+        .etat-vide {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+        }
+
+        .icone-vide {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+
+        .titre-vide {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        /* === VERSION MOBILE === */
+        @media (max-width: 768px) {
+            .cartes-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .en-tete-tableau {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .titre-et-filtres {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .filtres-et-recherche {
+                flex-direction: column;
+                gap: 15px;
+                align-items: center;
+                margin-left: 0;
+            }
+            
+            .filtres-statut {
+                margin-left: 0;
+                justify-content: center;
+            }
+            
+            .barre-recherche {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .champ-recherche {
+                width: 100%;
+            }
+            
+            .select-organisation {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .boutons-actions-principales {
+                flex-direction: column;
+                width: 100%;
+                gap: 10px;
+            }
+            
+            .boutons-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .bouton {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .tableau-utilisateurs {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .cellule-entete, .cellule-donnee {
+                padding: 8px;
+                font-size: 0.75rem;
+            }
+            
+            .bouton {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .menu-actions {
+                position: static;
+                transform: none;
+                opacity: 1;
+                display: flex;
+                justify-content: center;
+                margin-top: 8px;
+                gap: 8px;
+            }
+            
+            .bouton-action {
+                width: 35px;
+                height: 35px;
+            }
+        }
+
+        /* Ajout pour très grands écrans */
+        @media (min-width: 1200px) {
+            .filtres-et-recherche {
+                gap: 25px; /* Plus d'espace sur grands écrans */
+            }
+        }
+    </style>
+</head>
+<body class="corps-page">
+    <div class="conteneur-principal">
+        
+        <header class="en-tete-principal">
+            <h1 class="titre-principal">
+                <i class="fas fa-users"></i> Liste des Inscrits
+            </h1>
+            <p class="sous-titre">Thermostat_UAM - Gestion des utilisateurs</p>
+        </header>
+
+        <section class="cartes-stats">
+            <article class="carte-stat">
+                <i class="fas fa-user-graduate icone-stat"></i>
+                <div class="nombre-stat" id="total-inscrits">
+                    {% if utilisateurs %}
+                        {{ utilisateurs|length }}
+                    {% else %}
+                        0
+                    {% endif %}
+                </div>
+                <div class="texte-stat">Total Inscrits</div>
+            </article>
+            
+            <article class="carte-stat">
+                <i class="fas fa-calendar-alt icone-stat"></i>
+                <div class="nombre-stat" id="date-actuelle">{{ date_actuelle }}</div>
+                <div class="texte-stat">Date du jour</div>
+            </article>
+            
+            <article class="carte-stat">
+                <i class="fas fa-university icone-stat"></i>
+                <div class="nombre-stat">UAM/FAST</div>
+                <div class="texte-stat">Établissement</div>
+            </article>
+
+            {% if organisations_disponibles %}
+            <article class="carte-stat">
+                <i class="fas fa-building icone-stat"></i>
+                <div class="nombre-stat">{{ organisations_disponibles|length }}</div>
+                <div class="texte-stat">Organisations</div>
+            </article>
+            {% endif %}
+        </section>
+
+        <main class="conteneur-tableau">
+            
+            <header class="en-tete-tableau">
+                <div class="titre-et-filtres">
+                    <h2 class="titre-tableau"><i class="fas fa-list"></i> Détail des utilisateurs</h2>
+                    <div class="filtres-et-recherche">
+                        
+                        <div class="filtre-organisation-group">
+                            <select id="filtreOrganisation" class="select-organisation" onchange="filtrerParOrganisation(this.value)">
+                                <option value="tous">Toutes les Organisations</option>
+                                {% if organisations_disponibles %}
+                                    {% for organisation in organisations_disponibles %}
+                                        <option value="{{ organisation }}">{{ organisation }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        <div class="filtres-statut">
+                            <button class="bouton bouton-admin" onclick="filtrerParStatut('admin')">
+                                <i class="fas fa-crown"></i> Admin
+                            </button>
+                            <button class="bouton bouton-user" onclick="filtrerParStatut('user')">
+                                <i class="fas fa-user"></i> User
+                            </button>
+                            <button class="bouton bouton-secondaire" onclick="filtrerParStatut('tous')">
+                                <i class="fas fa-eye"></i> Tous
+                            </button>
+                        </div>
+                        <div class="barre-recherche">
+                            <input type="text" class="champ-recherche" id="champRecherche" placeholder="Rechercher un utilisateur...">
+                            <i class="fas fa-search icone-recherche"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- NOUVEAU : Conteneur pour les boutons principaux -->
+                <div class="boutons-actions-principales">
+                    <div class="boutons-actions">
+                        <a href="{{ url_for('inscription') }}" class="bouton bouton-principal">
+                            <i class="fas fa-user-plus"></i> Nouvelle Inscription
+                        </a>
+                        
+                        <!-- NOUVEAU : Bouton pour créer un TP -->
+                        <a href="{{ url_for('gestion_tps') }}" class="bouton bouton-tp">
+                            <i class="fas fa-flask"></i> Créer TP
+                        </a>
+                        
+                        <a href="{{ url_for('index') }}" class="bouton bouton-secondaire">
+                            <i class="fas fa-home"></i> Accueil
+                        </a>
+                    </div>
+                </div>
+            </header>
+
+            {% if utilisateurs %}
+            <table class="tableau-utilisateurs">
+                <thead class="en-tete-colonnes">
+                    <tr>
+                        <th class="cellule-entete">Utilisateur</th>
+                        <th class="cellule-entete">Matricule</th>
+                        <th class="cellule-entete">Organisation</th>
+                        <th class="cellule-entete">Date Naissance</th>
+                        <th class="cellule-entete">Lieu Naissance</th>
+                        <th class="cellule-entete">Email</th>
+                        <th class="cellule-entete">Date Inscription</th>
+                        <th class="cellule-entete">Statut</th>
+                    </tr>
+                </thead>
+                
+                <tbody id="corps-tableau">
+                    {% for utilisateur in utilisateurs %}
+                    <tr class="ligne-utilisateur" data-statut="{{ utilisateur.statut|default('user') }}" data-user-id="{{ utilisateur.id }}" data-organisation="{{ utilisateur.organisation|default('Non spécifié') }}">
+                        <td class="cellule-donnee">
+                            <div class="info-utilisateur">
+                                <div class="avatar-utilisateur">
+                                    {{ utilisateur.prenom[0] }}{{ utilisateur.nom[0] }}
+                                </div>
+                                <div>
+                                    <div class="nom-utilisateur">{{ utilisateur.prenom }} {{ utilisateur.nom }}</div>
+                                    <div class="id-utilisateur">ID: {{ utilisateur.id }}</div>
+                                </div>
+                            </div>
+                            
+                            <!-- MENU D'ACTIONS HORIZONTAL -->
+                            <div class="menu-actions">
+                                <button class="bouton-action bouton-admin-action" title="Nommer Admin" onclick="changerStatut('{{ utilisateur.id }}', 'admin')">
+                                    <i class="fas fa-crown"></i>
+                                </button>
+                                <button class="bouton-action bouton-user-action" title="Définir comme User" onclick="changerStatut('{{ utilisateur.id }}', 'user')">
+                                    <i class="fas fa-user"></i>
+                                </button>
+                                <button class="bouton-action bouton-bloquer" title="Bloquer/Débloquer" onclick="changerStatut('{{ utilisateur.id }}', 'bloque')">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                                <button class="bouton-action bouton-supprimer" title="Supprimer" onclick="supprimerUtilisateur('{{ utilisateur.id }}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                        
+                        <td class="cellule-donnee"><strong>{{ utilisateur.matricule }}</strong></td>
+                        
+                        <td class="cellule-donnee"><strong>{{ utilisateur.organisation|default('Non spécifié') }}</strong></td>
+                        <td class="cellule-donnee">{{ utilisateur.date_naissance.strftime('%d/%m/%Y') }}</td>
+                        
+                        <td class="cellule-donnee">{{ utilisateur.lieu_naissance }}</td>
+                        
+                        <td class="cellule-donnee">{{ utilisateur.email }}</td>
+                        
+                        <td class="cellule-donnee">{{ utilisateur.date_inscription.strftime('%d/%m/%Y à %H:%M') }}</td>
+                        
+                        <td class="cellule-donnee">
+                            {% if utilisateur.statut == 'admin' %}
+                                <span class="badge badge-admin">👑 Admin</span>
+                            {% elif utilisateur.statut == 'bloque' %}
+                                <span class="badge badge-bloque">🚫 Bloqué</span>
+                            {% else %}
+                                <span class="badge badge-succes">👤 User</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            {% else %}
+            <section class="etat-vide">
+                <i class="fas fa-user-slash icone-vide"></i>
+                <h3 class="titre-vide">Aucun utilisateur inscrit</h3>
+                <p>Commencez par inscrire le premier utilisateur</p>
+                
+                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                    <a href="{{ url_for('inscription') }}" class="bouton bouton-principal">
+                        <i class="fas fa-user-plus"></i> Premier Inscription
+                    </a>
+                    <!-- Bouton Créer TP -->
+                    <a href="{{ url_for('gestion_tps') }}" class="bouton bouton-tp">
+                        <i class="fas fa-flask"></i> Créer TP
+                    </a>
+                </div>
+            </section>
+            {% endif %}
+        </main>
+    </div>
+
+    <!-- Notification simple -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // Variables pour les filtres
+        let filtreOrganisationActif = 'tous';
+        let filtreStatutActif = 'tous';
+        let termeRechercheActif = '';
+
+        // Met à jour la date actuelle automatiquement
+        document.addEventListener('DOMContentLoaded', function() {
+            const maintenant = new Date();
+            const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+            const dateFormatee = maintenant.toLocaleDateString('fr-FR', options);
+            
+            // Met à jour la date dans la carte statistique
+            const elementDate = document.getElementById('date-actuelle');
+            if (elementDate) {
+                elementDate.textContent = dateFormatee;
+            }
+            
+            // Met à jour le total des inscrits (au cas où)
+            const totalInscrits = document.getElementById('total-inscrits');
+            if (totalInscrits && totalInscrits.textContent === '') {
+                totalInscrits.textContent = '0';
+            }
+
+            // Initialiser la barre de recherche
+            initialiserRecherche();
+        });
+
+        // Fonction pour afficher une notification
+        function afficherNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        // Fonction pour initialiser la barre de recherche
+        function initialiserRecherche() {
+            const champRecherche = document.getElementById('champRecherche');
+            
+            champRecherche.addEventListener('input', function() {
+                termeRechercheActif = this.value.toLowerCase().trim();
+                appliquerFiltres();
+            });
+        }
+        
+        // Fonction pour filtrer par Organisation
+        function filtrerParOrganisation(organisation) {
+            filtreOrganisationActif = organisation;
+            document.getElementById('champRecherche').value = '';
+            termeRechercheActif = '';
+            appliquerFiltres();
+        }
+
+        // Fonction pour filtrer les utilisateurs par statut
+        function filtrerParStatut(statut) {
+            filtreStatutActif = statut;
+            document.getElementById('champRecherche').value = '';
+            termeRechercheActif = '';
+            appliquerFiltres();
+        }
+
+        // Fonction principale pour appliquer tous les filtres
+        function appliquerFiltres() {
+            const lignes = document.querySelectorAll('.ligne-utilisateur');
+            
+            lignes.forEach(ligne => {
+                const nomUtilisateur = ligne.querySelector('.nom-utilisateur').textContent.toLowerCase();
+                const email = ligne.querySelector('.cellule-donnee:nth-child(6)').textContent.toLowerCase();
+                const matricule = ligne.querySelector('.cellule-donnee:nth-child(2)').textContent.toLowerCase();
+                const organisation = ligne.getAttribute('data-organisation').toLowerCase(); 
+                const statutLigne = ligne.getAttribute('data-statut');
+
+                // 1. Filtrer par Recherche
+                const correspondRecherche = (
+                    nomUtilisateur.includes(termeRechercheActif) ||
+                    email.includes(termeRechercheActif) ||
+                    matricule.includes(termeRechercheActif) ||
+                    organisation.includes(termeRechercheActif) ||
+                    termeRechercheActif === ''
+                );
+                
+                // 2. Filtrer par Statut
+                const correspondStatut = (
+                    filtreStatutActif === 'tous' || 
+                    statutLigne === filtreStatutActif
+                );
+
+                // 3. Filtrer par Organisation
+                const correspondOrganisation = (
+                    filtreOrganisationActif === 'tous' ||
+                    organisation === filtreOrganisationActif.toLowerCase()
+                );
+                
+                // Afficher la ligne si toutes les conditions sont remplies
+                if (correspondRecherche && correspondStatut && correspondOrganisation) {
+                    ligne.style.display = '';
+                } else {
+                    ligne.style.display = 'none';
+                }
+            });
+        }
+
+        // Fonction pour mettre à jour le badge de statut
+        function mettreAJourBadgeStatut(ligne, nouveauStatut) {
+            const celluleStatut = ligne.querySelector('.cellule-donnee:nth-child(8)');
+            let badgeHTML = '';
+            
+            switch(nouveauStatut) {
+                case 'admin':
+                    badgeHTML = '<span class="badge badge-admin">👑 Admin</span>';
+                    break;
+                case 'bloque':
+                    badgeHTML = '<span class="badge badge-bloque">🚫 Bloqué</span>';
+                    break;
+                default:
+                    badgeHTML = '<span class="badge badge-succes">👤 User</span>';
+            }
+            
+            celluleStatut.innerHTML = badgeHTML;
+        }
+
+        // Fonction pour changer le statut d'un utilisateur (avec email)
+        function changerStatut(idUtilisateur, nouveauStatut) {
+            console.log('Changer statut:', idUtilisateur, '->', nouveauStatut);
+            
+            let donnees = {
+                id_utilisateur: idUtilisateur,
+                statut: nouveauStatut
+            };
+            
+            // Si on bloque, demander une raison
+            if (nouveauStatut === 'bloque') {
+                const raison = prompt("Veuillez saisir la raison du blocage (optionnel):\n\nExemples:\n- Comportement inapproprié\n- Tentatives de connexion suspectes\n- Violation des règles d'utilisation\n- Autre...");
+                if (raison === null) {
+                    return; // L'utilisateur a annulé
+                }
+                if (raison.trim() !== '') {
+                    donnees.raison = raison;
+                }
+            }
+            
+            // Afficher un message de confirmation
+            const actionText = nouveauStatut === 'admin' ? 'nommer Administrateur' : 
+                              nouveauStatut === 'bloque' ? 'bloquer' : 'définir comme User';
+            const confirmation = confirm(`Êtes-vous sûr de vouloir ${actionText} cet utilisateur ?\n\n✅ Un email de notification sera automatiquement envoyé à l'utilisateur.`);
+            
+            if (!confirmation) {
+                return;
+            }
+            
+            fetch('/api/changer_statut', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(donnees)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur réseau');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Réponse API:', data);
+                
+                if (data.success) {
+                    // Mettre à jour l'affichage sans recharger la page
+                    const ligne = document.querySelector(`.ligne-utilisateur[data-user-id="${idUtilisateur}"]`);
+                    if (ligne) {
+                        // Mettre à jour l'attribut data-statut
+                        ligne.setAttribute('data-statut', nouveauStatut);
+                        
+                        // Mettre à jour le badge de statut
+                        mettreAJourBadgeStatut(ligne, nouveauStatut);
+                        
+                        // Mettre à jour les styles de la ligne
+                        if (nouveauStatut === 'bloque') {
+                            ligne.style.background = 'linear-gradient(135deg, #fdeaea, #f8d7da)';
+                            ligne.style.borderLeft = '4px solid #dc3545';
+                        } else if (nouveauStatut === 'admin') {
+                            ligne.style.background = 'linear-gradient(135deg, #fff9e6, #fff3cd)';
+                            ligne.style.borderLeft = '4px solid #ffc107';
+                        } else {
+                            ligne.style.background = 'white';
+                            ligne.style.borderLeft = '4px solid transparent';
+                        }
+                    }
+                    
+                    // Message avec info sur l'email
+                    let message = `✅ ${data.message}`;
+                    if (data.email_envoye) {
+                        message += " 📧 Email envoyé";
+                    }
+                    
+                    afficherNotification(message);
+                    
+                    // Réappliquer les filtres
+                    setTimeout(() => appliquerFiltres(), 500);
+                } else {
+                    afficherNotification(` ${data.message}`, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                afficherNotification('Erreur de connexion au serveur', 'error');
+            });
+        }
+
+        // Fonction pour supprimer un utilisateur
+        function supprimerUtilisateur(idUtilisateur) {
+            console.log('Supprimer utilisateur:', idUtilisateur);
+            
+            // Demander confirmation
+            const confirmation = confirm("⚠️ Êtes-vous sûr de vouloir supprimer définitivement cet utilisateur ?\n\nCette action est irréversible et supprimera toutes les données associées.");
+            
+            if (!confirmation) {
+                return;
+            }
+            
+            fetch('/api/supprimer_utilisateur', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id_utilisateur: idUtilisateur
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur réseau');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Réponse API:', data);
+                
+                if (data.success) {
+                    // Supprimer la ligne du tableau
+                    const ligne = document.querySelector(`.ligne-utilisateur[data-user-id="${idUtilisateur}"]`);
+                    if (ligne) {
+                        ligne.remove();
+                        
+                        // Mettre à jour le compteur total des inscrits
+                        const totalInscrits = document.getElementById('total-inscrits');
+                        if (totalInscrits) {
+                            const nouveauTotal = parseInt(totalInscrits.textContent) - 1;
+                            totalInscrits.textContent = Math.max(0, nouveauTotal);
+                        }
+                    }
+                    
+                    afficherNotification(`✅ ${data.message}`);
+                    
+                    // Vérification si plus d'utilisateurs
+                    setTimeout(() => {
+                        const lignesRestantes = document.querySelectorAll('.ligne-utilisateur').length;
+                        if (lignesRestantes === 0) {
+                            // Si plus d'utilisateurs, recharger pour afficher l'état vide
+                            window.location.reload();
+                        } else {
+                            // Sinon, réappliquer les filtres
+                            appliquerFiltres();
+                        }
+                    }, 500);
+                } else {
+                    afficherNotification(` ${data.message}`, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                afficherNotification('Erreur de connexion au serveur', 'error');
+            });
+        }
+    </script>
+</body>
+</html>

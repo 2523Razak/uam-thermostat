@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Création de Travail Pratique - Thermostat_UAM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/creer_tp.css') }}">
+</head>
+<body class="corps-page">
+    <div class="conteneur-principal">
+        <!-- En-tête académique -->
+        <header class="en-tete-academique">
+            <h1 class="titre-page">
+                <i class="fas fa-flask"></i> Création de Travail Pratique
+            </h1>
+            <p class="sous-titre-page">
+                {% if user_organisation %}
+                    {{ user_organisation }}
+                {% elif utilisateur and utilisateur.organisation %}
+                    {{ utilisateur.organisation }}
+                {% else %}
+                    Plateforme Pédagogique
+                {% endif %}
+            </p>
+            <span class="badge-institution">
+                <i class="fas fa-user-tie"></i> Enseignant : {{ user_prenom }} {{ user_nom }}
+            </span>
+        </header>
+
+        <!-- Contenu principal -->
+        <main class="contenu-principal">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="message-alerte message-{{ category }}">
+                            <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Indicateur de progression -->
+            <div class="indicateur-progression">
+                <div class="etape-progression active completed" data-etape="1">
+                    <div class="cercle-etape">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="label-etape">Informations</div>
+                </div>
+                <div class="etape-progression" data-etape="2">
+                    <div class="cercle-etape">2</div>
+                    <div class="label-etape">Étudiants</div>
+                </div>
+                <div class="etape-progression" data-etape="3">
+                    <div class="cercle-etape">3</div>
+                    <div class="label-etape">Validation</div>
+                </div>
+            </div>
+
+            <!-- Formulaire principal -->
+            <form method="POST" action="{{ url_for('creer_tp') }}" id="form-creer-tp">
+                
+                <!-- Étape 1: Informations du TP -->
+                <div id="etape-1" class="conteneur-etape active">
+                    <div class="carte-contenu">
+                        <h2 class="titre-section">
+                            <i class="fas fa-info-circle"></i> Informations Générales
+                        </h2>
+                        
+                        <div class="groupe-formulaire">
+                            <label for="titre">Titre du Travail Pratique <span class="requis">*</span></label>
+                            <input type="text" id="titre" name="titre" class="controle-formulaire" 
+                                   value="{{ titre|default('', true) }}"
+                                   placeholder="Ex: TP n°1 - Mesure de température avec thermistance"
+                                   required>
+                            <p class="indice-formulaire">
+                                Choisissez un titre clair et descriptif pour identifier votre TP
+                            </p>
+                        </div>
+                        
+                        <div class="groupe-formulaire">
+                            <label for="module">Module / UE associé</label>
+                            <input type="text" id="module" name="module" class="controle-formulaire"
+                                   value="{{ module|default('', true) }}"
+                                   placeholder="Ex: PHY-302 - Instrumentation et Mesures">
+                            <p class="indice-formulaire">
+                                Facultatif - Spécifiez le module ou l'unité d'enseignement concerné
+                            </p>
+                        </div>
+                        
+                        <div class="groupe-formulaire">
+                            <label for="description">Description et Objectifs</label>
+                            <textarea id="description" name="description" class="controle-formulaire textarea"
+                                      placeholder="Décrivez les objectifs pédagogiques, le matériel nécessaire, les pré-requis...">{{ description|default('', true) }}</textarea>
+                            <p class="indice-formulaire">
+                                Cette description sera visible par les étudiants lors de l'accès au TP
+                            </p>
+                        </div>
+                        
+                        <div class="groupe-formulaire">
+                            <label for="date_limite">Date limite de rendu</label>
+                            <input type="datetime-local" id="date_limite" name="date_limite" class="controle-formulaire"
+                                   value="{{ date_limite|default('', true) }}">
+                            <p class="indice-formulaire">
+                                Facultatif - Définissez une date limite pour la soumission des rapports
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Étape 2: Liste des étudiants -->
+                <div id="etape-2" class="conteneur-etape">
+                    <div class="carte-contenu">
+                        <h2 class="titre-section">
+                            <i class="fas fa-user-graduate"></i> Gestion des Participants
+                        </h2>
+                        
+                        <div class="section-etudiants">
+                            <div class="entete-section">
+                                <div>
+                                    <h3 style="color: #1a237e; margin-bottom: 5px;">Étudiants autorisés</h3>
+                                    <p style="color: #6c757d; font-size: 0.9rem;">
+                                        Ajoutez les étudiants qui auront accès à ce TP
+                                    </p>
+                                </div>
+                                <div>
+                                    <span class="compteur-etudiants" id="compteur-etudiants">0 étudiants</span>
+                                </div>
+                            </div>
+                            
+                            <button type="button" class="bouton bouton-ajouter" id="btn-ajouter-etudiant">
+                                <i class="fas fa-user-plus"></i> Ajouter un étudiant
+                            </button>
+                            
+                            <div class="liste-etudiants" id="liste-etudiants">
+                                <div class="etat-vide">
+                                    <i class="fas fa-users icone-vide"></i>
+                                    <p>Aucun étudiant ajouté pour le moment</p>
+                                    <p style="font-size: 0.9rem; margin-top: 5px;">
+                                        Commencez par ajouter des étudiants via le bouton ci-dessus
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <input type="hidden" name="etudiants" id="etudiants-hidden" value="">
+                        </div>
+                        
+                        <div class="zone-saisie-masse">
+                            <label for="etudiants-textarea">
+                                <i class="fas fa-paste"></i> Ajout en masse (optionnel)
+                            </label>
+                            <textarea id="etudiants-textarea" name="etudiants_text" 
+                                      class="controle-formulaire"
+                                      placeholder="Saisissez un identifiant par ligne :&#10;ETU123456&#10;ETU789012&#10;nom.etudiant@univ-zig.sn"></textarea>
+                            <p class="indice-saisie">
+                                Formats acceptés : matricule étudiant (ETU123456) ou adresse email universitaire
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Étape 3: Validation -->
+                <div id="etape-3" class="conteneur-etape">
+                    <div class="carte-contenu">
+                        <h2 class="titre-section">
+                            <i class="fas fa-clipboard-check"></i> Récapitulatif et Validation
+                        </h2>
+                        
+                        <div style="background: #e8f5e9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                            <h3 style="color: #2e7d32; margin-bottom: 15px;">
+                                <i class="fas fa-check-circle"></i> Informations à valider
+                            </h3>
+                            
+                            <div id="recap-titre" style="margin-bottom: 15px;">
+                                <strong style="color: #1a237e;">Titre :</strong> 
+                                <span id="recap-titre-text" style="color: #2c3e50;">-</span>
+                            </div>
+                            
+                            <div id="recap-module" style="margin-bottom: 15px;">
+                                <strong style="color: #1a237e;">Module :</strong> 
+                                <span id="recap-module-text" style="color: #2c3e50;">Non spécifié</span>
+                            </div>
+                            
+                            <div id="recap-etudiants" style="margin-bottom: 15px;">
+                                <strong style="color: #1a237e;">Participants :</strong> 
+                                <span id="recap-etudiants-text" style="color: #2c3e50;">0 étudiant(s)</span>
+                            </div>
+                            
+                            <div id="recap-date-limite" style="margin-bottom: 15px;">
+                                <strong style="color: #1a237e;">Date limite :</strong> 
+                                <span id="recap-date-limite-text" style="color: #2c3e50;">Non spécifiée</span>
+                            </div>
+                            
+                            <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 6px; border: 1px solid #c8e6c9;">
+                                <p style="color: #388e3c; font-weight: 500; margin-bottom: 10px;">
+                                    <i class="fas fa-lightbulb"></i> Après création, vous pourrez :
+                                </p>
+                                <ul style="color: #4caf50; margin-left: 20px;">
+                                    <li>Ajouter des questions et exercices</li>
+                                    <li>Gérer les soumissions des étudiants</li>
+                                    <li>Consulter les statistiques de participation</li>
+                                    <li>Modifier ou supprimer le TP</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="groupe-formulaire">
+                            <label for="confirm-creator" style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="checkbox" id="confirm-creator" name="confirm_creator" style="margin-right: 10px; width: 18px; height: 18px;">
+                                <span style="font-weight: 600; color: #2c3e50;">
+                                    Je certifie être l'enseignant responsable de ce TP et je comprends que :
+                                </span>
+                            </label>
+                            <ul style="color: #6c757d; margin-left: 30px; margin-top: 10px; font-size: 0.9rem;">
+                                <li>Seul moi ({{ user_prenom }} {{ user_nom }}) pourrai modifier ou supprimer ce TP</li>
+                                <li>Les étudiants que j'ai ajoutés auront accès à ce TP</li>
+                                <li>Je devrai ensuite créer les questions dans l'étape suivante</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Barre de navigation -->
+                <div class="barre-navigation">
+                    <div>
+                        <a href="{{ url_for('gestion_tps') }}" class="bouton bouton-secondaire">
+                            <i class="fas fa-times"></i> Annuler
+                        </a>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" class="bouton bouton-secondaire" id="btn-precedent">
+                            <i class="fas fa-arrow-left"></i> Précédent
+                        </button>
+                        <button type="button" class="bouton bouton-principal" id="btn-suivant">
+                            Suivant <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <button type="submit" class="bouton bouton-success" id="btn-creer-final" style="display: none;">
+                            <i class="fas fa-check"></i> Créer le TP
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <!-- Inclure le fichier JavaScript -->
+    <script src="{{ url_for('static', filename='js/creer_tp.js') }}"></script>
+</body>
+</html>

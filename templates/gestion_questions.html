@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Questions - {{ tp.titre }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/gestion_questions.css') }}">
+    <style>
+        /* Styles inline pour assurer le fonctionnement */
+        .zone-upload-image {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px dashed #dee2e6;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: none;
+            object-fit: contain;
+        }
+        
+        .bouton-upload {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        .bouton-upload:hover {
+            background: #0d62d9;
+        }
+    </style>
+</head>
+<body>
+    <div class="conteneur-principal">
+        <!-- Bouton retour -->
+        <a href="{{ url_for('gestion_tps') }}" class="bouton-retour">
+            <i class="fas fa-arrow-left"></i>
+            Retour aux TP
+        </a>
+
+        <!-- En-tête académique -->
+        <header class="en-tete-academique">
+            <h1 class="titre-principal">
+                <i class="fas fa-edit"></i> Création du Formulaire
+            </h1>
+            <div class="sous-titre">
+                Gestion des questions pour votre travail pratique
+            </div>
+            
+            <div class="informations-tp">
+                <div class="info-item">
+                    <i class="fas fa-book"></i>
+                    <span><strong>TP:</strong> {{ tp.titre }}</span>
+                </div>
+                
+                {% if tp.module %}
+                <div class="info-item">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span><strong>Module:</strong> {{ tp.module }}</span>
+                </div>
+                {% endif %}
+                
+                <div class="info-item">
+                    <i class="fas fa-user-tie"></i>
+                    <span><strong>Créateur:</strong> {{ createur.prenom }} {{ createur.nom }}</span>
+                </div>
+                
+                <div class="info-item">
+                    <i class="fas fa-calendar"></i>
+                    <span><strong>Créé le:</strong> {{ tp.date_creation.strftime('%d/%m/%Y') }}</span>
+                </div>
+                
+                <div class="info-item">
+                    <i class="fas fa-question-circle"></i>
+                    <span><strong>Questions:</strong> {{ tp.nombre_questions }}</span>
+                </div>
+                
+                <div class="info-item">
+                    <i class="fas fa-users"></i>
+                    <span><strong>Étudiants:</strong> {{ tp.nombre_etudiants }}</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Description du TP -->
+        {% if tp.description %}
+        <div class="carte-description">
+            <h2 class="titre-section">
+                <i class="fas fa-info-circle"></i> Description du TP
+            </h2>
+            <div class="texte-description">
+                {{ tp.description }}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Indicateur de progression -->
+        <div class="indicateur-progression">
+            <div class="statistique">
+                <i class="fas fa-question-circle"></i>
+                <div>
+                    <div class="valeur-stat" id="nombre-questions">0</div>
+                    <div class="label-stat">Questions</div>
+                </div>
+            </div>
+            
+            <div class="statistique">
+                <i class="fas fa-star"></i>
+                <div>
+                    <div class="valeur-stat" id="total-points">0</div>
+                    <div class="label-stat">Points totaux</div>
+                </div>
+            </div>
+            
+            <div class="statistique">
+                <i class="fas fa-save"></i>
+                <div>
+                    <div class="valeur-stat" id="statut-enregistrement">●</div>
+                    <div class="label-stat" id="texte-statut">Non sauvegardé</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conteneur des questions -->
+        <div class="conteneur-questions" id="conteneur-questions">
+            <div id="etat-vide" class="etat-vide">
+                <i class="fas fa-clipboard-list icone-vide"></i>
+                <h3 class="titre-vide">Aucune question pour le moment</h3>
+                <p class="texte-vide">
+                    Commencez par ajouter votre première question en cliquant sur le bouton 
+                    <i class="fas fa-plus" style="color: #1a73e8;"></i> ci-dessous.
+                </p>
+                <button class="bouton-flottant" onclick="ajouterQuestion()" style="margin: 20px auto; display: block; width: auto; padding: 10px 30px; border-radius: 25px;">
+                    <i class="fas fa-plus"></i> Ajouter une question
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Boutons flottants -->
+    <div class="boutons-flottants">
+        <button class="bouton-flottant enregistrer" id="btn-enregistrer" onclick="enregistrerQuestions()">
+            <i class="fas fa-save"></i>
+            <span class="label-flottant">Enregistrer toutes les questions</span>
+        </button>
+        <button class="bouton-flottant" id="btn-ajouter" onclick="ajouterQuestion()">
+            <i class="fas fa-plus"></i>
+            <span class="label-flottant">Ajouter une question</span>
+        </button>
+    </div>
+
+    <!-- Template de question -->
+    <template id="template-question">
+        <div class="carte-question" data-id="{id}">
+            <div class="entete-question">
+                <span class="numero-question">Question {numero}</span>
+                <div class="controles-question">
+                    <select class="select-type" onchange="changerTypeQuestion({id})">
+                        <option value="texte">Texte libre</option>
+                        <option value="choix_multiple">Choix multiple</option>
+                        <option value="case_cocher">Cases à cocher</option>
+                        <option value="image_reponse">Réponse avec image</option>
+                        <option value="image_question">Question avec image</option>
+                    </select>
+                    <input type="number" class="input-points" value="1.0" min="0.5" step="0.5" 
+                           onchange="mettreAJourProgression()" placeholder="Points">
+                    <button class="bouton-supprimer" onclick="supprimerQuestion({id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <textarea class="zone-texte" placeholder="Saisissez votre question ici..." 
+                      rows="3" oninput="mettreAJourStatut()"></textarea>
+            
+            <!-- ZONE POUR L'UPLOAD D'IMAGE -->
+            <div class="zone-upload-image" id="zone-image-{id}" style="display: none;">
+                <div class="titre-options">
+                    <i class="fas fa-image"></i> Image de la question
+                </div>
+                <div class="preview-image-container">
+                    <img id="preview-{id}" class="preview-image" src="" alt="Aperçu de l'image">
+                    <div class="upload-controls">
+                        <label for="image-input-{id}" class="bouton-upload">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            Choisir une image
+                        </label>
+                        <input type="file" id="image-input-{id}" class="input-image" 
+                               accept="image/*" style="display: none;" 
+                               onchange="previewImage({id}, this)">
+                        <button type="button" class="bouton-supprimer-image" onclick="supprimerImageQuestion({id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="info-upload">
+                        <i class="fas fa-info-circle"></i>
+                        Formats acceptés: JPG, PNG, GIF, WEBP. Max: 5MB
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ZONE POUR LES OPTIONS (QCM) -->
+            <div class="zone-options" id="options-{id}" style="display: none;">
+                <div class="titre-options">
+                    <i class="fas fa-list"></i> Options de réponse
+                </div>
+                <div class="liste-options" id="liste-options-{id}">
+                    <div class="option-item">
+                        <input type="text" class="input-option" placeholder="Option 1" oninput="mettreAJourStatut()">
+                        <button class="bouton-supprimer" style="width: 30px; height: 30px;" onclick="supprimerOption({id}, this)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="option-item">
+                        <input type="text" class="input-option" placeholder="Option 2" oninput="mettreAJourStatut()">
+                        <button class="bouton-supprimer" style="width: 30px; height: 30px;" onclick="supprimerOption({id}, this)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <button class="bouton-ajouter-option" onclick="ajouterOption({id})">
+                    <i class="fas fa-plus"></i> Ajouter une option
+                </button>
+            </div>
+            
+            <!-- INFO POUR RÉPONSE AVEC IMAGE -->
+            <div class="info-image" id="info-image-{id}" style="display: none;">
+                <i class="fas fa-info-circle"></i>
+                <span>Les étudiants pourront télécharger une image en réponse à cette question</span>
+            </div>
+        </div>
+    </template>
+
+    <!-- Lien vers le fichier JavaScript -->
+    <script src="{{ url_for('static', filename='js/gestion_questions.js') }}"></script>
+    <!-- Ajouter l'ID du TP -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tpId = '{{ tp.id }}';
+            initialiserGestionQuestions(tpId);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Correction TP - Thermostat_UAM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== RÉINITIALISATION ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .correction-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        /* ===== EN-TÊTE ACADÉMIQUE ===== */
+        .en-tete-academique {
+            background: linear-gradient(135deg, #283593 0%, #1a237e 100%);
+            color: white;
+            padding: 25px 40px;
+            border-bottom: 4px solid #4caf50;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .header-left h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-left .sous-titre {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .etudiant-info {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .etudiant-info .nom {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .etudiant-info .matricule {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .badge-copie {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        /* ===== NOTE FINALE ===== */
+        .note-finale-section {
+            padding: 30px 40px;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-bottom: 1px solid #e9ecef;
+            text-align: center;
+        }
+
+        .note-finale-section h2 {
+            font-size: 1.5rem;
+            color: #1976d2;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .note-box {
+            display: inline-block;
+            background: white;
+            padding: 30px 50px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(25, 118, 210, 0.15);
+        }
+
+        .note-principale {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #1976d2;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .note-sur {
+            font-size: 1.5rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .pourcentage {
+            margin-top: 15px;
+            font-size: 1.2rem;
+            color: #388e3c;
+            font-weight: 600;
+            background: rgba(56, 142, 60, 0.1);
+            padding: 8px 20px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .appreciation {
+            margin-top: 20px;
+            font-size: 1.3rem;
+            color: #2c3e50;
+            font-weight: 600;
+            padding: 10px 25px;
+            background: white;
+            border-radius: 10px;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ===== SECTION QUESTIONS ===== */
+        .questions-section {
+            padding: 30px 40px;
+        }
+
+        .questions-section h2 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+            font-weight: 600;
+        }
+
+        /* ===== CARTE QUESTION ===== */
+        .question-card {
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            margin-bottom: 25px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 25px;
+        }
+
+        .question-card:hover {
+            border-color: #bbdefb;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Barre de notation */
+        .note-bar {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 80px;
+            height: 100%;
+            background: #f8f9fa;
+            border-left: 3px solid #2196f3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 10px;
+        }
+
+        .note-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .note-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f57c00;
+            margin-bottom: 3px;
+        }
+
+        .note-max {
+            font-size: 1rem;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 5px;
+            margin-top: 5px;
+        }
+
+        /* Contenu question */
+        .question-content {
+            margin-right: 90px;
+        }
+
+        .question-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f1f1;
+        }
+
+        .question-num {
+            background: #283593;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 8px rgba(40, 53, 147, 0.2);
+        }
+
+        .question-titre {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            font-weight: 600;
+            flex-grow: 1;
+        }
+
+        .question-points {
+            background: #4caf50;
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .question-type-badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .question-enonce {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            padding: 15px;
+            background: #fafafa;
+            border-radius: 8px;
+            border-left: 4px solid #283593;
+        }
+
+        /* Images */
+        .question-image-section, .reponse-image-section {
+            margin: 15px 0;
+        }
+
+        .image-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            color: #2e7d32;
+        }
+
+        .image-container {
+            text-align: center;
+            margin: 10px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .image-link {
+            display: inline-block;
+            position: relative;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .question-image-display, .reponse-image-display {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .image-link:hover .question-image-display,
+        .image-link:hover .reponse-image-display {
+            opacity: 0.95;
+            transform: scale(1.01);
+        }
+
+        .image-zoom-icon {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+
+        .image-link:hover .image-zoom-icon {
+            opacity: 1;
+        }
+
+        /* Options QCM et cases à cocher */
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.2s;
+        }
+
+        .option-item.selected {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+
+        .option-item.correct {
+            background: #e8f5e9;
+            border-color: #4caf50;
+        }
+
+        .option-item input {
+            width: 18px;
+            height: 18px;
+            cursor: default;
+            margin: 0;
+        }
+
+        .option-item input[type="radio"] {
+            accent-color: #2196f3;
+        }
+
+        .option-item input[type="checkbox"] {
+            accent-color: #2196f3;
+        }
+
+        .option-item label, .option-text {
+            flex: 1;
+            margin: 0;
+            cursor: default;
+            font-weight: 500;
+        }
+
+        .option-letter {
+            font-weight: 700;
+            color: #666;
+            min-width: 30px;
+        }
+
+        .option-item.selected .option-letter,
+        .option-item.selected label {
+            color: #1976d2;
+            font-weight: 600;
+        }
+
+        .option-item.correct .option-letter {
+            color: #2e7d32;
+        }
+
+        .correct-icon {
+            color: #4caf50;
+            font-size: 1.1rem;
+        }
+
+        .selected-badge, .correct-badge {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 10px;
+        }
+
+        .selected-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .correct-badge {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        /* Réponses */
+        .reponse-section {
+            margin-bottom: 25px;
+        }
+
+        .reponse-titre {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .note-obtenue {
+            margin-left: auto;
+            font-size: 0.9rem;
+            color: #f57c00;
+        }
+
+        .reponse-etudiant {
+            padding: 20px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        .reponse-correcte {
+            padding: 20px;
+            border-radius: 8px;
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #2c3e50;
+            margin-top: 15px;
+        }
+
+        .reponse-texte-wrapper {
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .reponse-texte {
+            margin: 0;
+            color: #333;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        .reponse-texte-empty {
+            margin: 0;
+            color: #999;
+            font-style: italic;
+        }
+
+        .reponse-texte-etudiant {
+            margin-top: 15px;
+            padding: 12px 15px;
+            background: #f0f8ff;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .reponse-texte-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: #1976d2;
+            font-size: 0.9rem;
+        }
+
+        .reponse-texte-content {
+            color: #333;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .reponse-date {
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: #999;
+            text-align: right;
+            border-top: 1px dashed #e0e0e0;
+            padding-top: 10px;
+        }
+
+        .no-reponse-message {
+            padding: 20px;
+            background: #fff3e0;
+            border-radius: 8px;
+            border-left: 4px solid #ff9800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #e65100;
+        }
+
+        /* Observations */
+        .observations-section {
+            margin-top: 25px;
+            padding: 20px;
+            background: #fff8e1;
+            border-radius: 10px;
+            border-left: 6px solid #ff9800;
+        }
+
+        .observations-titre {
+            font-size: 1rem;
+            color: #5d4037;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .observations-content {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ffe082;
+        }
+
+        .commentaire-content {
+            line-height: 1.6;
+            color: #5d4037;
+        }
+
+        .commentaire-date {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #999;
+            text-align: right;
+            padding-top: 8px;
+            border-top: 1px dashed #ffcc80;
+        }
+
+        /* Commentaire général */
+        .commentaire-general {
+            margin: 30px 40px;
+            padding: 30px;
+            background: #e3f2fd;
+            border-radius: 12px;
+            border-left: 6px solid #2196f3;
+        }
+
+        .commentaire-general h3 {
+            font-size: 1.4rem;
+            color: #1976d2;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+        }
+
+        .commentaire-content {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid #bbdefb;
+            line-height: 1.7;
+        }
+
+        .appreciation-excellent, .appreciation-bon, .appreciation-satisfaisant, .appreciation-insuffisant {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .appreciation-excellent {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .appreciation-bon {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .appreciation-satisfaisant {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .appreciation-insuffisant {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .conseils-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px dashed #bbdefb;
+        }
+
+        .conseils-section ul {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        .conseils-section li {
+            margin-bottom: 5px;
+        }
+
+        .signature-enseignant {
+            margin-top: 30px;
+            text-align: right;
+            font-style: italic;
+            color: #546e7a;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 15px;
+        }
+
+        .nom-professeur {
+            font-weight: 600;
+            color: #37474f;
+            margin-top: 5px;
+        }
+
+        .email-professeur {
+            font-size: 0.85rem;
+            color: #78909c;
+        }
+
+        /* Pied de page */
+        .footer-correction {
+            padding: 25px 40px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .date-correction {
+            font-size: 0.95rem;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .actions-etudiant {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-action {
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #2196f3;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1976d2;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(108, 117, 125, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .correction-container {
+                margin: 10px;
+                border-radius: 8px;
+            }
+            
+            .en-tete-academique,
+            .note-finale-section,
+            .questions-section,
+            .footer-correction,
+            .commentaire-general {
+                padding: 20px;
+            }
+            
+            .commentaire-general {
+                margin: 20px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .header-right {
+                text-align: left;
+                width: 100%;
+            }
+            
+            .note-box {
+                padding: 20px 30px;
+            }
+            
+            .note-principale {
+                font-size: 2.8rem;
+            }
+            
+            .question-card {
+                padding: 20px;
+            }
+            
+            .note-bar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                border-left: none;
+                border-top: 3px solid #2196f3;
+                margin-top: 20px;
+                padding: 15px;
+                flex-direction: row;
+                justify-content: center;
+                gap: 20px;
+            }
+            
+            .question-content {
+                margin-right: 0;
+            }
+            
+            .note-value {
+                font-size: 1.8rem;
+            }
+            
+            .footer-correction {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .actions-etudiant {
+                width: 100%;
+                flex-direction: column;
+            }
+            
+            .btn-action {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .question-image-display, .reponse-image-display {
+                max-height: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .note-principale {
+                font-size: 2.2rem;
+            }
+            
+            .question-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .question-points {
+                align-self: flex-start;
+            }
+            
+            .options-list {
+                gap: 8px;
+            }
+            
+            .option-item {
+                flex-wrap: wrap;
+                padding: 8px 12px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .note-box, .question-card {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="correction-container">
+        <!-- En-tête académique -->
+        <header class="en-tete-academique">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>
+                        <i class="fas fa-file-signature"></i> CORRECTION DU TRAVAIL PRATIQUE
+                    </h1>
+                    <p class="sous-titre">
+                        {% if tp and tp.module %}
+                            {{ tp.module }} - {{ tp.titre }}
+                        {% else %}
+                            Plateforme Éducative
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <div class="header-right">
+                    <div class="etudiant-info">
+                        <div class="nom">{{ etudiant.prenom }} {{ etudiant.nom }}</div>
+                        <div class="matricule">{{ etudiant.matricule }}</div>
+                    </div>
+                    <span class="badge-copie">
+                        <i class="fas fa-check-double"></i> COPIE CORRIGÉE ET NOTÉE
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Note finale -->
+        <section class="note-finale-section">
+            <h2><i class="fas fa-chart-bar"></i> NOTE FINALE</h2>
+            <div class="note-box">
+                <div class="note-principale">
+                    {{ "%.2f"|format(total_notes) if total_notes is defined else "0.00" }}
+                </div>
+                <div class="note-sur">
+                    sur {{ "%.2f"|format(total_points) if total_points is defined else "0.00" }} points
+                </div>
+                <div class="pourcentage">
+                    {{ "%.1f"|format(pourcentage) if pourcentage is defined else "0.0" }}%
+                </div>
+                <div class="appreciation">
+                    {% if pourcentage >= 80 %}
+                        <i class="fas fa-trophy"></i> TRÈS BON TRAVAIL
+                    {% elif pourcentage >= 60 %}
+                        <i class="fas fa-thumbs-up"></i> BON TRAVAIL
+                    {% elif pourcentage >= 40 %}
+                        <i class="fas fa-check-circle"></i> SATISFAISANT
+                    {% else %}
+                        <i class="fas fa-exclamation-triangle"></i> À AMÉLIORER
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Section des questions -->
+        <section class="questions-section">
+            <h2><i class="fas fa-list-check"></i> CORRECTION DÉTAILLÉE</h2>
+            
+            {% for question in questions %}
+            {% set reponse = reponses_dict.get(question.id) if reponses_dict else None %}
+            <div class="question-card">
+                <!-- Barre de notation à droite -->
+                <div class="note-bar">
+                    <div class="note-label">NOTE</div>
+                    <div class="note-value">
+                        {% if reponse and reponse.note is not none %}
+                            {{ "%.1f"|format(reponse.note) }}
+                        {% else %}
+                            0.0
+                        {% endif %}
+                    </div>
+                    <div class="note-max">/{{ "%.1f"|format(question.points) }}</div>
+                </div>
+                
+                <div class="question-content">
+                    <!-- En-tête de la question -->
+                    <div class="question-header">
+                        <div class="question-num">{{ loop.index }}</div>
+                        <div class="question-titre">QUESTION {{ loop.index }}</div>
+                        <div class="question-points">{{ "%.1f"|format(question.points) }} pts</div>
+                    </div>
+                    
+                    <!-- Type de question -->
+                    <div class="question-type-badge">
+                        {% if question.type_question == 'qcm' %}
+                            <i class="fas fa-list-check"></i> QCM - Choix unique
+                        {% elif question.type_question == 'case_cocher' %}
+                            <i class="fas fa-check-square"></i> Cases à cocher - Choix multiples
+                        {% elif question.type_question == 'ouverte' %}
+                            <i class="fas fa-font"></i> Question ouverte
+                        {% elif question.type_question == 'image_reponse' %}
+                            <i class="fas fa-image"></i> Réponse avec image
+                        {% elif question.type_question == 'image_question' %}
+                            <i class="fas fa-image"></i> Question avec image
+                        {% else %}
+                            <i class="fas fa-question"></i> {{ question.type_question }}
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Énoncé de la question -->
+                    <div class="question-enonce">
+                        {{ question.enonce|safe }}
+                    </div>
+                    
+                    <!-- Image de la question si présente -->
+                    {% if question.type_question == 'image_question' and question.image_url %}
+                    <div class="question-image-section">
+                        <div class="image-header">
+                            <i class="fas fa-image"></i>
+                            <strong>Image de la question :</strong>
+                        </div>
+                        <div class="image-container">
+                            <a href="{{ question.image_url }}" target="_blank" class="image-link">
+                                <img src="{{ question.image_url }}" alt="Image de la question" class="question-image-display">
+                                <span class="image-zoom-icon">
+                                    <i class="fas fa-search-plus"></i> Agrandir
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Réponse de l'étudiant -->
+                    <div class="reponse-section">
+                        <div class="reponse-titre">
+                            <i class="fas fa-user-graduate"></i> VOTRE RÉPONSE
+                            <span class="note-obtenue">
+                                {% if reponse and reponse.note is not none %}
+                                    ({{ "%.1f"|format(reponse.note) }}/{{ "%.1f"|format(question.points) }} pts)
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="reponse-etudiant">
+                            {% if reponse %}
+                                {% if question.type_question == 'qcm' %}
+                                    <!-- QCM : afficher les radios -->
+                                    <div class="options-list">
+                                        {% set options = ['A', 'B', 'C', 'D', 'E', 'F'] %}
+                                        {% for option in options[:4] %}
+                                            {% set is_selected = (reponse.reponse|string == option) or (reponse.reponse|string|upper == option) %}
+                                            <div class="option-item {% if is_selected %}selected{% endif %}">
+                                                <input type="radio" name="q{{ question.id }}" value="{{ option }}" {% if is_selected %}checked{% endif %} disabled>
+                                                <span class="option-letter">{{ option }}.</span>
+                                                <label>Option {{ option }}</label>
+                                                {% if is_selected %}
+                                                    <span class="selected-badge">
+                                                        <i class="fas fa-check-circle"></i> Votre choix
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    
+                                {% elif question.type_question == 'case_cocher' %}
+                                    <!-- Cases à cocher -->
+                                    <div class="options-list">
+                                        {% set options = ['A', 'B', 'C', 'D'] %}
+                                        {% set reponse_str = reponse.reponse|string %}
+                                        {% for option in options %}
+                                            {% set is_selected = option in reponse_str %}
+                                            <div class="option-item {% if is_selected %}selected{% endif %}">
+                                                <input type="checkbox" name="q{{ question.id }}" value="{{ option }}" {% if is_selected %}checked{% endif %} disabled>
+                                                <span class="option-letter">{{ option }}.</span>
+                                                <label>Option {{ option }}</label>
+                                                {% if is_selected %}
+                                                    <span class="selected-badge">
+                                                        <i class="fas fa-check-circle"></i> Sélectionné
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    
+                                {% elif question.type_question == 'image_reponse' %}
+                                    <!-- Réponse avec image -->
+                                    {% if reponse.fichier_path %}
+                                        <div class="reponse-image-section">
+                                            <div class="image-header">
+                                                <i class="fas fa-image"></i>
+                                                <strong>Image soumise :</strong>
+                                            </div>
+                                            <div class="image-container">
+                                                {% set corrected_path = reponse.fichier_path.replace('\\', '/') %}
+                                                {% set image_url = url_for('serve_tp_file', filename=corrected_path) %}
+                                                <a href="{{ image_url }}" target="_blank" class="image-link">
+                                                    <img src="{{ image_url }}" alt="Image de la réponse" class="reponse-image-display">
+                                                    <span class="image-zoom-icon">
+                                                        <i class="fas fa-search-plus"></i> Agrandir
+                                                    </span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <!-- Commentaire textuel de l'étudiant -->
+                                    {% set has_comment = reponse.reponse and reponse.reponse.strip() and reponse.reponse != '[]' and reponse.reponse != 'null' %}
+                                    {% if has_comment %}
+                                        <div class="reponse-texte-etudiant">
+                                            <div class="reponse-texte-header">
+                                                <i class="fas fa-comment-dots"></i>
+                                                <strong>Votre commentaire :</strong>
+                                            </div>
+                                            <div class="reponse-texte-content">
+                                                {{ reponse.reponse|replace('\n', '<br>')|safe }}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    {% if not reponse.fichier_path and not has_comment %}
+                                        <div class="no-reponse-message">
+                                            <i class="fas fa-comment-slash"></i>
+                                            <span>Aucune réponse fournie</span>
+                                        </div>
+                                    {% endif %}
+                                    
+                                {% else %}
+                                    <!-- Réponse texte simple -->
+                                    <div class="reponse-texte-wrapper">
+                                        {% if reponse.reponse and reponse.reponse.strip() %}
+                                            <p class="reponse-texte">{{ reponse.reponse|replace('\n', '<br>')|safe }}</p>
+                                        {% else %}
+                                            <p class="reponse-texte-empty">Aucune réponse textuelle</p>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <div class="no-reponse-message">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>Aucune réponse fournie pour cette question</span>
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Date de soumission -->
+                            {% if reponse and reponse.date_soumission %}
+                            <div class="reponse-date">
+                                <i class="fas fa-clock"></i> Soumis le : {{ reponse.date_soumission.strftime('%d/%m/%Y à %H:%M') }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Réponse attendue -->
+                    {% if question.reponse_correcte %}
+                    <div class="reponse-section">
+                        <div class="reponse-titre">
+                            <i class="fas fa-check-circle"></i> RÉPONSE ATTENDUE
+                        </div>
+                        <div class="reponse-correcte">
+                            {% if question.type_question == 'qcm' %}
+                                <div class="options-list">
+                                    {% set option = question.reponse_correcte|string|upper %}
+                                    <div class="option-item correct">
+                                        <i class="fas fa-check-circle correct-icon"></i>
+                                        <span class="option-letter">{{ option }}.</span>
+                                        <span class="option-text">Option {{ option }}</span>
+                                        <span class="correct-badge">Bonne réponse</span>
+                                    </div>
+                                </div>
+                            {% elif question.type_question == 'case_cocher' %}
+                                <div class="options-list">
+                                    {% set reponse_correcte_str = question.reponse_correcte|string %}
+                                    {% set options = ['A', 'B', 'C', 'D'] %}
+                                    {% for option in options %}
+                                        {% set is_correct = option in reponse_correcte_str %}
+                                        <div class="option-item {% if is_correct %}correct{% endif %}">
+                                            {% if is_correct %}
+                                                <i class="fas fa-check-circle correct-icon"></i>
+                                            {% else %}
+                                                <i class="far fa-circle"></i>
+                                            {% endif %}
+                                            <span class="option-letter">{{ option }}.</span>
+                                            <span class="option-text">Option {{ option }}</span>
+                                            {% if is_correct %}
+                                                <span class="correct-badge">Bonne réponse</span>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% elif question.type_question == 'image_reponse' %}
+                                <div class="reponse-texte-wrapper">
+                                    <p class="reponse-texte">{{ question.reponse_correcte }}</p>
+                                </div>
+                            {% else %}
+                                <div class="reponse-texte-wrapper">
+                                    <p class="reponse-texte">{{ question.reponse_correcte }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Observations du professeur pour cette question -->
+                    {% if reponse and reponse.commentaire_correction %}
+                    <div class="observations-section">
+                        <div class="observations-titre">
+                            <i class="fas fa-comment-medical"></i> OBSERVATIONS DU CORRECTEUR
+                        </div>
+                        <div class="observations-content">
+                            <div class="commentaire-content">
+                                {{ reponse.commentaire_correction }}
+                            </div>
+                            {% if reponse.date_correction %}
+                            <div class="commentaire-date">
+                                <i class="fas fa-calendar-alt"></i> Corrigé le : {{ reponse.date_correction.strftime('%d/%m/%Y à %H:%M') }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+
+        <!-- Commentaire général du professeur -->
+        <section class="commentaire-general">
+            <h3><i class="fas fa-comments"></i> APPRÉCIATION GÉNÉRALE</h3>
+            <div class="commentaire-content">
+                {% if pourcentage >= 80 %}
+                    <p class="appreciation-excellent">
+                        <i class="fas fa-trophy"></i>
+                        <strong>Excellent travail !</strong> Votre compréhension du sujet est très bonne. Vous avez répondu de manière précise et complète aux questions. Continuez ainsi !
+                    </p>
+                    <p>Votre copie montre une excellente maîtrise des concepts abordés. La qualité de vos réponses démontre un travail sérieux et une bonne compréhension du cours.</p>
+                {% elif pourcentage >= 60 %}
+                    <p class="appreciation-bon">
+                        <i class="fas fa-thumbs-up"></i>
+                        <strong>Bon travail dans l'ensemble.</strong> Vous maîtrisez les concepts fondamentaux. Quelques imprécisions à corriger pour atteindre l'excellence.
+                    </p>
+                    <p>Vos réponses montrent une bonne compréhension générale du sujet. Attention cependant aux détails qui peuvent faire la différence.</p>
+                {% elif pourcentage >= 40 %}
+                    <p class="appreciation-satisfaisant">
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Travail satisfaisant.</strong> Vous avez saisi les bases mais des efforts sont nécessaires pour approfondir votre compréhension.
+                    </p>
+                    <p>Je vous conseille de revoir les chapitres correspondant aux questions où vous avez eu des difficultés. N'hésitez pas à poser des questions en cours.</p>
+                {% else %}
+                    <p class="appreciation-insuffisant">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Ce travail nécessite d'être revu.</strong> Je vous invite à reprendre les cours et à me consulter en cas de difficultés.
+                    </p>
+                    <p>Des ressources supplémentaires sont disponibles sur la plateforme. Prenez le temps de bien comprendre les bases avant de passer aux applications.</p>
+                {% endif %}
+                
+                <div class="conseils-section">
+                    <strong><i class="fas fa-lightbulb"></i> CONSEILS POUR LA PROCHAINE FOIS :</strong>
+                    <ul>
+                        {% if pourcentage < 60 %}
+                            <li>Prenez le temps de bien lire les énoncés</li>
+                            <li>Vérifiez vos réponses avant de soumettre</li>
+                            <li>Relisez attentivement le cours avant de commencer</li>
+                            <li>N'hésitez pas à poser des questions en cas de doute</li>
+                        {% else %}
+                            <li>Continuez à fournir des réponses aussi bien détaillées</li>
+                            <li>Soignez la présentation et la rédaction</li>
+                            <li>Approfondissez vos connaissances sur les points maîtrisés</li>
+                            <li>Participez activement aux séances de travaux pratiques</li>
+                        {% endif %}
+                    </ul>
+                </div>
+                
+                <!-- Signature du professeur -->
+                <div class="signature-enseignant">
+                    {% if professeur %}
+                        <p>Le correcteur,</p>
+                        <p class="nom-professeur">{{ professeur.prenom }} {{ professeur.nom }}</p>
+                        <p class="email-professeur">{{ professeur.email if professeur.email else '' }}</p>
+                    {% else %}
+                        <p>Le professeur correcteur</p>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Pied de page -->
+        <footer class="footer-correction">
+            <div class="date-correction">
+                <i class="far fa-calendar-alt"></i>
+                Correction effectuée le {{ today_date if today_date else "Aujourd'hui" }}
+                {% if reponses and reponses[0].date_soumission %}
+                    | Soumis le {{ reponses[0].date_soumission.strftime('%d/%m/%Y') }}
+                {% endif %}
+            </div>
+            
+            <div class="actions-etudiant">
+                <a href="{{ url_for('liste_tps_etudiant') }}" class="btn-action btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour aux TPs
+                </a>
+                <button onclick="window.print()" class="btn-action btn-primary">
+                    <i class="fas fa-print"></i> Imprimer la correction
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            colorizeNotes();
+            console.log('📄 Page de correction chargée');
+        });
+
+        function colorizeNotes() {
+            const noteBars = document.querySelectorAll('.note-bar');
+            noteBars.forEach(bar => {
+                const noteValue = bar.querySelector('.note-value');
+                const noteText = noteValue.textContent;
+                const note = parseFloat(noteText);
+                const maxElement = bar.querySelector('.note-max');
+                const maxText = maxElement.textContent.replace('/', '');
+                const maxPoints = parseFloat(maxText);
+                
+                const percentage = (note / maxPoints) * 100;
+                
+                if (percentage >= 80) {
+                    bar.style.borderLeftColor = '#4caf50';
+                    noteValue.style.color = '#4caf50';
+                } else if (percentage >= 60) {
+                    bar.style.borderLeftColor = '#ff9800';
+                    noteValue.style.color = '#ff9800';
+                } else {
+                    bar.style.borderLeftColor = '#f44336';
+                    noteValue.style.color = '#f44336';
+                }
+            });
+            
+            const notePrincipale = document.querySelector('.note-principale');
+            if (notePrincipale) {
+                const note = parseFloat(notePrincipale.textContent);
+                const total = parseFloat(document.querySelector('.note-sur').textContent.replace('sur ', '').replace(' points', ''));
+                const percentage = (note / total) * 100;
+                
+                if (percentage >= 80) {
+                    notePrincipale.style.color = '#4caf50';
+                } else if (percentage >= 60) {
+                    notePrincipale.style.color = '#ff9800';
+                } else {
+                    notePrincipale.style.color = '#f44336';
+                }
+            }
+        }
+
+        // Gestion de l'impression
+        window.addEventListener('beforeprint', function() {
+            document.body.style.backgroundColor = 'white';
+            const container = document.querySelector('.correction-container');
+            if (container) {
+                container.style.boxShadow = 'none';
+                container.style.margin = '0';
+                container.style.borderRadius = '0';
+            }
+        });
+
+        window.addEventListener('afterprint', function() {
+            document.body.style.backgroundColor = '#f5f5f5';
+            const container = document.querySelector('.correction-container');
+            if (container) {
+                container.style.boxShadow = '0 8px 30px rgba(0, 0, 0, 0.08)';
+                container.style.margin = '30px auto';
+                container.style.borderRadius = '12px';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,749 @@
+/* --- RESET ET BASE --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #ffffff;
+    padding: 20px;
+}
+
+/* --- CONTENEUR PRINCIPAL --- */
+.login-container {
+    display: flex;
+    width: 1000px;
+    max-width: 100%;
+    height: 550px;
+    background-color: #1f1f1f;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+/* --- PARTIE GAUCHE (VERTE) - AVEC DEUX LOGOS --- */
+.left-panel {
+    flex: 1;
+    background-color: #1ea95e;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    padding: 40px;
+    text-align: center;
+    position: relative;
+}
+
+/* Conteneur Flex pour les deux logos sur le panneau gauche */
+.logos-wrapper-left {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Style commun pour les deux logos circulaires */
+.logo-circle {
+    width: 100px;
+    height: 100px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.3);
+    overflow: hidden;
+    padding: 0;
+}
+
+/* Style spécifique pour le deuxième logo */
+.logo-circle.logo-secondary {
+    width: 80px;
+    height: 80px;
+    align-self: center;
+}
+
+/* Règle commune pour toutes les images de logo */
+.logo-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.brand-name {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ff6b35;
+    margin-bottom: 5px;
+}
+
+.brand-subtitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    opacity: 0.9;
+    max-width: 300px;
+    margin-bottom: 40px;
+}
+
+.secure-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.switch-link {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.switch-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+/* --- PARTIE DROITE (FORMULAIRE) --- */
+.right-panel {
+    flex: 1;
+    background-color: #1a1a1a;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow-y: auto;
+}
+
+/* TITRES CENTRÉS */
+h2.form-title {
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+p.form-subtitle {
+    color: #aaa;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* FORMULAIRE */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    color: #e0e0e0;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+input {
+    width: 100%;
+    padding: 12px 45px 12px 45px; /* Espace pour les icônes */
+    border-radius: 8px;
+    border: none;
+    background-color: #ebf0f7;
+    color: #333;
+    font-size: 1rem;
+    outline: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    box-shadow: 0 0 0 2px #1ea95e;
+    background-color: white;
+}
+
+/* Icône fixe à gauche */
+.icon-field {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    font-size: 1rem;
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* ICÔNE OEIL */
+.eye-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ff6b35;
+    cursor: pointer;
+    z-index: 10;
+    padding: 5px;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    background-color: transparent;
+}
+
+/* Suppression de l'œil noir par défaut */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 12px;
+    background-color: #1ea95e;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-submit:hover {
+    background-color: #168f4f;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(30, 169, 94, 0.3);
+}
+
+/* --- PIED DU FORMULAIRE (LIENS) --- */
+.form-footer {
+    margin-top: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.form-footer a {
+    color: #aaa;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+}
+
+.form-footer a:hover {
+    color: #ff6b35;
+    text-decoration: underline;
+}
+
+/* Suppression de "Nouveau compte" */
+.form-footer a[href*="inscription"] {
+    display: none;
+}
+
+/* Styles pour l'alerte de vérification d'email */
+.verification-alert {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.alert-icon {
+    font-size: 2rem;
+    color: #ffc107;
+}
+
+.alert-content h3 {
+    color: #856404;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.alert-content p {
+    color: #666;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.btn-resend {
+    background: #1ea95e;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-resend:hover {
+    background: #168f4f;
+    transform: translateY(-2px);
+}
+
+.small-text {
+    font-size: 0.8rem;
+    margin-top: 12px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.small-text i {
+    color: #1ea95e;
+}
+
+.email-highlight {
+    background: #f8f9fa;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Conteneur des messages flash */
+.flash-messages-container {
+    margin-bottom: 20px;
+}
+
+.flash-message {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: opacity 0.5s ease;
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.flash-message.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.flash-message.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.flash-message.warning {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.flash-message.info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+/* Lien switch (Créer un compte) */
+.switch-link {
+    color: white;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    margin-top: 15px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.switch-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Responsive pour l'alerte de vérification */
+@media (max-width: 768px) {
+    .verification-alert {
+        flex-direction: column;
+        text-align: center;
+        padding: 15px;
+    }
+    
+    .alert-icon {
+        align-self: center;
+        font-size: 1.5rem;
+    }
+    
+    .btn-resend {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .alert-content h3 {
+        font-size: 1rem;
+    }
+}
+
+/* Amélioration responsive générale */
+@media (max-width: 480px) {
+    .flash-message {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+    
+    .verification-alert {
+        margin-top: 15px;
+    }
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+        height: auto;
+        min-height: auto;
+    }
+    
+    .left-panel, .right-panel {
+        padding: 30px;
+        width: 100%;
+    }
+    
+    .left-panel {
+        border-radius: 20px 20px 0 0;
+    }
+    
+    .right-panel {
+        border-radius: 0 0 20px 20px;
+    }
+    
+    .form-footer {
+        flex-direction: row; /* Garde en ligne même sur mobile */
+        justify-content: center;
+        gap: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        max-width: 100%;
+    }
+    
+    .left-panel, .right-panel {
+        padding: 20px;
+    }
+    
+    .logos-wrapper-left {
+        gap: 10px;
+    }
+    
+    .logo-circle {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .logo-circle.logo-secondary {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .brand-name {
+        font-size: 1.5rem;
+    }
+    
+    h2.form-title {
+        font-size: 1.3rem;
+    }
+    
+    .form-footer {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+}
+
+ /* STYLES POUR LE MODAL (POPUP) ET LOADING */
+
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #1a1a1a;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    color: white;
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+.modal-header h3 i {
+    color: #1ea95e;
+    margin-right: 10px;
+}
+
+.close-modal {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-modal:hover {
+    color: #ff6b35;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.modal-body p {
+    color: #ccc;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+}
+
+.modal-body .form-group {
+    margin-bottom: 0;
+}
+
+.modal-body label {
+    color: #e0e0e0;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.modal-body input {
+    width: 100%;
+    padding: 12px 15px 12px 40px;
+    border-radius: 8px;
+    border: none;
+    background-color: #ebf0f7;
+    color: #333;
+    font-size: 1rem;
+    outline: none;
+}
+
+.modal-body input:focus {
+    box-shadow: 0 0 0 2px #1ea95e;
+}
+
+.modal-footer {
+    padding: 20px 25px;
+    border-top: 1px solid #333;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.btn-cancel {
+    padding: 10px 20px;
+    background-color: #444;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background-color: #555;
+}
+
+.btn-submit-modal {
+    padding: 10px 20px;
+    background-color: #1ea95e;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-submit-modal:hover {
+    background-color: #168f4f;
+    transform: translateY(-2px);
+}
+
+.resend-message {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.resend-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.resend-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.resend-message.warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+/* Loading spinner */
+.loading-spinner {
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #333;
+    border-top: 4px solid #1ea95e;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-spinner p {
+    color: white;
+    margin-top: 15px;
+    font-size: 1rem;
+}
+
+/* Responsive pour le modal */
+@media (max-width: 480px) {
+    .modal-content {
+        width: 95%;
+        margin: 10px;
+    }
+    
+    .modal-header {
+        padding: 15px 20px;
+    }
+    
+    .modal-header h3 {
+        font-size: 1.1rem;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .modal-footer {
+        padding: 15px 20px;
+        flex-direction: column-reverse;
+    }
+    
+    .btn-cancel, .btn-submit-modal {
+        width: 100%;
+        justify-content: center;
+    }
+}

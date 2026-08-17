@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soumissions des Étudiants - Thermostat_UAM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/consulter_soumissions.css') }}">
+</head>
+<body class="corps-page-soumissions">
+    <div class="conteneur-principal-soumissions">
+        <!-- En-tête académique -->
+        <header class="en-tete-academique-soumissions">
+            <div class="header-content">
+                <div>
+                    <h1 class="titre-page-soumissions">
+                        <i class="fas fa-file-alt"></i> Soumissions des Étudiants
+                    </h1>
+                    <p class="sous-titre-page-soumissions">
+                        Consultation et gestion des travaux pratiques soumis
+                    </p>
+                </div>
+                <div class="header-actions">
+                    <a href="{{ url_for('gestion_tps') }}" class="bouton bouton-secondaire">
+                        <i class="fas fa-arrow-left"></i> Retour aux TP
+                    </a>
+                    <span class="badge-institution-soumissions">
+                        <i class="fas fa-chalkboard-teacher"></i> Enseignant : {{ user_prenom }} {{ user_nom }}
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Statistiques rapides -->
+            <div class="stats-rapides">
+                <div class="stat-rapide">
+                    <i class="fas fa-flask"></i>
+                    <div>
+                        <h3 id="stat-tps">0</h3>
+                        <p>TPs créés</p>
+                    </div>
+                </div>
+                <div class="stat-rapide">
+                    <i class="fas fa-user-graduate"></i>
+                    <div>
+                        <h3 id="stat-etudiants">0</h3>
+                        <p>Étudiants inscrits</p>
+                    </div>
+                </div>
+                <div class="stat-rapide">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <h3 id="stat-soumis">0</h3>
+                        <p>Soumissions</p>
+                    </div>
+                </div>
+                <div class="stat-rapide">
+                    <i class="fas fa-chart-line"></i>
+                    <div>
+                        <h3 id="stat-moyenne">0.0</h3>
+                        <p>Moyenne</p>
+                    </div>
+                </div>
+                <div class="stat-rapide">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <h3 id="stat-en-cours">0</h3>
+                        <p>En cours</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Contenu principal -->
+        <main class="contenu-principal-soumissions">
+            <!-- Statistiques en temps réel -->
+            <div class="cartes-stats" id="cartes-stats">
+                <!-- Les cartes seront chargées dynamiquement -->
+            </div>
+
+            <!-- Section des soumissions -->
+            <div class="section-soumissions">
+                <div class="section-header">
+                    <div>
+                        <h2 class="titre-section-soumissions">
+                            <i class="fas fa-list"></i> Liste des soumissions
+                            <span class="badge-compteur" id="compteur-soumissions">0 résultats</span>
+                        </h2>
+                        <p class="sous-titre-section" id="sous-titre-filtres">
+                            Cliquez sur une ligne pour voir les détails
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Panneau de filtres -->
+                <div class="panneau-filtres" style="margin-top: 20px;">
+                    <div class="filtres-header">
+                        <h3><i class="fas fa-filter"></i> Filtres de recherche</h3>
+                        <button class="bouton-filtres-toggle" id="toggle-filtres">
+                            <i class="fas fa-sliders-h"></i> Afficher/Masquer
+                        </button>
+                    </div>
+                    
+                    <div class="filtres-body" id="filtres-body" style="display: block;">
+                        <div class="filtres-grid-compact">
+                            <!-- Filtre par TP -->
+                            <div class="filtre-groupe-compact">
+                                <label for="filtre-tp">
+                                    <i class="fas fa-flask"></i> Travail Pratique
+                                </label>
+                                <select id="filtre-tp" class="controle-filtre-compact-select">
+                                    <option value="all">Tous les TPs</option>
+                                    {% for tp in tps %}
+                                    <option value="{{ tp.id }}">{{ tp.titre }} {% if tp.module %}({{ tp.module }}){% endif %}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <!-- Filtre par étudiant -->
+                            <div class="filtre-groupe-compact">
+                                <label for="filtre-etudiant">
+                                    <i class="fas fa-user-graduate"></i> Recherche étudiant
+                                </label>
+                                <input type="text" id="filtre-etudiant" class="controle-filtre-compact" 
+                                       placeholder="Nom, prénom ou matricule...">
+                            </div>
+                            
+                            <!-- Filtre par statut -->
+                            <div class="filtre-groupe-compact">
+                                <label for="filtre-statut">
+                                    <i class="fas fa-check-circle"></i> Statut
+                                </label>
+                                <select id="filtre-statut" class="controle-filtre-compact-select">
+                                    <option value="all">Tous les statuts</option>
+                                    <option value="soumis">Soumis</option>
+                                    <option value="en_cours">En cours</option>
+                                    <option value="non_commence">Non démarré</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Filtre par date -->
+                            <div class="filtre-groupe-compact">
+                                <label for="filtre-date">
+                                    <i class="fas fa-calendar-alt"></i> Date de soumission
+                                </label>
+                                <input type="date" id="filtre-date" class="controle-filtre-compact">
+                            </div>
+                        </div>
+                        
+                        <!-- Actions des filtres -->
+                        <div class="filtres-actions-compact">
+                            <button class="bouton bouton-principal" id="appliquer-filtres">
+                                <i class="fas fa-search"></i> Appliquer les filtres
+                            </button>
+                            <button class="bouton bouton-secondaire" id="reinitialiser-filtres">
+                                <i class="fas fa-redo"></i> Réinitialiser
+                            </button>
+                            <button class="bouton bouton-success" id="exporter-donnees">
+                                <i class="fas fa-file-export"></i> Exporter CSV
+                            </button>
+                            <button class="bouton bouton-info" id="actualiser-donnees">
+                                <i class="fas fa-sync-alt"></i> Actualiser
+                            </button>
+                            <a href="{{ url_for('correction_rapide') }}" class="bouton bouton-warning" style="background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); color: white;">
+                                <i class="fas fa-fast-forward"></i> Corrections
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Indicateur de chargement -->
+                <div class="indicateur-chargement" id="indicateur-chargement">
+                    <div class="spinner"></div>
+                    <p>Chargement des soumissions...</p>
+                </div>
+                
+                <!-- Tableau -->
+                <div class="conteneur-tableau" id="conteneur-tableau">
+                    <table class="tableau-soumissions" id="tableau-soumissions">
+                        <thead>
+                            <tr>
+                                <th data-sort="etudiant">Étudiant <i class="fas fa-sort"></i></th>
+                                <th data-sort="tp">TP <i class="fas fa-sort"></i></th>
+                                <th data-sort="module">Module <i class="fas fa-sort"></i></th>
+                                <th data-sort="statut">Statut <i class="fas fa-sort"></i></th>
+                                <th data-sort="progression">Progression <i class="fas fa-sort"></i></th>
+                                <th data-sort="date_soumission">Date soumission <i class="fas fa-sort"></i></th>
+                                <th data-sort="derniere_activite">Dernière activité <i class="fas fa-sort"></i></th>
+                                <th data-sort="note">Note <i class="fas fa-sort"></i></th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableau-body">
+                            <!-- Les données seront chargées dynamiquement -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="pagination" id="pagination">
+                    <!-- La pagination sera générée dynamiquement -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de détails -->
+    <div class="modal-overlay" id="modal-details">
+        <div class="modal-contenu">
+            <div class="modal-header">
+                <h2 class="modal-titre">
+                    <i class="fas fa-graduation-cap"></i> Détails de la Soumission
+                </h2>
+                <button class="modal-fermer" id="modal-fermer">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Le contenu sera chargé dynamiquement -->
+            </div>
+            <div class="modal-footer">
+                <button class="bouton bouton-secondaire" onclick="fermerModalDetails()">
+                    <i class="fas fa-times"></i> Fermer
+                </button>
+                <button class="bouton bouton-principal" onclick="ouvrirCorrection()">
+                    <i class="fas fa-edit"></i> Corriger
+                </button>
+                <button class="bouton bouton-success" onclick="exporterDetails()">
+                    <i class="fas fa-download"></i> Exporter PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de correction -->
+    <div class="modal-overlay" id="modal-correction">
+        <div class="modal-contenu large">
+            <div class="modal-header">
+                <h2 class="modal-titre">
+                    <i class="fas fa-edit"></i> Correction de la Soumission
+                </h2>
+                <button class="modal-fermer" id="modal-correction-fermer">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-correction-body">
+                <!-- Le contenu sera chargé dynamiquement -->
+            </div>
+            <div class="modal-footer">
+                <button class="bouton bouton-secondaire" onclick="fermerModalCorrection()">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+                <button class="bouton bouton-success" onclick="sauvegarderCorrection()">
+                    <i class="fas fa-save"></i> Enregistrer la correction
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/consulter_soumissions.js') }}"></script>
+</body>
+</html>

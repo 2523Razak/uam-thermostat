@@ -1,0 +1,292 @@
+/* En-tête de la page */
+.en-tete-page {
+    margin-bottom: 25px;
+}
+
+.en-tete-page h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #312C85;
+    margin-bottom: 5px;
+}
+
+.en-tete-page p {
+    color: #718096;
+    font-size: 0.95rem;
+}
+
+/* Grille spécifique à cette page (2 colonnes inégales) */
+.grille-editeur {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* 2/3 pour l'éditeur, 1/3 pour les exemples */
+    gap: 20px;
+    align-items: start;
+}
+
+/* Style de base des cartes */
+.carte {
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eef2f7;
+    margin-bottom: 20px;
+}
+
+.carte h4 {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* --- Colonne Gauche : L'Éditeur --- */
+
+.entete-carte {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.badge-inactif {
+    background-color: #edf2f7;
+    color: #718096;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 1px solid #cbd5e0;
+}
+
+.zone-texte-code {
+    width: 100%;
+    height: 400px;
+    background-color: #0f111a; 
+    color: #a6accd;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #2d3748;
+    resize: none;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.actions-editeur {
+    display: flex;
+    gap: 15px;
+}
+
+.bouton-sauvegarder, .bouton-activer {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    transition: transform 0.2s;
+}
+
+.bouton-sauvegarder {
+    background-color: #584BF2; /* Violet */
+}
+
+.bouton-activer {
+    background-color: #10B981; /* Vert */
+}
+
+.bouton-sauvegarder:hover, .bouton-activer:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+/* --- Section Instructions --- */
+.sous-titre-instr {
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: #4a5568;
+}
+
+.liste-instructions {
+    margin-left: 20px;
+    color: #4a5568;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    line-height: 1.8;
+}
+
+.boite-conseils {
+    background-color: #ebf8ff;
+    border: 1px solid #bee3f8;
+    border-radius: 8px;
+    padding: 15px;
+    font-size: 0.85rem;
+    color: #2c5282;
+}
+
+.boite-conseils ul {
+    margin-left: 20px;
+    margin-top: 5px;
+}
+
+/* --- Colonne Droite : Exemples et Variables --- */
+
+/* Sélecteur type PI/PID/MPC */
+.selecteur-exemples {
+    display: flex;
+    background-color: #f7fafc;
+    border-radius: 8px;
+    padding: 4px;
+    margin-bottom: 15px;
+}
+
+.btn-exemple {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 6px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #718096;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.15s ease;
+}
+
+.btn-exemple.actif {
+    background-color: white;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.desc-exemple {
+    font-size: 0.85rem;
+    color: #4a5568;
+    margin-bottom: 10px;
+}
+
+.apercu-code {
+    background-color: #f8fafc;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #edf2f7;
+    margin-bottom: 15px;
+    font-size: 0.75rem;
+    overflow-x: auto;
+    
+    /* MODIFICATIONS CLÉS POUR CONSERVER LA TAILLE FIXE (CORRECTIF) */
+    max-height: 150px; 
+    overflow-y: auto;  /* Ajoute une barre de défilement verticale */
+}
+
+.apercu-code pre {
+    color: #4a5568;
+    font-family: monospace;
+    margin: 0;
+}
+
+.bouton-charger-exemple {
+    width: 100%;
+    padding: 10px;
+    background-color: white;
+    border: 1px solid #4a55ff;
+    color: #4a55ff;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.bouton-charger-exemple:hover {
+    background-color: #eef2ff;
+}
+
+/* Liste des variables */
+.item-variable {
+    background-color: #f8fafc; /* Gris très clair */
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border-left: 3px solid transparent;
+}
+
+.item-variable:hover {
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.nom-var {
+    display: block;
+    color: #584BF2; /* Violet */
+    font-family: monospace;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+}
+
+.desc-var {
+    font-size: 0.75rem;
+    color: #718096;
+}
+
+/* État du code */
+.boite-info-etat {
+    padding: 15px;
+    background-color: #f7fafc;
+    border: 1px solid #edf2f7;
+    border-radius: 8px;
+}
+
+.boite-info-etat p {
+    font-size: 0.85rem;
+    margin-bottom: 5px;
+}
+
+.texte-gris {
+    color: #718096;
+    margin: 0;
+}
+
+/* =========================================
+   STYLES SPECIFIQUES CODEMIRROR (L'ÉDITEUR)
+   ========================================= */
+
+/* Conteneur principal de l'éditeur */
+.CodeMirror {
+    border-radius: 8px; 
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    height: 400px !important; /* Force la hauteur */
+    border: 1px solid #2d3748;
+    margin-bottom: 20px;
+}
+
+/* Colonne des numéros de ligne (Gutters) */
+.cm-s-dracula .CodeMirror-gutters {
+    background-color: #282a36; /* Fond plus sombre pour les numéros */
+    border-right: 1px solid #44475a;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+/* Responsive Design pour mobile */
+@media (max-width: 900px) {
+    .grille-editeur {
+        grid-template-columns: 1fr; /* Une seule colonne sur petit écran */
+    }
+    
+    .CodeMirror {
+        height: 300px !important; /* Hauteur réduite sur mobile */
+    }
+}

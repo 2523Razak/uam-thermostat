@@ -1,0 +1,7 @@
+{
+  "server_url": "https://uam-thermostat.onrender.com",
+  "agent_token": "change-moi-en-production",
+  "agent_id": null,
+  "intervalle_scan_ports_s": 5,
+  "intervalle_heartbeat_s": 10
+}

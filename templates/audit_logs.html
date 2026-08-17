@@ -1,0 +1,47 @@
+<!-- templates/audit_logs.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logs d'Audit</title>
+    <style>
+        .audit-log { border: 1px solid #ddd; margin: 5px; padding: 10px; }
+        .log-critical { background-color: #ffcccc; }
+        .log-warning { background-color: #fff3cd; }
+        .log-info { background-color: #d4edda; }
+    </style>
+</head>
+<body>
+    <h1>📊 Logs d'Audit du Système</h1>
+    
+    <form method="GET">
+        <input type="text" name="user_id" placeholder="Filtrer par ID utilisateur">
+        <select name="event_type">
+            <option value="">Tous les événements</option>
+            <option value="ARDUINO_CONNECT">Connexion Arduino</option>
+            <option value="SETPOINT_CHANGE">Changement consigne</option>
+            <option value="CONTROLLER_PARAMS_CHANGE">Changement paramètres</option>
+            <option value="UNAUTHORIZED_ACCESS">Tentative accès non autorisé</option>
+        </select>
+        <input type="number" name="limit" value="100" min="1" max="1000">
+        <button type="submit">Filtrer</button>
+    </form>
+    
+    <div id="logs-container">
+        {% for log in logs %}
+        <div class="audit-log log-{{ log.severity|default('info') }}">
+            <strong>{{ log.timestamp }}</strong>
+            <br>
+            <strong>Type:</strong> {{ log.event_type }}
+            <br>
+            <strong>Utilisateur:</strong> {{ log.user_email }} (ID: {{ log.user_id }})
+            <br>
+            <strong>Connexion:</strong> {{ log.connection_id }}
+            <br>
+            <strong>Détails:</strong> {{ log.details }}
+            <br>
+            <strong>IP:</strong> {{ log.ip_address }}
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

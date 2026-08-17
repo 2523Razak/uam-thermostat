@@ -1,0 +1,17 @@
+============================================================ 
+  THERMOSTAT UAM - Demarrage - 25/07/2026 19:00:21,71 
+============================================================ 
+Dossier du projet : C:\Users\user\Documents\Fiche Word,Excel\Word\These_Master\EEA\Fiche_word\projet_flask_arduino_1.2.1 
+Python trouve : C:\Python314\python.exe 
+Aucun package utilisateur trouve. 
+Lancement de l'application... 
+[OK] platform.machine() patché
+[OK] platform.win32_ver() patché
+[OK] platform.processor() patché
+[OK] Platform patché pour éviter WMI timeout
+Traceback (most recent call last):
+  File "C:\Users\user\Documents\Fiche Word,Excel\Word\These_Master\EEA\Fiche_word\projet_flask_arduino_1.2.1\app.py", line 38, in <module>
+    from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, session, send_from_directory, send_file
+ModuleNotFoundError: No module named 'flask'
+ 
+L'application s'est arretee - 25/07/2026 19:01:11,13 
