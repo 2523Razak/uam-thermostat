@@ -456,18 +456,24 @@ function supprimerOption(id, bouton) {
 
 // Supprimer une question complète
 function supprimerQuestion(id) {
-    if (confirm('Voulez-vous vraiment supprimer cette question ?')) {
-        const carte = document.querySelector(`[data-id="${id}"]`);
-        if (carte) {
-            carte.remove();
-            delete questionsData[id];
-            
-            mettreAJourProgression();
-            mettreAJourStatut();
-            
-            afficherToast('Question supprimée', 'success');
+    appConfirm('Voulez-vous vraiment supprimer cette question ?', {
+        title: 'Supprimer la question',
+        confirmLabel: 'Supprimer',
+        danger: true
+    }).then(function(ok) {
+        if (ok) {
+            const carte = document.querySelector(`[data-id="${id}"]`);
+            if (carte) {
+                carte.remove();
+                delete questionsData[id];
+                
+                mettreAJourProgression();
+                mettreAJourStatut();
+                
+                afficherToast('Question supprimée', 'success');
+            }
         }
-    }
+    });
 }
 
 // ===== SAUVEGARDE DES QUESTIONS =====

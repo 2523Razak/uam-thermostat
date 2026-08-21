@@ -40,7 +40,7 @@ CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config_a
 
 CONFIG_PAR_DEFAUT = {
     "server_url": "https://uam-thermostat.onrender.com",
-    "agent_token": "change-moi-en-production",
+    "agent_token": "ebee4ff1a941bd6475daf2c0fa517029786263070f713b51980bca6affa5dcac",
     "agent_id": None,   # None -> utilise le nom de la machine automatiquement
     "intervalle_scan_ports_s": 5,
     "intervalle_heartbeat_s": 10,
@@ -96,7 +96,7 @@ INDICATEURS_ARDUINO = [
 # ÉTAT LOCAL
 # ----------------------------------------------------------------------------
 
-sio = socketio.Client(reconnection=True, reconnection_delay=2, reconnection_delay_max=15)
+sio = socketio.Client(reconnection=True, reconnection_attempts=0, reconnection_delay=2, reconnection_delay_max=20)
 connexions_locales = {}   # connection_id -> {'serial': Serial, 'port': str, 'lock': Lock, 'thread': Thread, 'actif': bool}
 verrou_global = threading.Lock()
 
@@ -110,8 +110,24 @@ def log_vers_serveur(level, message):
         pass
 
 
+def _port_physiquement_libre(nom_port):
+    """Teste si le port peut réellement être ouvert au niveau du système
+    d'exploitation. Comble la fenêtre de course qu'un simple comptage
+    logique côté serveur ne peut pas garantir à travers le réseau (délai
+    réseau, redémarrage serveur, etc.) - réplique verifier_port_disponible()
+    de l'ancienne architecture locale."""
+    try:
+        p = serial.Serial(nom_port)
+        p.close()
+        return True
+    except Exception:
+        return False
+
+
 def detecter_ports_arduino():
-    """Identique à la détection d'origine (controllers/arduino_controller.py), mais côté agent"""
+    """Détection des cartes Arduino, avec test physique d'ouverture pour les
+    ports qu'on n'a pas nous-mêmes déjà ouverts (le serveur, lui, ne peut
+    pas faire ce test : il n'est pas physiquement sur place)."""
     ports_trouves = []
 
     ports_deja_ouverts = {c['port'] for c in connexions_locales.values() if c.get('actif')}
@@ -121,12 +137,21 @@ def detecter_ports_arduino():
         hwid = port.hwid.upper()
         est_arduino = any(ind in desc for ind in INDICATEURS_ARDUINO) or any(ind in hwid for ind in INDICATEURS_ARDUINO)
 
-        if est_arduino:
-            ports_trouves.append({
-                'port': port.device,
-                'description': port.description,
-                'en_utilisation': port.device in ports_deja_ouverts,
-            })
+        if not est_arduino:
+            continue
+
+        if port.device in ports_deja_ouverts:
+            # Déjà ouvert par nous : ne JAMAIS le re-sonder avec serial.Serial()
+            # (basculerait la ligne DTR et réinitialiserait l'Arduino en cours d'usage)
+            en_utilisation = True
+        else:
+            en_utilisation = not _port_physiquement_libre(port.device)
+
+        ports_trouves.append({
+            'port': port.device,
+            'description': port.description,
+            'en_utilisation': en_utilisation,
+        })
 
     return ports_trouves
 
@@ -240,16 +265,29 @@ def boucle_lecture_arduino(connection_id):
     port_serie = connexion['serial']
     port = connexion['port']
 
+    heure_ouverture = time.time()
     derniere_donnee = time.time()
     dernier_test_connexion = time.time()
     erreurs_consecutives = 0
-    max_erreurs_consecutives = 3
-    timeout_sans_donnee = 8
+    max_erreurs_consecutives = 5
+
+    # Délai avant de considérer la carte comme muette. Généreux car certaines
+    # cartes/sketches mettent du temps à s'initialiser après le reset provoqué
+    # par l'ouverture du port série (capteurs, calibration, etc.).
+    timeout_sans_donnee = 25
+    # Pendant cette période de "grâce" après l'ouverture, on ne referme jamais
+    # la connexion même sans donnée : on laisse le temps à la carte de démarrer.
+    delai_grace_demarrage = 6
+
+    lignes_recues_total = 0
+    temp_envoyes = 0
 
     while connexion.get('actif'):
         try:
+            maintenant = time.time()
+
             # Vérifier périodiquement que le port existe encore physiquement
-            if time.time() - dernier_test_connexion > 3:
+            if maintenant - dernier_test_connexion > 3:
                 ports_existants = [p.device for p in serial.tools.list_ports.comports()]
                 if port not in ports_existants:
                     logger.warning(f"❌ Port physique {port} n'existe plus ({connection_id})")
@@ -258,7 +296,7 @@ def boucle_lecture_arduino(connection_id):
                 try:
                     with connexion['lock']:
                         port_serie.write(b"PING\n")
-                    dernier_test_connexion = time.time()
+                    dernier_test_connexion = maintenant
                     erreurs_consecutives = 0
                 except Exception as e:
                     erreurs_consecutives += 1
@@ -267,9 +305,16 @@ def boucle_lecture_arduino(connection_id):
                         logger.error(f"Trop d'erreurs consécutives sur {port}, abandon")
                         break
 
-            if time.time() - derniere_donnee > timeout_sans_donnee:
-                logger.warning(f"Timeout : aucune donnée valide reçue depuis {timeout_sans_donnee}s sur {port}")
-                break
+            # Ne pas abandonner pendant la période de grâce initiale, et ne
+            # jamais compter le temps écoulé pendant une éventuelle coupure
+            # Internet contre la carte (la lecture série reste 100% locale).
+            if (maintenant - heure_ouverture) > delai_grace_demarrage:
+                if maintenant - derniere_donnee > timeout_sans_donnee:
+                    logger.warning(
+                        f"Timeout : aucune donnée valide reçue depuis {timeout_sans_donnee}s sur {port} "
+                        f"({lignes_recues_total} ligne(s) reçue(s) au total, {temp_envoyes} demande(s) TEMP envoyée(s))"
+                    )
+                    break
 
             while port_serie.in_waiting > 0:
                 try:
@@ -282,6 +327,13 @@ def boucle_lecture_arduino(connection_id):
                 if not ligne:
                     continue
 
+                lignes_recues_total += 1
+                if lignes_recues_total <= 5 or lignes_recues_total % 20 == 0:
+                    # Journalise un échantillon de ce qui est réellement reçu,
+                    # même si ce n'est pas du "DATA:" — utile pour diagnostiquer
+                    # un problème de firmware/format de trame.
+                    logger.info(f"[{port}] ligne reçue : {ligne[:80]}")
+
                 if ligne.startswith("DATA:"):
                     derniere_donnee = time.time()
 
@@ -292,15 +344,19 @@ def boucle_lecture_arduino(connection_id):
                     if sio.connected:
                         sio.emit('data', {'connection_id': connection_id, 'line': ligne}, namespace='/agent')
 
-            # Si pas de donnée récente, redemander la température
-            if time.time() - derniere_donnee > 2:
+            # Si pas de donnée récente, redemander la température (pas plus
+            # d'une fois par seconde pour ne pas saturer la carte)
+            if maintenant - derniere_donnee > 2 and maintenant - dernier_test_connexion <= 3:
+                pass  # le PING ci-dessus vient d'être envoyé, on laisse la carte respirer
+            elif maintenant - derniere_donnee > 2:
                 try:
                     with connexion['lock']:
                         port_serie.write(b"TEMP\n")
+                    temp_envoyes += 1
                 except Exception as e:
                     logger.error(f"Erreur demande TEMP {port} : {e}")
 
-            time.sleep(0.2)
+            time.sleep(0.3)
 
         except Exception as e:
             logger.error(f"Erreur boucle lecture {connection_id} : {e}")
@@ -344,6 +400,20 @@ def disconnect():
 @sio.on('server:hello', namespace='/agent')
 def on_hello(data):
     logger.info(f"Serveur : {data.get('message')}")
+
+
+@sio.on('server:reset', namespace='/agent')
+def on_reset(data):
+    """ Le serveur a redémarré ou ne connaît plus cet agent : on ferme toutes les connexions locales orphelines. """
+    if not connexions_locales:
+        return
+
+    logger.warning(
+        f"Le serveur a redémarré ou ne connaît plus cet agent : fermeture de "
+        f"{len(connexions_locales)} connexion(s) locale(s) orpheline(s)..."
+    )
+    for connection_id in list(connexions_locales.keys()):
+        fermer_connexion(connection_id)
 
 
 @sio.on('server:open_port', namespace='/agent')

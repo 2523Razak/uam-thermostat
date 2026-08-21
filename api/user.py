@@ -2,6 +2,7 @@
 from flask import jsonify, request, session, flash, redirect, url_for
 from utils.decorators import login_required, admin_required
 from utils.email_utils import envoyer_email, envoyer_notification_statut, envoyer_confirmation_changement_mdp
+from utils.security import hash_password, verify_password
 from db import db, Utilisateur
 from datetime import datetime
 import re
@@ -68,7 +69,8 @@ def register_user_routes(app):
                 return jsonify({'success': False, 'message': 'Utilisateur non trouvé'})
             
             # Vérifier l'ancien mot de passe
-            if utilisateur.password != ancien_mot_de_passe:
+            mot_de_passe_valide, _ = verify_password(utilisateur.password, ancien_mot_de_passe)
+            if not mot_de_passe_valide:
                 return jsonify({'success': False, 'message': 'Ancien mot de passe incorrect'})
             
             # Vérifier si le nouveau mot de passe est différent de l'ancien
@@ -76,7 +78,7 @@ def register_user_routes(app):
                 return jsonify({'success': False, 'message': 'Le nouveau mot de passe doit être différent de l\'ancien'})
             
             # Mettre à jour le mot de passe
-            utilisateur.password = nouveau_mot_de_passe
+            utilisateur.password = hash_password(nouveau_mot_de_passe)
             db.session.commit()
             
             print(f"Mot de passe changé pour l'utilisateur {utilisateur.email}")
@@ -140,8 +142,11 @@ def register_user_routes(app):
                 return jsonify({'success': False, 'message': 'Utilisateur non trouvé'})
             
             # Vérifier le mot de passe
-            if utilisateur.password != mot_de_passe:
+            mot_de_passe_valide, doit_rehasher = verify_password(utilisateur.password, mot_de_passe)
+            if not mot_de_passe_valide:
                 return jsonify({'success': False, 'message': 'Mot de passe incorrect'})
+            if doit_rehasher:
+                utilisateur.password = hash_password(mot_de_passe)
             
             # Vérifier si l'email existe déjà
             email_existe = Utilisateur.query.filter_by(email=nouvel_email).first()

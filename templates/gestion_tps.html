@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Travaux Pratiques - Thermostat_UAM</title>
@@ -355,5 +356,8 @@
         console.log('Page gestion_tps.html chargée');
     });
     </script>
+    <script src="{{ url_for('static', filename='js/security.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dialogs.js') }}"></script>
+
 </body>
 </html>

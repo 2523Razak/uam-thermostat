@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="/website/css/uicons-solid-rounded.css" rel="stylesheet">
@@ -130,6 +131,10 @@
     </div>
     {% block content %}{% endblock %}
     
+    <!-- Sécurité : jeton CSRF automatique + dialogues stylisés (à charger avant tout autre script) -->
+    <script src="{{ url_for('static', filename='js/security.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dialogs.js') }}"></script>
+
     <!-- Inclure le fichier JavaScript des notifications -->
     <script src="{{ url_for('static', filename='js/barmenu.js') }}"></script>
     

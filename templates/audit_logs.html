@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Logs d'Audit</title>
     <style>
         .audit-log { border: 1px solid #ddd; margin: 5px; padding: 10px; }
@@ -42,6 +43,8 @@
             <strong>IP:</strong> {{ log.ip_address }}
         </div>
         {% endfor %}
-    </div>
+    </div>    <script src="{{ url_for('static', filename='js/security.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dialogs.js') }}"></script>
+
 </body>
 </html>

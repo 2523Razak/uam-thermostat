@@ -244,6 +244,11 @@
     color: white;
 }
 
+.badge-supprime {
+    background: rgba(97, 97, 97, 0.95) !important;
+    color: white;
+}
+
 .titre-tp {
     font-size: 1.1rem;
     font-weight: 600;

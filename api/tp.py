@@ -103,14 +103,19 @@ def get_etudiants_tp(tp_id):
         if tp.created_by != session.get('user_id'):
             return jsonify({'success': False, 'message': 'Non autorisé'}), 403
         
-        inscriptions = EtudiantTP.query.filter_by(tp_id=tp_id).all()
+        # jointure directe pour éviter les lectures N+1 et garantir que
+        # la liste renvoyée reflète toujours l'état réel de la base.
+        inscriptions = (
+            db.session.query(EtudiantTP, Utilisateur)
+            .join(Utilisateur, Utilisateur.id == EtudiantTP.etudiant_id)
+            .filter(EtudiantTP.tp_id == tp_id)
+            .all()
+        )
         
         etudiants = []
-        for inscription in inscriptions:
-            etudiant = Utilisateur.query.get(inscription.etudiant_id)
-            if etudiant:
-                identifiant = etudiant.matricule if etudiant.matricule else etudiant.email
-                etudiants.append(identifiant)
+        for _inscription, etudiant in inscriptions:
+            identifiant = etudiant.matricule if etudiant.matricule else etudiant.email
+            etudiants.append(identifiant)
         
         return jsonify({
             'success': True,
@@ -134,50 +139,82 @@ def update_etudiants_tp(tp_id):
         if tp.created_by != session.get('user_id'):
             return jsonify({'success': False, 'message': 'Non autorisé'}), 403
         
-        data = request.get_json()
+        data = request.get_json(silent=True) or {}
         nouveaux_etudiants = data.get('etudiants', [])
         
         print(f"=== MISE À JOUR ÉTUDIANTS TP {tp_id} ===")
         print(f"Identifiants reçus: {nouveaux_etudiants}")
         
-        # Supprimer les inscriptions existantes
-        EtudiantTP.query.filter_by(tp_id=tp_id).delete()
+        from sqlalchemy import func
         
         added_count = 0
-        for identifiant in nouveaux_etudiants:
-            identifiant = identifiant.strip()
+        etudiants_ajoutes = []
+        introuvables = []
+        deja_traites = set()  # évite les doublons dans la liste envoyée
+        etudiants_ids_valides = []
+        
+        for identifiant_brut in nouveaux_etudiants:
+            if not identifiant_brut:
+                continue
+            identifiant = str(identifiant_brut).strip()
             
             if not identifiant:
                 continue
             
-            # Chercher l'étudiant par matricule ou email
+            cle_dedup = identifiant.lower()
+            if cle_dedup in deja_traites:
+                continue
+            deja_traites.add(cle_dedup)
+            
+            # Recherche insensible à la casse et aux espaces superflus, par
+            # matricule OU email : un simple problème de majuscules ne doit
+            # plus faire échouer silencieusement l'ajout d'un étudiant.
             etudiant = Utilisateur.query.filter(
-                (Utilisateur.matricule == identifiant) | 
-                (Utilisateur.email == identifiant)
+                (func.lower(func.trim(Utilisateur.matricule)) == identifiant.lower()) |
+                (func.lower(func.trim(Utilisateur.email)) == identifiant.lower())
             ).first()
             
-            if etudiant:
-                # Ne pas ajouter les admins ou le créateur du TP
-                if etudiant.statut == 'admin' or etudiant.id == tp.created_by:
-                    continue
-                
-                nouvelle_inscription = EtudiantTP(
-                    tp_id=tp_id,
-                    etudiant_id=etudiant.id
-                )
-                db.session.add(nouvelle_inscription)
-                added_count += 1
+            if not etudiant:
+                introuvables.append(identifiant)
+                continue
+            
+            # Ne pas ajouter les admins ou le créateur du TP
+            if etudiant.statut == 'admin' or etudiant.id == tp.created_by:
+                introuvables.append(f"{identifiant} (compte enseignant/admin, ignoré)")
+                continue
+            
+            etudiants_ids_valides.append(etudiant.id)
+            etudiants_ajoutes.append(f"{etudiant.prenom} {etudiant.nom}")
         
+        # On ne supprime/recrée les inscriptions QUE si la recherche s'est
+        # déroulée sans erreur, pour ne jamais vider la liste existante par
+        # accident (ex : requête réseau tronquée envoyant un tableau vide).
+        EtudiantTP.query.filter_by(tp_id=tp_id).delete()
+        
+        for etudiant_id in etudiants_ids_valides:
+            db.session.add(EtudiantTP(tp_id=tp_id, etudiant_id=etudiant_id))
+        
+        added_count = len(etudiants_ids_valides)
         tp.nombre_etudiants = added_count
         db.session.commit()
         
-        print(f"Étudiants ajoutés: {added_count}")
+        print(f"Étudiants ajoutés: {added_count} | Introuvables: {introuvables}")
+        
+        if introuvables:
+            message = (
+                f'{added_count} étudiant(s) enregistré(s). '
+                f'{len(introuvables)} identifiant(s) non trouvé(s) : ' + ', '.join(introuvables)
+            )
+        else:
+            message = f'{added_count} étudiant(s) enregistré(s) avec succès'
         
         return jsonify({
             'success': True,
-            'message': f'{added_count} étudiant(s) ajouté(s) avec succès',
+            'message': message,
             'count': added_count,
-            'added_count': added_count
+            'added_count': added_count,
+            'etudiants_ajoutes': etudiants_ajoutes,
+            'introuvables': introuvables
         })
         
     except Exception as e:
@@ -230,62 +267,73 @@ def update_date_limite_tp(tp_id):
         return jsonify({'success': False, 'message': 'Erreur serveur'}), 500
 
 @tp_bp.route('/tp/<int:tp_id>/supprimer', methods=['DELETE'])
+def _supprimer_tp_impl(tp_id):
+    """
+    Implémentation commune de la suppression d'un TP (suppression douce).
+
+    On ne supprime plus jamais physiquement le TP, ses questions, ni les
+    réponses/inscriptions des étudiants : cela permettrait de perdre les
+    copies déjà soumises par des étudiants, qu'on doit pouvoir continuer à
+    corriger et que l'étudiant doit continuer à voir avec sa note.
+
+    Le TP est simplement marqué `supprime = True` :
+    - il disparaît de la liste active "Gestion des Travaux Pratiques" et de
+      la liste des TP à faire côté étudiant (pour ceux qui n'ont rien soumis),
+    - il continue à apparaître, en lecture/correction seule, pour les
+      étudiants qui avaient déjà soumis une réponse.
+    """
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Non authentifié'}), 401
+
+    tp = TP.query.get(tp_id)
+    if not tp:
+        return jsonify({'success': False, 'message': 'TP non trouvé'}), 404
+
+    user_id = session.get('user_id')
+    if tp.created_by != user_id:
+        return jsonify({'success': False, 'message': 'Permission refusée: Vous devez être le créateur du TP'}), 403
+
+    if tp.supprime:
+        return jsonify({'success': False, 'message': 'Ce TP a déjà été supprimé'}), 400
+
+    questions_count = Question.query.filter_by(tp_id=tp_id).count()
+    reponses_count = ReponseEtudiant.query.filter_by(tp_id=tp_id).count()
+    inscriptions_count = EtudiantTP.query.filter_by(tp_id=tp_id).count()
+    etudiants_avec_soumission = (
+        db.session.query(ReponseEtudiant.etudiant_id).filter_by(tp_id=tp_id).distinct().count()
+    )
+
+    tp.supprime = True
+    tp.date_suppression = datetime.now()
+    db.session.commit()
+
+    message = f'TP "{tp.titre}" supprimé.'
+    if etudiants_avec_soumission > 0:
+        message += (
+            f' {etudiants_avec_soumission} étudiant(s) avaient déjà soumis leur travail : '
+            'leurs copies sont conservées, restent corrigeables, et ils continueront de voir '
+            'leur note. Le TP disparaît uniquement pour les étudiants qui n\'avaient rien soumis.'
+        )
+
+    return jsonify({
+        'success': True,
+        'message': message,
+        'soft_delete': True,
+        'stats': {
+            'questions': questions_count,
+            'reponses': reponses_count,
+            'inscriptions': inscriptions_count,
+            'etudiants_avec_soumission': etudiants_avec_soumission
+        }
+    })
+
+
+@tp_bp.route('/tp/<int:tp_id>/supprimer', methods=['DELETE'])
 @login_required
 def supprimer_tp(tp_id):
-    """API pour supprimer un TP (méthode DELETE)"""
-    print(f"=== SUPPRESSION TP {tp_id} DEMANDÉE (DELETE) ===")
-    print(f"User ID dans session: {session.get('user_id')}")
-    
+    """API pour supprimer (suppression douce) un TP (méthode DELETE)"""
     try:
-        # Vérifier l'authentification
-        if 'user_id' not in session:
-            print("ERREUR: Utilisateur non connecté")
-            return jsonify({'success': False, 'message': 'Non authentifié'}), 401
-        
-        tp = TP.query.get(tp_id)
-        if not tp:
-            print(f"TP {tp_id} non trouvé")
-            return jsonify({'success': False, 'message': 'TP non trouvé'}), 404
-        
-        print(f"TP trouvé: {tp.titre}")
-        print(f"Créé par: {tp.created_by}")
-        print(f"Utilisateur connecté: {session.get('user_id')}")
-        
-        # Vérifier les permissions
-        user_id = session.get('user_id')
-        if tp.created_by != user_id:
-            print(f"Permission refusée: user_id={user_id} != created_by={tp.created_by}")
-            return jsonify({'success': False, 'message': 'Permission refusée: Vous devez être le créateur du TP'}), 403
-        
-        print("Suppression des données associées...")
-        
-        # Compter les éléments à supprimer
-        questions_count = Question.query.filter_by(tp_id=tp_id).count()
-        reponses_count = ReponseEtudiant.query.filter_by(tp_id=tp_id).count()
-        inscriptions_count = EtudiantTP.query.filter_by(tp_id=tp_id).count()
-        
-        print(f"Éléments à supprimer: {questions_count} questions, {reponses_count} réponses, {inscriptions_count} inscriptions")
-        
-        # Supprimer dans l'ordre inverse des dépendances
-        ReponseEtudiant.query.filter_by(tp_id=tp_id).delete()
-        EtudiantTP.query.filter_by(tp_id=tp_id).delete()
-        Question.query.filter_by(tp_id=tp_id).delete()
-        
-        print("Suppression du TP...")
-        db.session.delete(tp)
-        db.session.commit()
-        
-        print(f"TP {tp_id} supprimé avec succès")
-        return jsonify({
-            'success': True,
-            'message': f'TP "{tp.titre}" supprimé avec succès',
-            'deleted_items': {
-                'questions': questions_count,
-                'reponses': reponses_count,
-                'inscriptions': inscriptions_count
-            }
-        })
-        
+        return _supprimer_tp_impl(tp_id)
     except Exception as e:
         db.session.rollback()
         print(f"ERREUR suppression TP {tp_id}: {str(e)}")
@@ -296,60 +344,9 @@ def supprimer_tp(tp_id):
 @tp_bp.route('/tp/<int:tp_id>/supprimer_post', methods=['POST'])
 @login_required
 def supprimer_tp_post(tp_id):
-    """API pour supprimer un TP (méthode POST alternative)"""
-    print(f"=== SUPPRESSION TP {tp_id} DEMANDÉE (POST) ===")
-    print(f"User ID dans session: {session.get('user_id')}")
-    
+    """API pour supprimer (suppression douce) un TP (méthode POST alternative)"""
     try:
-        # Vérifier l'authentification
-        if 'user_id' not in session:
-            print("ERREUR: Utilisateur non connecté")
-            return jsonify({'success': False, 'message': 'Non authentifié'}), 401
-        
-        tp = TP.query.get(tp_id)
-        if not tp:
-            print(f"TP {tp_id} non trouvé")
-            return jsonify({'success': False, 'message': 'TP non trouvé'}), 404
-        
-        print(f"TP trouvé: {tp.titre}")
-        print(f"Créé par: {tp.created_by}")
-        print(f"Utilisateur connecté: {session.get('user_id')}")
-        
-        # Vérifier les permissions
-        user_id = session.get('user_id')
-        if tp.created_by != user_id:
-            print(f"Permission refusée: user_id={user_id} != created_by={tp.created_by}")
-            return jsonify({'success': False, 'message': 'Permission refusée: Vous devez être le créateur du TP'}), 403
-        
-        print("Suppression des données associées...")
-        
-        # Compter les éléments à supprimer
-        questions_count = Question.query.filter_by(tp_id=tp_id).count()
-        reponses_count = ReponseEtudiant.query.filter_by(tp_id=tp_id).count()
-        inscriptions_count = EtudiantTP.query.filter_by(tp_id=tp_id).count()
-        
-        print(f"Éléments à supprimer: {questions_count} questions, {reponses_count} réponses, {inscriptions_count} inscriptions")
-        
-        # Supprimer dans l'ordre inverse des dépendances
-        ReponseEtudiant.query.filter_by(tp_id=tp_id).delete()
-        EtudiantTP.query.filter_by(tp_id=tp_id).delete()
-        Question.query.filter_by(tp_id=tp_id).delete()
-        
-        print("Suppression du TP...")
-        db.session.delete(tp)
-        db.session.commit()
-        
-        print(f"TP {tp_id} supprimé avec succès")
-        return jsonify({
-            'success': True,
-            'message': f'TP "{tp.titre}" supprimé avec succès',
-            'deleted_items': {
-                'questions': questions_count,
-                'reponses': reponses_count,
-                'inscriptions': inscriptions_count
-            }
-        })
-        
+        return _supprimer_tp_impl(tp_id)
     except Exception as e:
         db.session.rollback()
         print(f"ERREUR suppression TP {tp_id}: {str(e)}")
@@ -454,6 +451,10 @@ def soumettre_reponses(tp_id):
         
         if not inscription:
             return jsonify({'success': False, 'message': 'Non inscrit à ce TP'}), 403
+        
+        tp = TP.query.get(tp_id)
+        if tp and tp.supprime:
+            return jsonify({'success': False, 'message': 'Ce TP a été supprimé par l\'enseignant et n\'accepte plus de soumissions'}), 403
         
         # Supprimer les anciennes réponses
         ReponseEtudiant.query.filter_by(

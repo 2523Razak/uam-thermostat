@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Correction Rapide - Thermostat_UAM</title>
@@ -574,6 +575,35 @@
         let totalQuestions = 0;
         let totalPoints = 0;
 
+        // Formater la réponse d'un étudiant pour affichage lisible,
+        // notamment pour les QCM/cases à cocher où la valeur stockée est
+        // déjà le texte réel (ou un tableau JSON de textes) et non un index.
+        function formatReponseAffichage(reponse, type) {
+            if (!reponse) return '<em>Aucune réponse</em>';
+            try {
+                if (type === 'case_cocher') {
+                    let items;
+                    try {
+                        items = JSON.parse(reponse);
+                    } catch (e) {
+                        items = String(reponse).split(',').map(s => s.trim());
+                    }
+                    if (!Array.isArray(items)) items = [String(items)];
+                    items = items.filter(x => String(x).trim() !== '');
+                    if (items.length === 0) return '<em>Aucune réponse</em>';
+                    return '<ul style="margin:4px 0 0 18px; padding:0;">' +
+                        items.map(x => `<li>${escapeHtml(String(x))}</li>`).join('') +
+                        '</ul>';
+                }
+                if (type === 'qcm') {
+                    return `<strong>${escapeHtml(String(reponse))}</strong>`;
+                }
+                return escapeHtml(String(reponse)).replace(/\n/g, '<br>');
+            } catch (e) {
+                return escapeHtml(String(reponse));
+            }
+        }
+
         // Éléments DOM
         const correctionContainer = document.getElementById('correction-container');
         const tpSelection = document.getElementById('tp-selection');
@@ -583,7 +613,7 @@
         async function chargerCopies() {
             tpId = tpSelect.value;
             if (!tpId) {
-                alert('Veuillez sélectionner un TP');
+                appAlert('Veuillez sélectionner un TP', { type: 'warning' });
                 return;
             }
 
@@ -687,7 +717,7 @@
                         tp_id: tpId,
                         etudiant_id: copy.etudiant_id,
                         corrections: [],
-                        commentaire: ''
+                        commentaire: data.commentaire_general || ''
                     };
                     
                     // Préparer les corrections à partir des données existantes
@@ -759,7 +789,7 @@
                         
                         <div class="question-text">
                             <strong>Énoncé :</strong><br>
-                            ${question.enonce || 'Pas d\'énoncé'}
+                            ${escapeHtml(question.enonce || 'Pas d\'énoncé').replace(/\n/g, '<br>')}
                         </div>
                         
                         ${hasImage ? `
@@ -773,7 +803,7 @@
                                 <i class="fas fa-user-graduate"></i> Réponse de l'étudiant :
                             </div>
                             <div class="student-answer-content">
-                                ${question.reponse_etudiant ? question.reponse_etudiant.replace(/\n/g, '<br>') : '<em>Aucune réponse texte</em>'}
+                                ${formatReponseAffichage(question.reponse_etudiant, question.type_question)}
                             </div>
                             ${hasFile ? `
                             <div class="student-answer-image">
@@ -1022,5 +1052,8 @@
             }
         });
     </script>
+    <script src="{{ url_for('static', filename='js/security.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dialogs.js') }}"></script>
+
 </body>
 </html>

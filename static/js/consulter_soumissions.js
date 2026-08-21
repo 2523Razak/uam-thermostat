@@ -1052,7 +1052,7 @@ function afficherModalCorrection(data) {
                         Ajoutez un commentaire constructif pour aider l'étudiant à améliorer son travail.
                     </p>
                     <textarea id="commentaire-general" class="commentaire-input-academique" 
-                              placeholder="Exemple: Bon travail sur les concepts fondamentaux. Pour la prochaine fois, essayez d'approfondir l'analyse des résultats...">${data.questions?.[0]?.commentaire_correction || ''}</textarea>
+                              placeholder="Exemple: Bon travail sur les concepts fondamentaux. Pour la prochaine fois, essayez d'approfondir l'analyse des résultats...">${escapeHtml(data.commentaire_general || '')}</textarea>
                 </div>
             </form>
         </div>
@@ -1612,13 +1612,21 @@ function formatReponse(reponse, type) {
     
     try {
         if (type === 'case_cocher') {
-            const indices = JSON.parse(reponse);
-            return indices.map(idx => `Option ${idx + 1}`).join(', ');
+            // La réponse stockée est un tableau JSON des TEXTES des options
+            // cochées (pas des index) : on l'affiche tel quel, joint par des virgules.
+            let items;
+            try {
+                items = JSON.parse(reponse);
+            } catch (e) {
+                items = reponse.split(',').map(s => s.trim());
+            }
+            if (!Array.isArray(items)) items = [String(items)];
+            return items.filter(x => String(x).trim() !== '').map(x => escapeHtml(String(x))).join(', ');
         } else if (type === 'qcm') {
-            const index = parseInt(reponse);
-            return `Option ${index + 1}`;
+            // La réponse stockée EST déjà le texte de l'option choisie.
+            return escapeHtml(String(reponse));
         } else if (type === 'code') {
-            return `<pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto;"><code>${reponse}</code></pre>`;
+            return `<pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto;"><code>${escapeHtml(reponse)}</code></pre>`;
         } else {
             // Échapper les caractères HTML pour la sécurité
             return reponse.replace(/[&<>"']/g, function(m) {

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Travaux Pratiques</title>
@@ -193,13 +194,17 @@
                                 
                                 <!-- Badge statut -->
                                 <span class="badge-statut 
-                                    {% if tp.statut == 'expire' and tp.date_soumission %}
+                                    {% if tp.supprime %}
+                                        badge-supprime
+                                    {% elif tp.statut == 'expire' and tp.date_soumission %}
                                         badge-soumis-expire
                                     {% else %}
                                         badge-{{ tp.statut }}
                                     {% endif %}">
                                     
-                                    {% if tp.statut == 'expire' and tp.date_soumission %}
+                                    {% if tp.supprime %}
+                                        <i class="fas fa-trash-alt"></i> TP supprimé (note conservée)
+                                    {% elif tp.statut == 'expire' and tp.date_soumission %}
                                         <i class="fas fa-check-circle"></i> Terminé (Note disponible)
                                     {% elif tp.statut == 'expire' %}
                                         <i class="fas fa-ban"></i> Expiré
@@ -293,6 +298,11 @@
                                 
                                 <!-- Actions étudiant -->
                                 <div class="actions-etudiant">
+                                    {% if tp.supprime %}
+                                        <a href="{{ url_for('voir_correction', tp_id=tp.id) }}" class="bouton-action correction">
+                                            <i class="fas fa-star"></i> Voir ma note
+                                        </a>
+                                    {% else %}
                                     {% if tp.statut == 'disponible' %}
                                     <a href="{{ url_for('commencer_tp', tp_id=tp.id) }}" class="bouton-action commencer">
                                         <i class="fas fa-play"></i> Commencer
@@ -324,6 +334,7 @@
                                         </button>
                                         {% endif %}
                                     {% endif %}
+                                    {% endif %}
                                     
                                     <a href="{{ url_for('details_tp', tp_id=tp.id) }}" class="bouton-action details">
                                         <i class="fas fa-info-circle"></i> Détails
@@ -351,6 +362,8 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/liste_tps_etudiant.js') }}"></script>
-    {% endblock %}
+    {% endblock %}    <script src="{{ url_for('static', filename='js/security.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dialogs.js') }}"></script>
+
 </body>
 </html>

@@ -283,20 +283,30 @@ function saveEtudiants() {
     })
     .then(data => {
         if (data.success) {
-            showToast(data.message, 'success');
-            
-            // Mettre à jour le compteur dans la carte
-            setTimeout(() => {
-                const carte = document.querySelector('[data-tp-id="' + currentTpId + '"]');
-                if (carte) {
-                    const countElement = carte.querySelector('.etudiants-count');
-                    if (countElement) {
-                        countElement.textContent = data.count + ' étudiant(s)';
-                    }
+            // Mettre à jour le compteur et la liste (retour serveur = source de vérité)
+            const carte = document.querySelector('[data-tp-id="' + currentTpId + '"]');
+            if (carte) {
+                const countElement = carte.querySelector('.etudiants-count');
+                if (countElement) {
+                    countElement.textContent = data.count + ' étudiant(s)';
                 }
-            }, 500);
+            }
             
-            // Fermer le modal
+            if (data.introuvables && data.introuvables.length > 0) {
+                showToast(`${data.added_count} étudiant(s) enregistré(s), ${data.introuvables.length} identifiant(s) introuvable(s)`, 'warning');
+                appAlert(
+                    "Les identifiants suivants n'ont pas été trouvés (vérifiez le matricule ou l'email exact) et n'ont donc pas été ajoutés :\n\n" +
+                    data.introuvables.join('\n'),
+                    { title: 'Certains étudiants sont introuvables', type: 'warning' }
+                );
+            } else {
+                showToast(data.message, 'success');
+            }
+            
+            // Recharger la liste depuis le serveur pour refléter l'état réel
+            loadEtudiants(currentTpId);
+            
+            // Fermer le modal après un court délai
             setTimeout(() => closeEtudiantsModal(), 1500);
         } else {
             showToast('Erreur: ' + data.message, 'error');
@@ -384,7 +394,7 @@ function confirmerSuppression(tpId, tpTitre) {
     
     document.getElementById('modal-confirmation-title').textContent = 'Supprimer le TP : ' + tpTitre;
     document.getElementById('confirmation-message').textContent = `Êtes-vous sûr de vouloir supprimer le TP "${tpTitre}" ?`;
-    document.getElementById('confirmation-details').textContent = `ID: ${tpId} • Action irréversible`;
+    document.getElementById('confirmation-details').textContent = `ID: ${tpId} • Le TP disparaîtra de votre liste et de celle des étudiants qui n'ont rien soumis. Les copies déjà soumises restent conservées et corrigeables.`;
     
     document.getElementById('modal-confirmation').style.display = 'flex';
 }

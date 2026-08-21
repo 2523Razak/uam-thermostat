@@ -1,0 +1,422 @@
+2026-08-18 23:22:07,980 - [AGENT] - INFO - ============================================================
+2026-08-18 23:22:07,983 - [AGENT] - INFO - AGENT LOCAL - Thermostat UAM
+2026-08-18 23:22:07,983 - [AGENT] - INFO - ============================================================
+2026-08-18 23:22:07,983 - [AGENT] - INFO - Identifiant agent : DESKTOP-0RCK778
+2026-08-18 23:22:07,984 - [AGENT] - INFO - Serveur           : https://uam-thermostat.onrender.com
+2026-08-18 23:22:07,984 - [AGENT] - INFO - ============================================================
+2026-08-18 23:22:19,146 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:22:29,154 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:22:39,605 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:22:49,626 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:22:58,915 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:23:08,923 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:29:34,224 - [AGENT] - INFO - ============================================================
+2026-08-18 23:29:34,224 - [AGENT] - INFO - AGENT LOCAL - Thermostat UAM
+2026-08-18 23:29:34,225 - [AGENT] - INFO - ============================================================
+2026-08-18 23:29:34,225 - [AGENT] - INFO - Identifiant agent : DESKTOP-0RCK778
+2026-08-18 23:29:34,226 - [AGENT] - INFO - Serveur           : https://uam-thermostat.onrender.com
+2026-08-18 23:29:34,226 - [AGENT] - INFO - ============================================================
+2026-08-18 23:29:47,109 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:29:57,116 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:30:05,874 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:30:18,432 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:30:27,962 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:30:42,135 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:31:02,252 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:31:06,939 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:31:06,940 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:31:14,873 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:31:14,878 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:31:24,886 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:31:34,642 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:31:43,006 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:31:46,784 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:31:55,830 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:32:02,986 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:32:05,839 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:32:06,293 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:32:12,489 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:32:15,695 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:32:15,695 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:32:15,695 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:32:25,694 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:32:32,988 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:32:32,989 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:32:41,354 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:32:41,354 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:32:51,360 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:33:00,329 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:33:03,308 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:33:10,341 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:33:11,823 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:33:19,481 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:33:29,484 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:33:34,485 - [AGENT] - ERROR - Connexion au serveur impossible : Client is not in a disconnected state. Nouvelle tentative dans 5s...
+2026-08-18 23:33:38,673 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:33:38,673 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:33:39,485 - [AGENT] - ERROR - Connexion au serveur impossible : Client is not in a disconnected state. Nouvelle tentative dans 5s...
+2026-08-18 23:33:44,004 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:33:44,004 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:33:44,487 - [AGENT] - ERROR - Connexion au serveur impossible : Client is not in a disconnected state. Nouvelle tentative dans 5s...
+2026-08-18 23:33:46,571 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:33:58,597 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:34:08,610 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:34:09,590 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:34:15,980 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:34:16,368 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:34:20,845 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:34:26,360 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:34:36,361 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:34:38,007 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:34:41,362 - [AGENT] - ERROR - Connexion au serveur impossible : Client is not in a disconnected state. Nouvelle tentative dans 5s...
+2026-08-18 23:34:42,645 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:34:50,233 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:34:50,747 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:35:01,792 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:35:04,392 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:35:09,340 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:35:09,341 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:35:11,045 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:35:11,045 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:35:21,048 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:35:28,823 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:35:28,824 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:35:28,825 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:35:32,508 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:35:38,213 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:35:38,902 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:35:39,192 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:35:45,829 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:35:51,777 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:35:56,188 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:35:56,189 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:35:58,312 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:36:02,395 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:36:06,194 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:36:18,988 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:36:28,995 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:36:33,997 - [AGENT] - ERROR - Connexion au serveur impossible : Client is not in a disconnected state. Nouvelle tentative dans 5s...
+2026-08-18 23:36:36,918 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:36:37,019 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:36:42,695 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:36:43,261 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:36:53,440 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:36:56,061 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:36:57,950 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:36:58,441 - [AGENT] - ERROR - Connexion au serveur impossible : Client is not in a disconnected state. Nouvelle tentative dans 5s...
+2026-08-18 23:37:03,441 - [AGENT] - ERROR - Connexion au serveur impossible : Client is not in a disconnected state. Nouvelle tentative dans 5s...
+2026-08-18 23:37:05,569 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:37:07,961 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:37:11,711 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:37:11,712 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:37:19,651 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:37:19,651 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:37:19,652 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:37:20,925 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:37:28,445 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:37:29,277 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:37:35,865 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:37:36,773 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:37:39,280 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:37:41,813 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:37:41,814 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:37:41,815 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:37:47,925 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:37:49,678 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:37:57,928 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:37:59,862 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:38:02,613 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:38:07,137 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:38:07,242 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:38:07,243 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:38:08,877 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:38:10,226 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:38:15,908 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:38:23,840 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:38:23,840 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:38:29,461 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:38:34,388 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:38:34,389 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:38:39,699 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:38:39,896 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:38:44,398 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:38:49,400 - [AGENT] - ERROR - Connexion au serveur impossible : Client is not in a disconnected state. Nouvelle tentative dans 5s...
+2026-08-18 23:38:50,340 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:38:54,400 - [AGENT] - ERROR - Connexion au serveur impossible : Client is not in a disconnected state. Nouvelle tentative dans 5s...
+2026-08-18 23:38:55,169 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:38:56,519 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:39:02,856 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:39:11,040 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:39:17,277 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:39:18,316 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:39:28,330 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:39:29,929 - [AGENT] - WARNING - Connection pool is full, discarding connection: uam-thermostat.onrender.com. Connection pool size: 10
+2026-08-18 23:39:33,347 - [AGENT] - ERROR - Connexion au serveur impossible : Client is not in a disconnected state. Nouvelle tentative dans 5s...
+2026-08-18 23:39:37,290 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:39:37,291 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:39:37,291 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:39:37,291 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:39:37,292 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:39:44,724 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:39:54,740 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:39:59,440 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:40:03,472 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:40:12,460 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:40:20,007 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:40:20,009 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:40:26,029 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:40:30,677 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:40:39,872 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:40:42,805 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:40:43,590 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:40:50,511 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:40:53,144 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:40:55,251 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:40:57,941 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:01,032 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:04,548 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:04,550 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:05,024 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:05,042 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:12,009 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:12,010 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:21,040 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:21,494 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:21,495 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:27,973 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:30,160 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:30,160 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:30,161 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:38,379 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:38,380 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:38,556 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:48,033 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:51,565 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:51,566 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:56,757 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:56,867 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:41:56,872 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:03,837 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:03,839 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:04,264 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:05,033 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : HTTPSConnectionPool(host='uam-thermostat.onrender.com', port=443): Read timed out. (read timeout=5)
+2026-08-18 23:42:12,774 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:12,775 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:12,776 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:15,951 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:42:19,746 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:20,204 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:20,920 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : HTTPSConnectionPool(host='uam-thermostat.onrender.com', port=443): Read timed out. (read timeout=5)
+2026-08-18 23:42:25,287 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:27,145 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:35,374 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:35,375 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:35,376 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:36,388 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:38,708 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:43,824 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:43,824 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:53,827 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:42:53,897 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:53,898 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:53,899 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:53,900 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:42:55,959 - [AGENT] - WARNING - Connection pool is full, discarding connection: uam-thermostat.onrender.com. Connection pool size: 10
+2026-08-18 23:42:56,206 - [AGENT] - WARNING - Connection pool is full, discarding connection: uam-thermostat.onrender.com. Connection pool size: 10
+2026-08-18 23:42:56,407 - [AGENT] - WARNING - Connection pool is full, discarding connection: uam-thermostat.onrender.com. Connection pool size: 10
+2026-08-18 23:42:56,960 - [AGENT] - WARNING - Connection pool is full, discarding connection: uam-thermostat.onrender.com. Connection pool size: 10
+2026-08-18 23:43:00,041 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:00,042 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:00,042 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:03,698 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:03,698 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:03,699 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:13,784 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:43:24,113 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:24,113 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:27,135 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:28,979 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:38,844 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:38,845 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:38,846 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:38,846 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:43,811 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:43,812 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:48,750 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:48,754 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:48,765 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:50,383 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:50,750 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:51,347 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:51,545 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:43:59,999 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:01,657 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:01,657 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:03,375 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:06,128 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:06,129 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:07,000 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:08,296 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:13,468 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:13,947 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:23,953 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:44:26,046 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:26,484 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:26,626 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:31,862 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:31,863 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:31,863 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:33,963 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:36,997 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:36,998 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:37,000 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:37,686 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:38,290 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:39,728 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:41,496 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:41,497 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:42,156 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:49,179 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:49,179 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:49,180 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:58,326 - [AGENT] - WARNING - Connection pool is full, discarding connection: uam-thermostat.onrender.com. Connection pool size: 10
+2026-08-18 23:44:58,326 - [AGENT] - WARNING - Connection pool is full, discarding connection: uam-thermostat.onrender.com. Connection pool size: 10
+2026-08-18 23:44:59,076 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:44:59,447 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:01,454 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:03,053 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:03,053 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:03,484 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:07,658 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:14,638 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:14,638 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:14,639 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:14,640 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:20,320 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:23,667 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:24,333 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:28,280 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:28,281 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:28,659 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:28,660 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:30,394 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:30,394 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:31,728 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:35,748 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:35,748 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:39,642 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:41,234 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:43,345 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:43,346 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:46,073 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:46,531 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:52,628 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:52,630 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:52,631 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:53,570 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:54,667 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:54,667 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:54,667 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:57,050 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:59,972 - [AGENT] - WARNING - Connection pool is full, discarding connection: uam-thermostat.onrender.com. Connection pool size: 10
+2026-08-18 23:45:59,974 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:45:59,974 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:46:04,596 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:46:04,847 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:46:04,848 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:46:06,504 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:46:08,043 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:46:09,158 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:46:10,415 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:46:10,418 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:46:10,559 - [AGENT] - WARNING - Connection pool is full, discarding connection: uam-thermostat.onrender.com. Connection pool size: 10
+2026-08-18 23:46:10,561 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:46:10,848 - [AGENT] - WARNING - Connection pool is full, discarding connection: uam-thermostat.onrender.com. Connection pool size: 10
+2026-08-18 23:46:10,849 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:46:12,219 - [AGENT] - WARNING - Connection pool is full, discarding connection: uam-thermostat.onrender.com. Connection pool size: 10
+2026-08-18 23:46:13,147 - [AGENT] - WARNING - Connection pool is full, discarding connection: uam-thermostat.onrender.com. Connection pool size: 10
+2026-08-18 23:46:13,918 - [AGENT] - WARNING - Connection pool is full, discarding connection: uam-thermostat.onrender.com. Connection pool size: 10
+2026-08-18 23:46:13,918 - [AGENT] - WARNING - Connection pool is full, discarding connection: uam-thermostat.onrender.com. Connection pool size: 10
+2026-08-18 23:46:13,920 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:46:13,921 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:46:14,055 - [AGENT] - WARNING - Connection pool is full, discarding connection: uam-thermostat.onrender.com. Connection pool size: 10
+2026-08-18 23:46:16,305 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:46:16,412 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:46:16,896 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:46:17,463 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:46:19,033 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:46:20,611 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:46:24,316 - [AGENT] - INFO - Arrêt demandé (Ctrl+C)
+2026-08-18 23:54:36,295 - [AGENT] - INFO - ============================================================
+2026-08-18 23:54:36,296 - [AGENT] - INFO - AGENT LOCAL - Thermostat UAM
+2026-08-18 23:54:36,296 - [AGENT] - INFO - ============================================================
+2026-08-18 23:54:36,297 - [AGENT] - INFO - Identifiant agent : DESKTOP-0RCK778
+2026-08-18 23:54:36,297 - [AGENT] - INFO - Serveur           : https://uam-thermostat.onrender.com
+2026-08-18 23:54:36,298 - [AGENT] - INFO - ============================================================
+2026-08-18 23:54:42,737 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:54:52,739 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:55:05,237 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:55:15,252 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:55:32,058 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:55:42,064 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:55:49,861 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:56:04,235 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:56:11,574 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:56:21,589 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:56:32,733 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:56:40,134 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:56:41,220 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:56:42,739 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:56:47,741 - [AGENT] - ERROR - Connexion au serveur impossible : Client is not in a disconnected state. Nouvelle tentative dans 5s...
+2026-08-18 23:56:50,502 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:56:58,039 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:57:08,114 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:57:08,392 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:57:22,453 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:57:28,411 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:57:38,424 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:57:43,425 - [AGENT] - ERROR - Connexion au serveur impossible : Client is not in a disconnected state. Nouvelle tentative dans 5s...
+2026-08-18 23:57:46,981 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:57:46,982 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:57:50,035 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:57:54,393 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:58:02,925 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:58:04,403 - [AGENT] - ERROR - Connexion au serveur impossible : One or more namespaces failed to connect. Nouvelle tentative dans 5s...
+2026-08-18 23:58:06,648 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:58:07,170 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:58:09,404 - [AGENT] - ERROR - Connexion au serveur impossible : Client is not in a disconnected state. Nouvelle tentative dans 5s...
+2026-08-18 23:58:14,404 - [AGENT] - ERROR - Connexion au serveur impossible : Client is not in a disconnected state. Nouvelle tentative dans 5s...
+2026-08-18 23:58:24,205 - [AGENT] - ERROR - packet queue is empty, aborting
+2026-08-18 23:58:36,643 - [AGENT] - ERROR - ❌ Échec de connexion au serveur : {'message': 'Connection rejected by server'}
+2026-08-18 23:58:38,085 - [AGENT] - INFO - Arrêt demandé (Ctrl+C)
+2026-08-19 00:22:36,441 - [AGENT] - INFO - ============================================================
+2026-08-19 00:22:36,442 - [AGENT] - INFO - AGENT LOCAL - Thermostat UAM
+2026-08-19 00:22:36,442 - [AGENT] - INFO - ============================================================
+2026-08-19 00:22:36,442 - [AGENT] - INFO - Identifiant agent : DESKTOP-0RCK778
+2026-08-19 00:22:36,442 - [AGENT] - INFO - Serveur           : https://uam-thermostat.onrender.com
+2026-08-19 00:22:36,442 - [AGENT] - INFO - ============================================================
+2026-08-19 00:22:42,185 - [AGENT] - INFO - Serveur : Connecté au serveur central en tant que 'DESKTOP-0RCK778'
+2026-08-19 00:22:42,186 - [AGENT] - INFO - ✅ Connecté au serveur central en tant que 'DESKTOP-0RCK778'
+2026-08-19 00:23:00,355 - [AGENT] - INFO - Ouverture du port COM9 pour user_2_1787095373_COM9...
+2026-08-19 00:23:02,359 - [AGENT] - INFO - ✅ Port COM9 ouvert avec succès (user_2_1787095373_COM9)
+2026-08-19 00:23:02,961 - [AGENT] - INFO - [COM9] ligne reçue : Mode change: none -> none
+2026-08-19 00:23:02,962 - [AGENT] - INFO - [COM9] ligne reçue : STATUS:none
+2026-08-19 00:23:02,964 - [AGENT] - INFO - [COM9] ligne reçue : DATA:47.73:25.00:0:none
+2026-08-19 00:23:02,965 - [AGENT] - INFO - [COM9] ligne reçue : DATA:66.77:25.00:63:none
+2026-08-19 00:23:03,568 - [AGENT] - INFO - [COM9] ligne reçue : Mode change: none -> none
+2026-08-19 00:23:06,012 - [AGENT] - INFO - [COM9] ligne reçue : DATA:66.24:25.00:63:none
+2026-08-19 00:23:08,468 - [AGENT] - INFO - [COM9] ligne reçue : Consigne definie: 25.00%
+2026-08-19 00:23:10,907 - [AGENT] - INFO - [COM9] ligne reçue : DATA:58.91:25.00:63:none
+2026-08-19 00:23:14,287 - [AGENT] - INFO - [COM9] ligne reçue : DATA:62.88:25.00:63:none
+2026-08-19 00:23:19,493 - [AGENT] - INFO - [COM9] ligne reçue : Consigne definie: 25.00%
+2026-08-19 00:23:21,063 - [AGENT] - INFO - [COM9] ligne reçue : Consigne definie: 25.00%
+2026-08-19 00:23:22,900 - [AGENT] - INFO - [COM9] ligne reçue : Consigne definie: 25.00%
+2026-08-19 00:23:24,441 - [AGENT] - INFO - [COM9] ligne reçue : DATA:61.81:25.00:63:none
+2026-08-19 00:23:28,110 - [AGENT] - INFO - [COM9] ligne reçue : DATA:60.87:25.00:63:none
+2026-08-19 00:23:28,874 - [AGENT] - INFO - 🔌 Connexion user_2_1787095373_COM9 fermée
+2026-08-19 00:23:28,876 - [AGENT] - INFO - Connexion user_2_1787095373_COM9 nettoyée (boucle terminée)
+2026-08-19 00:24:50,434 - [AGENT] - WARNING - ⚠️ Déconnecté du serveur central, tentative de reconnexion automatique...
+2026-08-19 00:24:59,745 - [AGENT] - INFO - Serveur : Connecté au serveur central en tant que 'DESKTOP-0RCK778'
+2026-08-19 00:24:59,745 - [AGENT] - INFO - ✅ Connecté au serveur central en tant que 'DESKTOP-0RCK778'
+2026-08-19 00:25:03,486 - [AGENT] - INFO - Serveur : Connecté au serveur central en tant que 'DESKTOP-0RCK778'
+2026-08-19 00:25:03,486 - [AGENT] - INFO - ✅ Connecté au serveur central en tant que 'DESKTOP-0RCK778'

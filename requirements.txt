@@ -33,3 +33,7 @@ eventlet==0.36.1
 
 # Serveur de production (Render/Railway) : voir Procfile
 gunicorn==22.0.0
+
+# Worker gevent pour gunicorn (compatible Python 3.14)
+gevent==24.11.1
+gevent-websocket==0.10.1

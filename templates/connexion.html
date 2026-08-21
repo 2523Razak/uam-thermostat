@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion - Thermostat_UAM</title>
@@ -52,6 +53,7 @@
 
             <!-- Formulaire de connexion -->
             <form method="POST" action="{{ url_for('connections') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="form-group">
                     <label for="identifiant">Email ou Matricule</label>
                     <div class="input-wrapper">
@@ -91,6 +93,7 @@
                     <p>Un lien de vérification a été envoyé à : <span class="email-highlight">{{ email }}</span></p>
                     
                     <form method="POST" action="{{ url_for('renvoyer_verification') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <input type="hidden" name="email" value="{{ email }}">
                         <button type="submit" class="btn-resend">
                             <i class="fas fa-redo"></i> Renvoyer le lien de vérification
@@ -106,7 +109,7 @@
             {% endif %}
 
             <div class="form-footer">
-                <a href="#" onclick="alert('Fonctionnalité de récupération bientôt disponible')">
+                <a href="#" onclick="appAlert('Fonctionnalité de récupération bientôt disponible', {type:'info'}); return false;">
                     <i class="fas fa-key"></i> Mot de passe oublié ?
                 </a>
             </div>
@@ -164,5 +167,8 @@
             });
         });
     </script>
+    <script src="{{ url_for('static', filename='js/security.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dialogs.js') }}"></script>
+
 </body>
 </html>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription</title>
@@ -206,6 +207,7 @@
             {% endwith %}
 
             <form method="POST" action="{{ url_for('inscription') }}" id="inscriptionForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     
                 <div class="form-row">
                     <div class="form-group half-width">
@@ -411,7 +413,7 @@
             
             // Vérifier la force du mot de passe
             if (!checkPasswordStrength(password)) {
-                alert('Veuillez choisir un mot de passe plus fort. Il doit contenir au moins 8 caractères, avec majuscules, minuscules, chiffres et caractères spéciaux.');
+                appAlert('Veuillez choisir un mot de passe plus fort. Il doit contenir au moins 8 caractères, avec majuscules, minuscules, chiffres et caractères spéciaux.', {type:'warning'});
                 e.preventDefault();
                 return false;
             }
@@ -419,27 +421,27 @@
             // Validation de l'email
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                alert('Veuillez entrer une adresse email valide');
+                appAlert('Veuillez entrer une adresse email valide', {type:'warning'});
                 e.preventDefault();
                 return false;
             }
             
             // Validation du matricule (au moins 3 caractères)
             if (matricule.length < 3) {
-                alert('Le matricule doit contenir au moins 3 caractères');
+                appAlert('Le matricule doit contenir au moins 3 caractères', {type:'warning'});
                 e.preventDefault();
                 return false;
             }
             
             // Validation du nom et prénom
             if (nom.length < 2) {
-                alert('Le nom doit contenir au moins 2 caractères');
+                appAlert('Le nom doit contenir au moins 2 caractères', {type:'warning'});
                 e.preventDefault();
                 return false;
             }
             
             if (prenom.length < 2) {
-                alert('Le prénom doit contenir au moins 2 caractères');
+                appAlert('Le prénom doit contenir au moins 2 caractères', {type:'warning'});
                 e.preventDefault();
                 return false;
             }
@@ -450,7 +452,7 @@
             const age = aujourdhui.getFullYear() - dateNaissance.getFullYear();
             
             if (age < 10) {
-                alert('Vous devez avoir au moins 10 ans pour vous inscrire');
+                appAlert('Vous devez avoir au moins 10 ans pour vous inscrire', {type:'warning'});
                 e.preventDefault();
                 return false;
             }
@@ -474,6 +476,9 @@
             }
         });
     </script>
+    <script src="{{ url_for('static', filename='js/security.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dialogs.js') }}"></script>
+
 
 </body>
 </html>

@@ -1,12 +1,7 @@
-# app.py - Version hébergée directement (le site tourne sur le serveur distant,
-# les cartes Arduino restent branchées en local et sont gérées par
-# agent_local/agent_arduino.py, relié ici via Socket.IO)
-#
-# IMPORTANT : eventlet.monkey_patch() DOIT être appelé avant tout autre import
-# (avant même Flask), sinon Flask-SocketIO + eventlet peuvent se comporter de
-# façon incohérente (blocages, threads non coopératifs).
-import eventlet
-eventlet.monkey_patch()
+# app.py - Version hébergée directement
+
+import gevent.monkey
+gevent.monkey.patch_all()
 
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, session, send_from_directory, send_file
 from flask_socketio import SocketIO
@@ -42,6 +37,8 @@ from controllers.historique_manager import HistoriqueManager
 from utils.audit_logger import audit_logger
 from controllers.connection_cleaner import ConnectionCleaner
 from utils.decorators import login_required, admin_required, connection_ownership_required
+from utils.security import hash_password, verify_password, login_rate_limiter
+from utils.reponses_format import build_qcm_display, selected_option_texts, format_student_answer
 
 # ============================================================================
 # CONFIGURATION
@@ -49,22 +46,28 @@ from utils.decorators import login_required, admin_required, connection_ownershi
 
 app = Flask(__name__)
 
+# Fonctions utilitaires exposées aux templates Jinja (affichage QCM/cases à cocher)
+app.jinja_env.globals['selected_option_texts'] = selected_option_texts
+app.jinja_env.globals['format_student_answer'] = format_student_answer
+
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
 
 # ============================================================================
-# HÉBERGEMENT DIRECT (le site tourne sur ce serveur, plus de tunnel HTTP)
+# HÉBERGEMENT DIRECT 
 # ============================================================================
-#
-# L'URL publique du site (utilisée par utils/email_utils.py pour construire
-# les liens de vérification/emails). À définir dans les variables
-# d'environnement du service Render/Railway, ex: https://uam-thermostat.onrender.com
+
 PUBLIC_BASE_URL = os.environ.get('PUBLIC_BASE_URL', 'http://localhost:5000')
 app.config['PUBLIC_TUNNEL_URL'] = PUBLIC_BASE_URL
 
-# Jeton partagé que l'agent local (agent_local/agent_arduino.py) doit
-# présenter pour pouvoir se connecter et piloter les cartes Arduino.
-# À définir aussi dans les variables d'environnement en production.
-AGENT_SHARED_SECRET = os.environ.get('AGENT_SHARED_SECRET', 'change-moi-en-production')
+AGENT_SHARED_SECRET = os.environ.get('AGENT_SHARED_SECRET', '')
+if not AGENT_SHARED_SECRET:
+    if os.environ.get('FLASK_ENV') == 'production' or os.environ.get('RENDER') or os.environ.get('RAILWAY_ENVIRONMENT'):
+        raise RuntimeError(
+            "AGENT_SHARED_SECRET manquante ! Définissez cette variable d'environnement "
+            "avant de démarrer en production (elle authentifie les agents Arduino)."
+        )
+    AGENT_SHARED_SECRET = secrets.token_hex(24)
+    print("⚠️  AGENT_SHARED_SECRET absente : secret temporaire généré pour le développement local.")
 app.config['AGENT_SHARED_SECRET'] = AGENT_SHARED_SECRET
 
 print(f"""
@@ -76,24 +79,51 @@ print(f"""
 ╚══════════════════════════════════════════════════════════════╝
 """)
 
-# Instance Socket.IO partagée par toute l'application (agents locaux +
-# éventuelles futures notifications temps réel côté navigateur).
-# async_mode="eventlet" est requis pour tenir des connexions WebSocket
-# persistantes sous gunicorn sur Render/Railway.
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode="gevent")
+socketio = SocketIO(app, cors_allowed_origins=os.environ.get('SOCKETIO_ALLOWED_ORIGINS', '*'), async_mode="gevent")
 
-# Configuration Flask db
-app.config['SECRET_KEY'] = 'votre_cle_secrete_tres_longue_ici'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///UAM_database.db'
+# ============================================================================
+# SÉCURITÉ - Configuration Flask / session / cookies
+# ============================================================================
+# IMPORTANT : en production (hébergement), définissez impérativement les
+# variables d'environnement SECRET_KEY, MAIL_PASSWORD, AGENT_SHARED_SECRET,
+# DATABASE_URL et ADMIN_DEFAULT_PASSWORD. Ne jamais committer de vrais
+# secrets dans le code source.
+
+_secret_key = os.environ.get('SECRET_KEY')
+if not _secret_key:
+    if os.environ.get('FLASK_ENV') == 'production' or os.environ.get('RENDER') or os.environ.get('RAILWAY_ENVIRONMENT'):
+        # En production, on refuse de démarrer avec une clé par défaut :
+        # cela permettrait de forger des sessions/cookies utilisateurs.
+        raise RuntimeError(
+            "SECRET_KEY manquante ! Définissez la variable d'environnement "
+            "SECRET_KEY avant de démarrer l'application en production."
+        )
+    # En local/dev uniquement : clé aléatoire régénérée à chaque démarrage
+    # (les sessions ne survivent pas à un redémarrage, ce qui est acceptable
+    # en développement).
+    _secret_key = secrets.token_hex(32)
+    print("⚠️  SECRET_KEY absente de l'environnement : clé temporaire générée pour le développement local.")
+
+app.config['SECRET_KEY'] = _secret_key
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///UAM_database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Configuration email
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
+# Cookies de session durcis
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SECURE'] = os.environ.get('FORCE_HTTPS_COOKIES', 'true').lower() != 'false'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=12)
+app.config['REMEMBER_COOKIE_HTTPONLY'] = True
+
+# Configuration email (les identifiants viennent OBLIGATOIREMENT de l'environnement)
+app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
+app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'razakboureimaissaadamou@gmail.com'
-app.config['MAIL_PASSWORD'] = 'hgwd ukac dshd kitu'
-app.config['MAIL_DEFAULT_SENDER'] = 'Thermostat_UAM <razakboureimaissaadamou@gmail.com>'
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', '')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD', '')
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER', 'Laboratoire FAST - UAM <no-reply@example.com>')
+if not app.config['MAIL_USERNAME'] or not app.config['MAIL_PASSWORD']:
+    print("⚠️  MAIL_USERNAME / MAIL_PASSWORD non définis : l'envoi d'emails échouera tant que ces variables d'environnement ne sont pas configurées.")
 
 # Configuration upload
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -108,15 +138,6 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 db.init_app(app)
 migrate = Migrate(app, db)
 
-# ----------------------------------------------------------------------------
-# Réglages SQLite pour mieux supporter les accès concurrents.
-# - WAL (Write-Ahead Logging) : les lectures ne bloquent plus les écritures
-#   et inversement (au lieu du mode par défaut où une écriture bloque tout).
-# - busy_timeout : si la base est momentanément verrouillée par une autre
-#   requête, on attend jusqu'à 10s au lieu de renvoyer immédiatement une
-#   erreur "database is locked".
-# Utile si plusieurs étudiants soumettent/consultent des TP en même temps.
-# ----------------------------------------------------------------------------
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 
@@ -130,6 +151,13 @@ def _regler_sqlite_pour_concurrence(dbapi_connection, connection_record):
         curseur.close()
 
 # ============================================================================
+# SÉCURITÉ - En-têtes HTTP, CSRF, limitation du débit
+# ============================================================================
+from utils.security import init_security
+
+init_security(app)
+
+# ============================================================================
 # INITIALISATION DU CONTRÔLEUR ARDUINO
 # ============================================================================
 
@@ -137,9 +165,10 @@ from controllers.arduino_controller import ArduinoController
 arduino_controller = ArduinoController(app, socketio)
 app.config['arduino_controller'] = arduino_controller
 
-# Hub Socket.IO : c'est le point d'entrée par lequel l'agent local
-# (agent_local/agent_arduino.py, sur la machine où sont branchées les
-# cartes Arduino) se connecte au serveur hébergé.
+# ============================================================================
+# CONFIGURATION SOCKET.IO POUR LES AGENTS ARDUINO
+# ============================================================================
+
 from sockets.agent_hub import register_agent_namespace
 register_agent_namespace(socketio, arduino_controller, AGENT_SHARED_SECRET)
 
@@ -279,6 +308,14 @@ def index():
 def connections():
     if request.method == 'POST':
         try:
+            # Protection anti brute-force : on bloque temporairement après
+            # plusieurs échecs consécutifs depuis la même adresse IP.
+            is_locked, seconds_left = login_rate_limiter.is_locked()
+            if is_locked:
+                minutes = max(1, seconds_left // 60)
+                flash(f'Trop de tentatives de connexion échouées. Réessayez dans environ {minutes} minute(s).', 'error')
+                return redirect(url_for('connections'))
+
             identifiant = request.form.get('identifiant')
             password = request.form.get('password')
             
@@ -291,6 +328,7 @@ def connections():
             ).first()
             
             if not utilisateur:
+                login_rate_limiter.register_failure()
                 flash('Identifiant ou mot de passe incorrect', 'error')
                 return redirect(url_for('connections'))
             
@@ -309,7 +347,18 @@ def connections():
                 
                 return redirect(url_for('connections'))
             
-            if utilisateur.password == password:
+            mot_de_passe_valide, doit_rehasher = verify_password(utilisateur.password, password)
+
+            if mot_de_passe_valide:
+                if doit_rehasher:
+                    # Migration transparente : l'ancien mot de passe en clair
+                    # est remplacé par un hash sécurisé dès la première
+                    # connexion réussie, sans aucune action de l'utilisateur.
+                    utilisateur.password = hash_password(password)
+                    db.session.commit()
+
+                login_rate_limiter.register_success()
+                session.clear()
                 session['user_id'] = utilisateur.id
                 session['user_nom'] = utilisateur.nom
                 session['user_prenom'] = utilisateur.prenom
@@ -323,6 +372,7 @@ def connections():
                 else:
                     return redirect(url_for('index'))
             else:
+                login_rate_limiter.register_failure()
                 flash('Identifiant ou mot de passe incorrect', 'error')
                 return redirect(url_for('connections'))
             
@@ -353,6 +403,10 @@ def inscription():
             
             if not all([nom, prenom, date_naissance_str, lieu_naissance, matricule, email, password]):
                 flash('Tous les champs sont obligatoires', 'error')
+                return render_template('inscription.html', est_admin=est_admin)
+            
+            if len(password) < 8:
+                flash('Le mot de passe doit contenir au moins 8 caractères', 'error')
                 return render_template('inscription.html', est_admin=est_admin)
             
             try:
@@ -388,7 +442,7 @@ def inscription():
                 organisation=organisation,
                 matricule=matricule,
                 email=email,
-                password=password,
+                password=hash_password(password),
                 statut=statut,
                 email_verifie=email_verifie,
                 token_verification=token_verification,
@@ -424,7 +478,7 @@ def inscription():
 @app.route('/verifier_email/<token>')
 def verifier_email(token):
     try:
-        print(f"\n🔍 VÉRIFICATION DU TOKEN: {token[:30]}...")
+        print(f"\n VÉRIFICATION DU TOKEN: {token[:30]}...")
         
         utilisateur = Utilisateur.query.filter_by(token_verification=token).first()
         
@@ -761,7 +815,7 @@ def reinitialiser_password():
             flash('Utilisateur non trouvé', 'error')
             return redirect(url_for('mot_de_passe_oublie'))
         
-        utilisateur.password = new_password
+        utilisateur.password = hash_password(new_password)
         db.session.commit()
         
         del reset_tokens[token]
@@ -885,6 +939,10 @@ def repondre_tp(tp_id):
         flash('Vous n\'êtes pas inscrit à ce TP', 'error')
         return redirect(url_for('liste_tps_etudiant'))
     
+    if tp.supprime:
+        flash('Ce TP a été supprimé par l\'enseignant et n\'accepte plus de soumissions', 'error')
+        return redirect(url_for('liste_tps_etudiant'))
+    
     if tp.date_limite and datetime.now() > tp.date_limite:
         flash('La date limite pour ce TP est dépassée', 'error')
         return redirect(url_for('liste_tps_etudiant'))
@@ -909,6 +967,10 @@ def continuer_tp(tp_id):
     
     if not inscription:
         flash('Vous n\'êtes pas inscrit à ce TP', 'error')
+        return redirect(url_for('liste_tps_etudiant'))
+    
+    if tp.supprime:
+        flash('Ce TP a été supprimé par l\'enseignant et n\'accepte plus de soumissions', 'error')
         return redirect(url_for('liste_tps_etudiant'))
     
     reponses_existantes = ReponseEtudiant.query.filter_by(
@@ -971,6 +1033,8 @@ def voir_correction(tp_id):
         pourcentage = (total_notes / total_points * 100) if total_points > 0 else 0
         today_date = datetime.now().strftime('%d/%m/%Y')
         
+        commentaire_general = inscription.commentaire_general if inscription else None
+        
         return render_template('correction_tp.html',
                              tp=tp,
                              etudiant=etudiant,
@@ -978,6 +1042,8 @@ def voir_correction(tp_id):
                              questions=questions,
                              reponses=reponses_etudiant,
                              reponses_dict=reponses_dict,
+                             qcm_display=build_qcm_display(questions),
+                             commentaire_general=commentaire_general,
                              total_points=total_points,
                              total_notes=total_notes,
                              pourcentage=pourcentage,
@@ -1074,66 +1140,84 @@ def liste_tps_etudiant():
     tps = []
     for inscription in inscriptions:
         tp = db.session.get(TP, inscription.tp_id)
-        if tp and tp.actif:
-            reponses = ReponseEtudiant.query.filter_by(
+        if not tp:
+            continue
+        
+        reponses = ReponseEtudiant.query.filter_by(
+            tp_id=tp.id,
+            etudiant_id=utilisateur.id
+        ).all()
+        reponses_count = len(reponses)
+        
+        # TP supprimé par l'enseignant (suppression douce) :
+        # - si l'étudiant n'a rien soumis, le TP disparaît de sa liste ;
+        # - s'il avait déjà soumis, il continue à le voir (lecture/correction
+        #   seule) avec sa note, mais ne peut plus rien y modifier.
+        if tp.supprime and reponses_count == 0:
+            continue
+        
+        if not tp.supprime and not tp.actif:
+            continue
+        
+        questions_count = tp.nombre_questions
+        a_soumis = (reponses_count == questions_count and questions_count > 0)
+        
+        statut = 'disponible'
+        
+        if reponses_count > 0 and not a_soumis:
+            statut = 'en_cours'
+        
+        if a_soumis:
+            statut = 'soumis'
+        
+        if tp.date_limite and datetime.now() > tp.date_limite:
+            statut = 'expire'
+        
+        if tp.supprime:
+            # Le TP n'existe plus côté enseignant : l'étudiant ne peut
+            # plus ni soumettre ni modifier, seulement consulter sa copie.
+            statut = 'supprime' if not a_soumis else statut
+        
+        jours_restants = 0
+        if tp.date_limite:
+            delta = tp.date_limite - datetime.now()
+            jours_restants = delta.days if delta.days > 0 else 0
+        
+        is_new = False
+        if tp.date_creation:
+            delta_nouveau = datetime.now() - tp.date_creation
+            is_new = delta_nouveau.days < 3
+        
+        date_soumission = None
+        if a_soumis:
+            derniere_reponse = ReponseEtudiant.query.filter_by(
                 tp_id=tp.id,
                 etudiant_id=utilisateur.id
-            ).all()
-            
-            reponses_count = len(reponses)
-            questions_count = tp.nombre_questions
-            a_soumis = (reponses_count == questions_count and questions_count > 0)
-            
-            statut = 'disponible'
-            
-            if reponses_count > 0 and not a_soumis:
-                statut = 'en_cours'
-            
-            if a_soumis:
-                statut = 'soumis'
-            
-            if tp.date_limite and datetime.now() > tp.date_limite:
-                statut = 'expire'
-            
-            jours_restants = 0
-            if tp.date_limite:
-                delta = tp.date_limite - datetime.now()
-                jours_restants = delta.days if delta.days > 0 else 0
-            
-            is_new = False
-            if tp.date_creation:
-                delta_nouveau = datetime.now() - tp.date_creation
-                is_new = delta_nouveau.days < 3
-            
-            date_soumission = None
-            if a_soumis:
-                derniere_reponse = ReponseEtudiant.query.filter_by(
-                    tp_id=tp.id,
-                    etudiant_id=utilisateur.id
-                ).order_by(ReponseEtudiant.date_soumission.desc()).first()
-                if derniere_reponse:
-                    date_soumission = derniere_reponse.date_soumission
-            
-            professeur_nom = 'Professeur'
-            if tp.created_by:
-                professeur = db.session.get(Utilisateur, tp.created_by)
-                if professeur:
-                    professeur_nom = f"{professeur.prenom} {professeur.nom}"
-            
-            tps.append({
-                'id': tp.id,
-                'titre': tp.titre,
-                'description': tp.description,
-                'module': tp.module,
-                'date_creation': tp.date_creation,
-                'date_limite': tp.date_limite,
-                'statut': statut,
-                'nombre_questions': questions_count,
-                'professeur_nom': professeur_nom,
-                'jours_restants': jours_restants,
-                'is_new': is_new,
-                'date_soumission': date_soumission
-            })
+            ).order_by(ReponseEtudiant.date_soumission.desc()).first()
+            if derniere_reponse:
+                date_soumission = derniere_reponse.date_soumission
+        
+        professeur_nom = 'Professeur'
+        if tp.created_by:
+            professeur = db.session.get(Utilisateur, tp.created_by)
+            if professeur:
+                professeur_nom = f"{professeur.prenom} {professeur.nom}"
+        
+        tps.append({
+            'id': tp.id,
+            'titre': tp.titre,
+            'description': tp.description,
+            'module': tp.module,
+            'date_creation': tp.date_creation,
+            'date_limite': tp.date_limite,
+            'statut': statut,
+            'supprime': tp.supprime,
+            'nombre_questions': questions_count,
+            'professeur_nom': professeur_nom,
+            'jours_restants': jours_restants,
+            'is_new': is_new,
+            'date_soumission': date_soumission
+        })
     
     tps_total = len(tps)
     tps_en_cours = len([tp for tp in tps if tp['statut'] == 'en_cours'])
@@ -1294,7 +1378,10 @@ def api_tps_statuts():
 def gestion_tps():
     try:
         utilisateur = db.session.get(Utilisateur, session.get('user_id'))
-        tps = TP.query.filter_by(created_by=utilisateur.id).all()
+        # Liste "active" : on masque les TP supprimés (suppression douce).
+        # Leurs copies restent accessibles via "Consulter Soumissions" /
+        # "Correction Rapide" tant que des étudiants ont soumis.
+        tps = TP.query.filter_by(created_by=utilisateur.id, supprime=False).all()
         
         total_etudiants = 0
         for tp in tps:
@@ -1761,6 +1848,10 @@ def soumettre_reponses(tp_id):
         if not inscription:
             return jsonify({'success': False, 'message': 'Non inscrit à ce TP'}), 403
         
+        tp = db.session.get(TP, tp_id)
+        if tp and tp.supprime:
+            return jsonify({'success': False, 'message': 'Ce TP a été supprimé par l\'enseignant et n\'accepte plus de soumissions'}), 403
+        
         ReponseEtudiant.query.filter_by(
             tp_id=tp_id,
             etudiant_id=etudiant_id
@@ -1914,8 +2005,6 @@ def verification_reussie():
 # ============================================================================
 # ANCIENNE ROUTE DE GESTION DU TUNNEL (obsolète depuis l'hébergement direct)
 # ============================================================================
-# Redirige vers la nouvelle page de supervision (/admin/logs) qui montre
-# désormais l'état des agents locaux à la place de l'ancien tunnel HTTP.
 
 @app.route('/admin/tunnel_management')
 @login_required
@@ -1936,11 +2025,15 @@ def create_default_admin():
         
         if admin_count == 0:
             print("👤 Création du compte administrateur par défaut...")
+            default_admin_password = os.environ.get('ADMIN_DEFAULT_PASSWORD')
+            if not default_admin_password:
+                default_admin_password = secrets.token_urlsafe(12)
+                print("⚠️  ADMIN_DEFAULT_PASSWORD non définie : un mot de passe aléatoire a été généré (voir ci-dessous).")
             default_admin = Utilisateur(
                 nom='Admin',
                 prenom='System',
-                email='admin@gmail.com',
-                password='Admin123',
+                email=os.environ.get('ADMIN_DEFAULT_EMAIL', 'admin@gmail.com'),
+                password=hash_password(default_admin_password),
                 matricule='ADMIN001',
                 organisation='UAM/FAST',
                 date_naissance=datetime(2024, 10, 20).date(),
@@ -1956,8 +2049,9 @@ def create_default_admin():
             print("=" * 50)
             print("✅ COMPTE ADMINISTRATEUR PAR DÉFAUT CRÉÉ")
             print("=" * 50)
-            print(f"   Email: admin@gmail.com")
-            print(f"   Mot de passe: Admin123")  
+            print(f"   Email: {default_admin.email}")
+            print(f"   Mot de passe: {default_admin_password}")
+            print("   ⚠️  Notez ce mot de passe MAINTENANT et changez-le dès la première connexion.")
             print("=" * 50)
         else:
             print("ℹ️ Un administrateur existe déjà, création ignorée.")
@@ -1970,21 +2064,81 @@ def create_default_admin():
         return 0
 
 
+def ensure_schema_upgrades():
+    """
+    Ajoute les colonnes introduites par les correctifs récents si elles
+    n'existent pas encore en base (db.create_all() ne modifie jamais les
+    tables déjà existantes). Fonctionne aussi bien avec SQLite qu'avec
+    PostgreSQL. Idempotent et sans danger à exécuter à chaque démarrage.
+    """
+    from sqlalchemy import inspect, text
+
+    inspecteur = inspect(db.engine)
+    colonnes_a_ajouter = {
+        'tps': [
+            ("supprime", "BOOLEAN NOT NULL DEFAULT 0"),
+            ("date_suppression", "TIMESTAMP NULL"),
+        ],
+        'etudiants_tps': [
+            ("commentaire_general", "TEXT"),
+            ("date_commentaire_general", "TIMESTAMP NULL"),
+        ],
+        'reponses_etudiants': [
+            ("commentaire_correction", "TEXT"),
+            ("date_correction", "TIMESTAMP NULL"),
+        ],
+    }
+
+    est_postgres = db.engine.url.get_backend_name().startswith('postgres')
+
+    for table, colonnes in colonnes_a_ajouter.items():
+        if table not in inspecteur.get_table_names():
+            continue
+        colonnes_existantes = {c['name'] for c in inspecteur.get_columns(table)}
+        for nom_colonne, definition_sqlite in colonnes:
+            if nom_colonne in colonnes_existantes:
+                continue
+            try:
+                if est_postgres:
+                    definition = definition_sqlite.replace("BOOLEAN NOT NULL DEFAULT 0", "BOOLEAN NOT NULL DEFAULT FALSE")
+                    definition = definition.replace("TIMESTAMP NULL", "TIMESTAMP")
+                else:
+                    definition = definition_sqlite
+                with db.engine.begin() as connexion:
+                    connexion.execute(text(f'ALTER TABLE {table} ADD COLUMN {nom_colonne} {definition}'))
+                print(f"🛠️  Colonne ajoutée : {table}.{nom_colonne}")
+            except Exception as e:
+                print(f"⚠️  Impossible d'ajouter {table}.{nom_colonne} (peut-être déjà présente) : {e}")
+
+
+def initialiser_application():
+    """
+    Initialisation exécutée à l'import du module, donc aussi bien en
+    développement local (python app.py) qu'en production sous gunicorn
+    (Procfile : `gunicorn app:app`), qui n'exécute jamais le bloc
+    `if __name__ == '__main__'`.
+    """
+    try:
+        with app.app_context():
+            db.create_all()
+            ensure_schema_upgrades()
+            create_default_admin()
+    except Exception as e:
+        print(f"❌ Erreur lors de l'initialisation de l'application/BD: {e}")
+        import traceback
+        traceback.print_exc()
+
+
+initialiser_application()
+
+
 # ============================================================================
 # POINT D'ENTRÉE PRINCIPAL
 # ============================================================================
-#
-# En production sur Render/Railway, ce bloc __main__ n'est PAS exécuté :
-# le service doit être démarré avec gunicorn + worker eventlet, qui importe
-# directement l'objet `app` (voir Procfile / commande de démarrage) afin de
-# supporter les connexions WebSocket persistantes des agents locaux.
-# Ce bloc sert uniquement aux tests en local (python app.py).
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
         print("✅ Tables créées/vérifiées")
-        create_default_admin()
 
         print("\n" + "="*60)
         print("🌐 MODE HÉBERGEMENT DIRECT (test local)")

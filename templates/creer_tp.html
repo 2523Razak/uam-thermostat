@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Création de Travail Pratique - Thermostat_UAM</title>
@@ -62,6 +63,7 @@
 
             <!-- Formulaire principal -->
             <form method="POST" action="{{ url_for('creer_tp') }}" id="form-creer-tp">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 
                 <!-- Étape 1: Informations du TP -->
                 <div id="etape-1" class="conteneur-etape active">
@@ -249,5 +251,8 @@
 
     <!-- Inclure le fichier JavaScript -->
     <script src="{{ url_for('static', filename='js/creer_tp.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/security.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dialogs.js') }}"></script>
+
 </body>
 </html>

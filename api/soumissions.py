@@ -391,6 +391,7 @@ def register_soumission_routes(app):
                     'compte_supprime': etudiant_supprime
                 },
                 'questions': questions_data,
+                'commentaire_general': inscription.commentaire_general if inscription else None,
                 'statistiques': {
                     'note_totale': round(note_totale, 2),
                     'note_max': round(note_max, 2),
@@ -780,7 +781,7 @@ def register_soumission_routes(app):
             tp_id = data.get('tp_id')
             etudiant_id = data.get('etudiant_id')
             corrections = data.get('corrections', [])
-            commentaire = data.get('commentaire', '').strip()
+            commentaire = (data.get('commentaire') or '').strip()
             
             print(f"📌 TP ID: {tp_id}")
             print(f"📌 Étudiant ID: {etudiant_id}")
@@ -854,6 +855,8 @@ def register_soumission_routes(app):
             for i, correction in enumerate(corrections):
                 question_id = correction.get('question_id')
                 note = correction.get('note')
+                commentaire_question = (correction.get('commentaire') or '').strip()
+                commentaire_question_fourni = 'commentaire' in correction
                 
                 print(f"\n  🔄 Correction {i+1}:")
                 print(f"     Question ID: {question_id}")
@@ -922,12 +925,19 @@ def register_soumission_routes(app):
                 if not question_repondu and note_valide > 0:
                     print(f"     ⚠️  Note attribuée à une question non répondue")
                 
-                # Enregistrer la correction
+                # Enregistrer la note
                 reponse.note = note_valide
                 
-                # Ajouter le commentaire (avec getattr pour compatibilité)
-                if commentaire and not getattr(reponse, 'commentaire_correction', None):
-                    reponse.commentaire_correction = commentaire
+                # Commentaire de correction PROPRE À CETTE QUESTION (distinct
+                # du commentaire général de la copie). On n'écrase que si le
+                # frontend a explicitement envoyé ce champ pour cette question
+                # (certaines interfaces, comme "Consulter Soumissions", ne
+                # gèrent que le commentaire général et ne doivent donc pas
+                # effacer un commentaire par question déjà enregistré ailleurs).
+                # Une chaîne vide explicitement envoyée permet d'effacer un
+                # commentaire existant.
+                if commentaire_question_fourni:
+                    reponse.commentaire_correction = commentaire_question or None
                 
                 # Ajouter la date de correction (avec getattr pour compatibilité)
                 if hasattr(reponse, 'date_correction'):
@@ -964,6 +974,11 @@ def register_soumission_routes(app):
             # Sauvegarder en base de données
             try:
                 print(f"\n💾 Tentative de commit avec {corrections_enregistrees} corrections...")
+                # Commentaire général de la copie (distinct des commentaires
+                # par question) : enregistré sur l'inscription de l'étudiant
+                # au TP, une seule fois par copie.
+                inscription.commentaire_general = commentaire or None
+                inscription.date_commentaire_general = datetime.now() if commentaire else inscription.date_commentaire_general
                 db.session.commit()
                 print("✅ Commit réussi!")
             except Exception as commit_error:

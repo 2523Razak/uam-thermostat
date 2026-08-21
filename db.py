@@ -63,6 +63,12 @@ class TP(db.Model):
     nombre_questions = db.Column(db.Integer, default=0, nullable=False)
     nombre_etudiants = db.Column(db.Integer, default=0, nullable=False)
     actif = db.Column(db.Boolean, default=True, nullable=False)
+    # Suppression douce : on ne supprime plus jamais physiquement un TP.
+    # Cela permet de conserver les soumissions et corrections des étudiants
+    # qui avaient déjà rendu leur travail, tout en masquant le TP pour les
+    # étudiants qui n'avaient rien soumis et pour la liste "active" du prof.
+    supprime = db.Column(db.Boolean, default=False, nullable=False)
+    date_suppression = db.Column(db.DateTime, nullable=True)
     
     def __repr__(self):
         return f'<TP {self.titre}>'
@@ -78,7 +84,8 @@ class TP(db.Model):
             'created_by': self.created_by,
             'nombre_questions': self.nombre_questions,
             'nombre_etudiants': self.nombre_etudiants,
-            'actif': self.actif
+            'actif': self.actif,
+            'supprime': self.supprime
         }
 
 class Question(db.Model):
@@ -148,6 +155,11 @@ class EtudiantTP(db.Model):
     tp_id = db.Column(db.Integer, db.ForeignKey('tps.id'), nullable=False)
     etudiant_id = db.Column(db.Integer, db.ForeignKey('utilisateurs.id'), nullable=False)
     date_inscription = db.Column(db.DateTime, default=datetime.now, nullable=False)
+    # Commentaire général du professeur pour l'ensemble de la copie de cet
+    # étudiant sur ce TP (distinct des commentaires par question stockés
+    # dans ReponseEtudiant.commentaire_correction).
+    commentaire_general = db.Column(db.Text, nullable=True)
+    date_commentaire_general = db.Column(db.DateTime, nullable=True)
     
     def __repr__(self):
         return f'<EtudiantTP TP:{self.tp_id} Etudiant:{self.etudiant_id}>'
@@ -157,7 +169,8 @@ class EtudiantTP(db.Model):
             'id': self.id,
             'tp_id': self.tp_id,
             'etudiant_id': self.etudiant_id,
-            'date_inscription': self.date_inscription.isoformat() if self.date_inscription else None
+            'date_inscription': self.date_inscription.isoformat() if self.date_inscription else None,
+            'commentaire_general': self.commentaire_general
         }
 
 class Notification(db.Model):

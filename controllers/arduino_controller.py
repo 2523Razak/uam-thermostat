@@ -1,26 +1,4 @@
-# controllers/arduino_controller.py - Contrôleur Arduino (VERSION HÉBERGÉE)
-#
-# CHANGEMENT D'ARCHITECTURE (hébergement du site sur un serveur distant) :
-#
-# Avant : ce contrôleur ouvrait lui-même le port série (pyserial) car Flask
-#         tournait sur la même machine que les cartes Arduino.
-#
-# Maintenant : Flask tourne sur un serveur distant (Render/Railway). Les cartes
-#         restent branchées sur la machine locale, gérées par un petit
-#         programme séparé : agent_local/agent_arduino.py. Ce contrôleur ne
-#         touche donc plus jamais pyserial directement : il communique avec
-#         l'agent via Socket.IO (canal WebSocket persistant, namespace /agent).
-#
-# Toutes les structures de données publiques (connexions_arduino,
-# donnees_temps_reel, historique_detaille, donnees_controle) et les méthodes
-# publiques utilisées ailleurs dans le code (api/arduino.py, app.py) gardent
-# EXACTEMENT le même nom et la même forme qu'avant, pour que le reste de
-# l'application n'ait presque rien à changer. Les seules différences :
-#   - les clés 'serial' et 'serial_lock' n'existent plus dans connexions_arduino
-#   - une clé 'agent_id' identifie quel agent local gère cette connexion
-#   - pour envoyer une commande brute à l'Arduino, utiliser la nouvelle
-#     méthode envoyer_commande_brute(id_connexion, commande) au lieu
-#     d'écrire directement sur port_serie.
+# controllers/arduino_controller.py
 
 import threading
 import time
@@ -31,27 +9,24 @@ from controllers.pid_controller import PIController, PIDController
 from utils.log_bus import log_bus
 
 # Durée après laquelle un agent est considéré hors-ligne s'il n'a pas donné
-# signe de vie (heartbeat ou liste de ports) - en secondes.
-AGENT_TIMEOUT = 20
+AGENT_TIMEOUT = 45
 
 # Durée après laquelle une connexion Arduino est considérée perdue si aucune
-# donnée (DATA:) n'a été reçue - en secondes. Doit rester généreux car le
-# trajet passe maintenant par Internet (agent -> serveur), pas juste USB.
-DONNEES_TIMEOUT = 15
+DONNEES_TIMEOUT = 30
 
 
 class ArduinoController:
     def __init__(self, app, socketio=None):
         self.app = app
-        self.socketio = socketio  # instance Flask-SocketIO, injectée depuis app.py
+        self.socketio = socketio
 
-        # --- États des connexions "logiques" Arduino (identiques à avant) ---
+        # États des connexions "logiques" Arduino
         self.connexions_arduino = {}
         self.donnees_temps_reel = {}
         self.historique_detaille = {}
         self.donnees_controle = {}
 
-        # --- Nouveauté : suivi des agents locaux connectés ---
+        # --- suivi des agents locaux connectés ---
         # agents[agent_id] = {'sid': ..., 'derniere_activite': ts, 'ports': [...]}
         self.agents = {}
         self.sid_vers_agent = {}          # sid Socket.IO -> agent_id
@@ -64,6 +39,10 @@ class ArduinoController:
     # ========================================================================
 
     def register_agent(self, agent_id, sid):
+        """Enregistre un agent. Retourne True si c'est une connexion 'nouvelle'
+        du point de vue du serveur (agent jamais vu, ou serveur redémarré et
+        ayant perdu toute trace de lui) - utilisé pour demander à l'agent de
+        libérer d'éventuels ports orphelins qu'il aurait gardés ouverts."""
         nouveau = agent_id not in self.agents
         self.agents[agent_id] = {
             'sid': sid,
@@ -76,21 +55,30 @@ class ArduinoController:
             log_bus.info('agent', f"Nouvel agent connecté : {agent_id}")
         else:
             log_bus.info('agent', f"Agent reconnecté : {agent_id}")
+        return nouveau
 
     def unregister_agent_by_sid(self, sid):
+
         agent_id = self.sid_vers_agent.pop(sid, None)
-        if agent_id and agent_id in self.agents:
-            del self.agents[agent_id]
-            log_bus.warning('agent', f"Agent déconnecté : {agent_id}")
+        if not agent_id:
+            return None
 
-            for id_connexion, connexion in self.connexions_arduino.items():
-                if connexion.get('agent_id') == agent_id and connexion.get('connecte'):
-                    connexion['connecte'] = False
-                    log_bus.warning('arduino', f"Connexion {id_connexion} coupée (agent {agent_id} hors-ligne)")
+        agent_info = self.agents.get(agent_id)
+        if not agent_info or agent_info.get('sid') != sid:
+            log_bus.info('agent', f"Déconnexion tardive ignorée pour {agent_id} (agent déjà reconnecté)")
+            return agent_id
 
-            for port, aid in list(self.port_vers_agent.items()):
-                if aid == agent_id:
-                    del self.port_vers_agent[port]
+        del self.agents[agent_id]
+        log_bus.warning('agent', f"Agent déconnecté : {agent_id}")
+
+        for id_connexion, connexion in self.connexions_arduino.items():
+            if connexion.get('agent_id') == agent_id and connexion.get('connecte'):
+                connexion['connecte'] = False
+                log_bus.warning('arduino', f"Connexion {id_connexion} coupée (agent {agent_id} hors-ligne)")
+
+        for port, aid in list(self.port_vers_agent.items()):
+            if aid == agent_id:
+                del self.port_vers_agent[port]
         return agent_id
 
     def touch_agent(self, agent_id):
@@ -128,14 +116,7 @@ class ArduinoController:
     # ========================================================================
 
     def lire_donnees_arduino(self, port, id_connexion, user_id=None, user_email=None):
-        """
-        Ouvre une connexion "logique" vers une carte Arduino branchée en local.
-        Ne lit plus le port série elle-même : elle demande à l'agent local
-        (celui qui a signalé ce port) d'ouvrir la connexion, et attend que
-        l'agent confirme via mettre_a_jour_statut_connexion().
-        Le nom est conservé pour éviter de toucher au code appelant
-        (api/arduino.py démarre cette méthode dans un thread).
-        """
+        
         agent_id = self.port_vers_agent.get(port)
 
         if not agent_id or agent_id not in self.agents:
@@ -223,11 +204,7 @@ class ArduinoController:
     # ========================================================================
 
     def traiter_ligne_arduino(self, id_connexion, ligne):
-        """
-        Reprend la logique de parsing qui était auparavant dans la boucle
-        while de lire_donnees_arduino. Appelée à chaque ligne série relayée
-        par l'agent local via l'événement Socket.IO 'agent:data'.
-        """
+        
         from controllers.code_personnalise import custom_code_manager
 
         if id_connexion not in self.connexions_arduino:
@@ -388,14 +365,13 @@ class ArduinoController:
             log_bus.error('arduino', f"Erreur traitement ligne ({id_connexion}) : {e}")
 
     # ========================================================================
-    # ENVOI DE COMMANDES (remplace les écritures directes sur port_serie)
+    # ENVOI DE COMMANDES 
     # ========================================================================
 
     def envoyer_commande_brute(self, id_connexion, commande):
         """
         Envoie une commande texte brute (ex: "SET:25.0\\n", "STOP\\n", "TEMP\\n")
         à la carte Arduino via l'agent local qui gère cette connexion.
-        Remplace tous les anciens `port_serie.write(commande.encode('utf-8'))`.
         """
         connexion = self.connexions_arduino.get(id_connexion)
         if not connexion or not connexion.get('connecte'):
@@ -414,7 +390,7 @@ class ArduinoController:
         return True
 
     def envoyer_commande_pwm_arduino(self, id_connexion, output):
-        """Envoie une commande PWM à l'Arduino (signature identique à l'ancienne version)"""
+        """Envoie une commande PWM à l'Arduino (output attendu entre 0 et 100)"""
         try:
             pwm_value = int((output / 100) * 255)
             pwm_value = max(0, min(255, pwm_value))
@@ -428,7 +404,7 @@ class ArduinoController:
         return False
 
     def envoyer_mode_arduino(self, id_connexion, mode):
-        """Envoie le mode de contrôle à l'Arduino (signature identique à l'ancienne version)"""
+        """Envoie le mode de contrôle à l'Arduino (ex: 'none', 'pi', 'pid', 'mpc', 'custom')"""
         try:
             commande = f"MODE:{mode}\n"
             if self.envoyer_commande_brute(id_connexion, commande):
@@ -439,7 +415,7 @@ class ArduinoController:
         return False
 
     # ========================================================================
-    # ENREGISTREMENT DES DONNÉES / HISTORIQUE (inchangé par rapport à l'original)
+    # ENREGISTREMENT DES DONNÉES / HISTORIQUE
     # ========================================================================
 
     def enregistrer_donnees_temps_reel(self, id_connexion, temperature, consigne, type_controleur, surveillance_active, controller_data=None):
@@ -621,7 +597,7 @@ class ArduinoController:
         log_bus.info('arduino', f"Événement {type_evenement} ({id_connexion})")
 
     # ========================================================================
-    # PORTS DISPONIBLES (proviennent maintenant des agents, pas de pyserial local)
+    # PORTS DISPONIBLES proviennent maintenant des agents, pas de pyserial local
     # ========================================================================
 
     def verifier_port_existe(self, nom_port):
@@ -636,7 +612,7 @@ class ArduinoController:
         return nom_port in ports_agent
 
     def obtenir_ports_disponibles(self):
-        """Agrège les ports Arduino détectés par tous les agents en ligne"""
+        """Agrège les ports Arduino détectés par tous les agents en ligne."""
         ports_trouves = []
         maintenant = time.time()
 
@@ -649,10 +625,11 @@ class ArduinoController:
             if (maintenant - info['derniere_activite']) > AGENT_TIMEOUT:
                 continue  # agent hors-ligne, on ignore ses ports (obsolètes)
             for port_info in info.get('ports', []):
+                physiquement_occupe = bool(port_info.get('en_utilisation'))
                 ports_trouves.append({
                     'port': port_info['port'],
                     'description': port_info.get('description', ''),
-                    'en_utilisation': port_info['port'] in ports_deja_connectes,
+                    'en_utilisation': physiquement_occupe or (port_info['port'] in ports_deja_connectes),
                     'agent_id': agent_id,
                 })
 
@@ -662,7 +639,7 @@ class ArduinoController:
         return ports_trouves
 
     def mettre_a_jour_disponibilite_ports(self):
-        """Recalcule 'en_utilisation' à partir des connexions actives (identique à l'original)"""
+        """Met à jour le statut 'en_utilisation' des ports selon les connexions actives."""
         tous_ports = self.obtenir_ports_disponibles()
 
         ports_utilises = []
@@ -671,20 +648,16 @@ class ArduinoController:
                 ports_utilises.append(connexion.get('port'))
 
         for info_port in tous_ports:
-            info_port['en_utilisation'] = info_port['port'] in ports_utilises
-
+            if info_port['port'] in ports_utilises:
+                info_port['en_utilisation'] = True
         return tous_ports
 
     # ========================================================================
-    # SURVEILLANCE PÉRIODIQUE (remplace verifier_connexions_actives d'origine)
+    # SURVEILLANCE PÉRIODIQUE DES CONNEXIONS ACTIVES
     # ========================================================================
 
     def verifier_connexions_actives(self):
-        """
-        Vérifie périodiquement :
-        - que l'agent responsable de chaque connexion est toujours en ligne
-        - qu'une donnée a bien été reçue récemment (sinon liaison figée)
-        """
+        #Vérifie périodiquement si les connexions Arduino sont toujours actives.
         try:
             maintenant = time.time()
             connexions_a_marquer_deconnectees = []

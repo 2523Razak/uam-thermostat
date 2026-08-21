@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liste des Inscrits - Thermostat_UAM</title>
@@ -895,7 +896,7 @@
         }
 
         // Fonction pour changer le statut d'un utilisateur (avec email)
-        function changerStatut(idUtilisateur, nouveauStatut) {
+        async function changerStatut(idUtilisateur, nouveauStatut) {
             console.log('Changer statut:', idUtilisateur, '->', nouveauStatut);
             
             let donnees = {
@@ -917,7 +918,10 @@
             // Afficher un message de confirmation
             const actionText = nouveauStatut === 'admin' ? 'nommer Administrateur' : 
                               nouveauStatut === 'bloque' ? 'bloquer' : 'définir comme User';
-            const confirmation = confirm(`Êtes-vous sûr de vouloir ${actionText} cet utilisateur ?\n\n✅ Un email de notification sera automatiquement envoyé à l'utilisateur.`);
+            const confirmation = await appConfirm(
+                `Êtes-vous sûr de vouloir ${actionText} cet utilisateur ?\n\nUn email de notification sera automatiquement envoyé à l'utilisateur.`,
+                { title: 'Confirmer le changement de statut', confirmLabel: 'Confirmer', danger: nouveauStatut === 'bloque' }
+            );
             
             if (!confirmation) {
                 return;
@@ -983,11 +987,14 @@
         }
 
         // Fonction pour supprimer un utilisateur
-        function supprimerUtilisateur(idUtilisateur) {
+        async function supprimerUtilisateur(idUtilisateur) {
             console.log('Supprimer utilisateur:', idUtilisateur);
             
             // Demander confirmation
-            const confirmation = confirm("⚠️ Êtes-vous sûr de vouloir supprimer définitivement cet utilisateur ?\n\nCette action est irréversible et supprimera toutes les données associées.");
+            const confirmation = await appConfirm(
+                "Êtes-vous sûr de vouloir supprimer définitivement cet utilisateur ?\n\nCette action est irréversible et supprimera toutes les données associées.",
+                { title: 'Suppression définitive', confirmLabel: 'Supprimer', danger: true }
+            );
             
             if (!confirmation) {
                 return;
@@ -1048,5 +1055,8 @@
             });
         }
     </script>
+    <script src="{{ url_for('static', filename='js/security.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dialogs.js') }}"></script>
+
 </body>
 </html>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Correction TP - Thermostat_UAM</title>
@@ -394,10 +395,31 @@
             accent-color: #2196f3;
         }
 
+        .commentaire-professeur-reel {
+            background: #fff8e1;
+            border-left: 4px solid #f9a825;
+            border-radius: 8px;
+            padding: 16px 18px;
+            margin-bottom: 16px;
+        }
+
+        .commentaire-professeur-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #e65100;
+            margin-bottom: 8px;
+        }
+
+        .commentaire-professeur-texte {
+            color: #37474f;
+            line-height: 1.6;
+            margin: 0;
+        }
+
         .option-item label, .option-text {
             flex: 1;
-            margin: 0;
-            cursor: default;
+            margin: 0;            cursor: default;
             font-weight: 500;
         }
 
@@ -996,42 +1018,63 @@
                         <div class="reponse-etudiant">
                             {% if reponse %}
                                 {% if question.type_question == 'qcm' %}
-                                    <!-- QCM : afficher les radios -->
+                                    <!-- QCM : afficher les vraies options avec le choix sélectionné -->
                                     <div class="options-list">
-                                        {% set options = ['A', 'B', 'C', 'D', 'E', 'F'] %}
-                                        {% for option in options[:4] %}
-                                            {% set is_selected = (reponse.reponse|string == option) or (reponse.reponse|string|upper == option) %}
-                                            <div class="option-item {% if is_selected %}selected{% endif %}">
-                                                <input type="radio" name="q{{ question.id }}" value="{{ option }}" {% if is_selected %}checked{% endif %} disabled>
-                                                <span class="option-letter">{{ option }}.</span>
-                                                <label>Option {{ option }}</label>
-                                                {% if is_selected %}
-                                                    <span class="selected-badge">
-                                                        <i class="fas fa-check-circle"></i> Votre choix
-                                                    </span>
-                                                {% endif %}
+                                        {% set qd = qcm_display.get(question.id) %}
+                                        {% set options = qd.options if qd and qd.options else [] %}
+                                        {% if options %}
+                                            {% for option_texte in options %}
+                                                {% set is_selected = option_texte in selected_option_texts('qcm', reponse.reponse) %}
+                                                <div class="option-item {% if is_selected %}selected{% endif %}">
+                                                    <input type="radio" name="q{{ question.id }}" {% if is_selected %}checked{% endif %} disabled>
+                                                    <label>{{ option_texte }}</label>
+                                                    {% if is_selected %}
+                                                        <span class="selected-badge">
+                                                            <i class="fas fa-check-circle"></i> Votre choix
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        {% elif reponse.reponse %}
+                                            <div class="option-item selected">
+                                                <i class="fas fa-check-circle"></i>
+                                                <label>{{ reponse.reponse }}</label>
+                                                <span class="selected-badge"><i class="fas fa-check-circle"></i> Votre choix</span>
                                             </div>
-                                        {% endfor %}
+                                        {% else %}
+                                            <p class="reponse-texte-empty">Aucune réponse</p>
+                                        {% endif %}
                                     </div>
                                     
                                 {% elif question.type_question == 'case_cocher' %}
-                                    <!-- Cases à cocher -->
+                                    <!-- Cases à cocher : afficher les vraies options avec les choix sélectionnés -->
                                     <div class="options-list">
-                                        {% set options = ['A', 'B', 'C', 'D'] %}
-                                        {% set reponse_str = reponse.reponse|string %}
-                                        {% for option in options %}
-                                            {% set is_selected = option in reponse_str %}
-                                            <div class="option-item {% if is_selected %}selected{% endif %}">
-                                                <input type="checkbox" name="q{{ question.id }}" value="{{ option }}" {% if is_selected %}checked{% endif %} disabled>
-                                                <span class="option-letter">{{ option }}.</span>
-                                                <label>Option {{ option }}</label>
-                                                {% if is_selected %}
-                                                    <span class="selected-badge">
-                                                        <i class="fas fa-check-circle"></i> Sélectionné
-                                                    </span>
-                                                {% endif %}
-                                            </div>
-                                        {% endfor %}
+                                        {% set qd = qcm_display.get(question.id) %}
+                                        {% set options = qd.options if qd and qd.options else [] %}
+                                        {% set selections = selected_option_texts('case_cocher', reponse.reponse) %}
+                                        {% if options %}
+                                            {% for option_texte in options %}
+                                                {% set is_selected = option_texte in selections %}
+                                                <div class="option-item {% if is_selected %}selected{% endif %}">
+                                                    <input type="checkbox" name="q{{ question.id }}" {% if is_selected %}checked{% endif %} disabled>
+                                                    <label>{{ option_texte }}</label>
+                                                    {% if is_selected %}
+                                                        <span class="selected-badge">
+                                                            <i class="fas fa-check-circle"></i> Sélectionné
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        {% elif selections %}
+                                            {% for texte in selections %}
+                                                <div class="option-item selected">
+                                                    <i class="fas fa-check-square"></i>
+                                                    <label>{{ texte }}</label>
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <p class="reponse-texte-empty">Aucune réponse</p>
+                                        {% endif %}
                                     </div>
                                     
                                 {% elif question.type_question == 'image_reponse' %}
@@ -1103,43 +1146,13 @@
                     </div>
                     
                     <!-- Réponse attendue -->
-                    {% if question.reponse_correcte %}
+                    {% if question.reponse_correcte and question.type_question not in ['qcm', 'case_cocher'] %}
                     <div class="reponse-section">
                         <div class="reponse-titre">
                             <i class="fas fa-check-circle"></i> RÉPONSE ATTENDUE
                         </div>
                         <div class="reponse-correcte">
-                            {% if question.type_question == 'qcm' %}
-                                <div class="options-list">
-                                    {% set option = question.reponse_correcte|string|upper %}
-                                    <div class="option-item correct">
-                                        <i class="fas fa-check-circle correct-icon"></i>
-                                        <span class="option-letter">{{ option }}.</span>
-                                        <span class="option-text">Option {{ option }}</span>
-                                        <span class="correct-badge">Bonne réponse</span>
-                                    </div>
-                                </div>
-                            {% elif question.type_question == 'case_cocher' %}
-                                <div class="options-list">
-                                    {% set reponse_correcte_str = question.reponse_correcte|string %}
-                                    {% set options = ['A', 'B', 'C', 'D'] %}
-                                    {% for option in options %}
-                                        {% set is_correct = option in reponse_correcte_str %}
-                                        <div class="option-item {% if is_correct %}correct{% endif %}">
-                                            {% if is_correct %}
-                                                <i class="fas fa-check-circle correct-icon"></i>
-                                            {% else %}
-                                                <i class="far fa-circle"></i>
-                                            {% endif %}
-                                            <span class="option-letter">{{ option }}.</span>
-                                            <span class="option-text">Option {{ option }}</span>
-                                            {% if is_correct %}
-                                                <span class="correct-badge">Bonne réponse</span>
-                                            {% endif %}
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            {% elif question.type_question == 'image_reponse' %}
+                            {% if question.type_question == 'image_reponse' %}
                                 <div class="reponse-texte-wrapper">
                                     <p class="reponse-texte">{{ question.reponse_correcte }}</p>
                                 </div>
@@ -1179,6 +1192,15 @@
         <section class="commentaire-general">
             <h3><i class="fas fa-comments"></i> APPRÉCIATION GÉNÉRALE</h3>
             <div class="commentaire-content">
+                {% if commentaire_general %}
+                    <div class="commentaire-professeur-reel">
+                        <div class="commentaire-professeur-header">
+                            <i class="fas fa-comment-dots"></i>
+                            <strong>Commentaire de votre enseignant :</strong>
+                        </div>
+                        <p class="commentaire-professeur-texte">{{ commentaire_general|replace('\n', '<br>')|safe }}</p>
+                    </div>
+                {% else %}
                 {% if pourcentage >= 80 %}
                     <p class="appreciation-excellent">
                         <i class="fas fa-trophy"></i>
@@ -1221,6 +1243,7 @@
                         {% endif %}
                     </ul>
                 </div>
+                {% endif %}
                 
                 <!-- Signature du professeur -->
                 <div class="signature-enseignant">
@@ -1323,5 +1346,8 @@
             }
         });
     </script>
+    <script src="{{ url_for('static', filename='js/security.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dialogs.js') }}"></script>
+
 </body>
 </html>

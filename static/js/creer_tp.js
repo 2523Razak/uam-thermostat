@@ -60,7 +60,7 @@
             if (numeroEtape === 1) {
                 const titre = document.getElementById('titre').value.trim();
                 if (!titre) {
-                    alert('Veuillez saisir un titre pour le TP');
+                    appAlert('Veuillez saisir un titre pour le TP', { type: 'warning' });
                     document.getElementById('titre').focus();
                     return false;
                 }
@@ -123,22 +123,44 @@
             
             // Validation du formulaire final
             document.getElementById('form-creer-tp').addEventListener('submit', function(e) {
+                e.preventDefault();
                 if (!validerFormulaireFinal()) {
-                    e.preventDefault();
+                    return;
+                }
+                
+                const form = e.target;
+                const hiddenInput = document.getElementById('etudiants-hidden');
+                const titre = document.getElementById('titre').value.trim();
+                
+                function demanderConfirmationFinale() {
+                    appConfirm(`Êtes-vous prêt à créer le TP "${titre}" ?`, {
+                        title: 'Créer le TP',
+                        confirmLabel: 'Créer',
+                        type: 'info'
+                    }).then(function(ok) {
+                        if (ok) {
+                            hiddenInput.value = JSON.stringify(etudiants);
+                            document.getElementById('btn-creer-final').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Création...';
+                            document.getElementById('btn-creer-final').disabled = true;
+                            form.submit();
+                        }
+                    });
+                }
+                
+                // Pas de validation obligatoire pour les étudiants - le TP peut être créé sans étudiants
+                if (etudiants.length === 0) {
+                    appConfirm(
+                        'Aucun étudiant n\'a été ajouté à ce TP. Vous pourrez ajouter des étudiants plus tard. Souhaitez-vous tout de même créer le TP ?',
+                        { title: 'Aucun étudiant ajouté', confirmLabel: 'Créer quand même', type: 'warning' }
+                    ).then(function(ok) {
+                        if (ok) {
+                            demanderConfirmationFinale();
+                        } else {
+                            changerEtape(2);
+                        }
+                    });
                 } else {
-                    // Ajouter les étudiants au formulaire
-                    const hiddenInput = document.getElementById('etudiants-hidden');
-                    hiddenInput.value = JSON.stringify(etudiants);
-                    
-                    // Afficher un message de confirmation
-                    const titre = document.getElementById('titre').value.trim();
-                    if (confirm(`Êtes-vous prêt à créer le TP "${titre}" ?`)) {
-                        // Le formulaire sera soumis normalement
-                        document.getElementById('btn-creer-final').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Création...';
-                        document.getElementById('btn-creer-final').disabled = true;
-                    } else {
-                        e.preventDefault();
-                    }
+                    demanderConfirmationFinale();
                 }
             });
         });
@@ -163,12 +185,18 @@
         
         // Supprimer un étudiant
         function supprimerEtudiant(index) {
-            if (confirm('Retirer cet étudiant de la liste des participants ?')) {
-                const etudiant = etudiants[index];
-                etudiants.splice(index, 1);
-                mettreAJourListeEtudiants();
-                afficherNotification(`Étudiant "${etudiant}" retiré de la liste`, 'info');
-            }
+            appConfirm('Retirer cet étudiant de la liste des participants ?', {
+                title: 'Retirer un étudiant',
+                confirmLabel: 'Retirer',
+                danger: true
+            }).then(function(ok) {
+                if (ok) {
+                    const etudiant = etudiants[index];
+                    etudiants.splice(index, 1);
+                    mettreAJourListeEtudiants();
+                    afficherNotification(`Étudiant "${etudiant}" retiré de la liste`, 'info');
+                }
+            });
         }
         
         // Mettre à jour la liste des étudiants
@@ -236,7 +264,7 @@
             }
         }
         
-        // Valider le formulaire final
+        // Valider le formulaire final (validations synchrones uniquement)
         function validerFormulaireFinal() {
             const titre = document.getElementById('titre').value.trim();
             const confirmCreator = document.getElementById('confirm-creator').checked;
@@ -250,14 +278,6 @@
             if (!confirmCreator) {
                 afficherNotification('Veuillez confirmer que vous êtes l\'enseignant responsable', 'error');
                 return false;
-            }
-            
-            // Pas de validation obligatoire pour les étudiants - le TP peut être créé sans étudiants
-            if (etudiants.length === 0) {
-                if (!confirm('Aucun étudiant n\'a été ajouté à ce TP. Vous pourrez ajouter des étudiants plus tard. Souhaitez-vous tout de même créer le TP ?')) {
-                    changerEtape(2);
-                    return false;
-                }
             }
             
             return true;
