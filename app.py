@@ -84,23 +84,15 @@ socketio = SocketIO(app, cors_allowed_origins=os.environ.get('SOCKETIO_ALLOWED_O
 # ============================================================================
 # SÉCURITÉ - Configuration Flask / session / cookies
 # ============================================================================
-# IMPORTANT : en production (hébergement), définissez impérativement les
-# variables d'environnement SECRET_KEY, MAIL_PASSWORD, AGENT_SHARED_SECRET,
-# DATABASE_URL et ADMIN_DEFAULT_PASSWORD. Ne jamais committer de vrais
-# secrets dans le code source.
 
 _secret_key = os.environ.get('SECRET_KEY')
 if not _secret_key:
     if os.environ.get('FLASK_ENV') == 'production' or os.environ.get('RENDER') or os.environ.get('RAILWAY_ENVIRONMENT'):
-        # En production, on refuse de démarrer avec une clé par défaut :
-        # cela permettrait de forger des sessions/cookies utilisateurs.
+
         raise RuntimeError(
             "SECRET_KEY manquante ! Définissez la variable d'environnement "
             "SECRET_KEY avant de démarrer l'application en production."
         )
-    # En local/dev uniquement : clé aléatoire régénérée à chaque démarrage
-    # (les sessions ne survivent pas à un redémarrage, ce qui est acceptable
-    # en développement).
     _secret_key = secrets.token_hex(32)
     print("⚠️  SECRET_KEY absente de l'environnement : clé temporaire générée pour le développement local.")
 
@@ -115,7 +107,10 @@ app.config['SESSION_COOKIE_SECURE'] = os.environ.get('FORCE_HTTPS_COOKIES', 'tru
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=12)
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
 
-# Configuration email (les identifiants viennent OBLIGATOIREMENT de l'environnement)
+# ============================================================================
+# CONFIGURATION EMAIL
+# ============================================================================
+
 app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
 app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
 app.config['MAIL_USE_TLS'] = True
@@ -308,8 +303,7 @@ def index():
 def connections():
     if request.method == 'POST':
         try:
-            # Protection anti brute-force : on bloque temporairement après
-            # plusieurs échecs consécutifs depuis la même adresse IP.
+            
             is_locked, seconds_left = login_rate_limiter.is_locked()
             if is_locked:
                 minutes = max(1, seconds_left // 60)
@@ -351,9 +345,6 @@ def connections():
 
             if mot_de_passe_valide:
                 if doit_rehasher:
-                    # Migration transparente : l'ancien mot de passe en clair
-                    # est remplacé par un hash sécurisé dès la première
-                    # connexion réussie, sans aucune action de l'utilisateur.
                     utilisateur.password = hash_password(password)
                     db.session.commit()
 
@@ -2025,10 +2016,9 @@ def create_default_admin():
         
         if admin_count == 0:
             print("👤 Création du compte administrateur par défaut...")
-            default_admin_password = os.environ.get('ADMIN_DEFAULT_PASSWORD')
-            if not default_admin_password:
-                default_admin_password = secrets.token_urlsafe(12)
-                print("⚠️  ADMIN_DEFAULT_PASSWORD non définie : un mot de passe aléatoire a été généré (voir ci-dessous).")
+            default_admin_password = 'Admin123'
+            print("⚠️  Mot de passe par défaut 'Admin123' utilisé pour le compte admin.")
+            print("⚠️  Pensez à le changer après la première connexion.")
             default_admin = Utilisateur(
                 nom='Admin',
                 prenom='System',
