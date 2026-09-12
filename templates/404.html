@@ -3,13 +3,41 @@
 <head>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page non trouvée - 404</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/errors.css') }}">
 </head>
-<body>
-    <h1>404 - Page non trouvée</h1>
-    <p>La page que vous cherchez n'existe pas.</p>
-    <a href="{{ url_for('index') }}">Retour à l'accueil</a>    <script src="{{ url_for('static', filename='js/security.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/dialogs.js') }}"></script>
+<body class="error-404">
 
+    <div class="error-card">
+        <div class="error-logos">
+            <img src="{{ url_for('static', filename='image/uam.jpg') }}" alt="UAM">
+            <img src="{{ url_for('static', filename='image/fast.jpg') }}" alt="FAST">
+        </div>
+
+        <div class="error-icon"><i class="fa-solid fa-compass"></i></div>
+        <div class="error-code">404</div>
+        <h1 class="error-title">Page introuvable</h1>
+        <p class="error-text">
+            La page que vous cherchez n'existe pas, a été déplacée, ou l'adresse comporte
+            une erreur. Vérifiez le lien ou repartez depuis l'accueil.
+        </p>
+
+        <div class="error-actions">
+            <a href="{{ url_for('index') }}" class="error-btn error-btn-primary">
+                <i class="fa-solid fa-house"></i> Retour à l'accueil
+            </a>
+            <a href="{{ url_for('a_propos') }}" class="error-btn error-btn-secondary">
+                <i class="fa-solid fa-circle-info"></i> À propos
+            </a>
+        </div>
+
+        <p class="error-footer">Plateforme Thermostat Intelligent — UAM / FAST</p>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/security.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dialogs.js') }}"></script>
 </body>
 </html>
