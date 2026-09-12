@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>À propos — Plateforme de régulation thermique à distance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="static/css/a_propos.css">
+</head>
+<body>
+
+  <!-- ===== Barre supérieure ===== -->
+  <header class="topbar">
+    <div class="topbar-mark">
+      <img src="static/image/uam.jpg" alt="UAM">
+      <img src="static/image/fast.jpg" alt="FAST">
+      <span class="mark-text">UAM <em>·</em> FAST</span>
+    </div>
+    <a href="#" class="btn-outline" id="backToLogin">
+      <i class="fa-solid fa-arrow-left-long"></i> Retour à la connexion
+    </a>
+  </header>
+
+  <!-- ===== Hero ===== -->
+  <section class="hero">
+    <p class="hero-eyebrow">Mémoire de Master · Physique, option EEA</p>
+    <h1 class="hero-title">Plateforme de pilotage à distance<br>d'un système thermique à régulation PID</h1>
+    <p class="hero-subtitle">
+      Une application web qui relie un navigateur à un montage électronique réel, pour régler,
+      mesurer et corriger une expérience de régulation de température à distance.
+    </p>
+    <div class="hero-rule"></div>
+  </section>
+
+  <!-- ===== 1. Présentation ===== -->
+  <section class="feature reveal">
+    <div class="feature-media">
+      <img src="static/image/thermostat.png" alt="Montage de régulation thermique">
+    </div>
+    <div class="feature-text">
+      <h2>Une expérience réelle, pilotée à distance</h2>
+      <p>
+        La plateforme met à disposition un véritable montage de régulation thermique : une carte Arduino
+        reliée à un capteur de température et à un élément chauffant. À la différence d'une simulation,
+        chaque commande envoyée depuis le navigateur agit sur le matériel installé au laboratoire, et
+        chaque mesure affichée provient directement du capteur.
+      </p>
+      <p>
+        L'accès se fait depuis n'importe quel poste connecté à Internet, sans installation particulière :
+        la création d'un compte et une vérification par email suffisent pour commencer une session de travail.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== 2. Architecture de communication ===== -->
+  <section class="section diagram-section reveal">
+    <h2 class="section-title">Quatre composants, une communication continue</h2>
+    <p>
+      Le navigateur affiche l'interface et transmet les actions de l'utilisateur au serveur par des
+      requêtes HTTP. Développé avec Flask, le serveur traite ces requêtes, applique les règles de
+      régulation et interroge la base de données qui conserve les comptes, les travaux pratiques et
+      les résultats des expériences. Pour atteindre le matériel, le serveur reste connecté en permanence
+      à un agent logiciel installé sur l'ordinateur du laboratoire. Cet agent relaie les commandes à la
+      carte Arduino par liaison série, puis renvoie les mesures de température dans l'autre sens. Cette
+      séparation permet d'héberger le serveur n'importe où, tout en laissant le matériel physique au
+      laboratoire.
+    </p>
+    <div class="diagram-frame">
+      <img src="static/image/architecture_communication.png" alt="Schéma de communication entre le navigateur, le serveur Flask, la base de données, l'agent local et la carte Arduino">
+    </div>
+  </section>
+
+  <!-- ===== 3. Cycle de régulation ===== -->
+  <section class="feature reveal">
+    <div class="feature-media">
+      <img src="static/image/cycle_regulation.jpeg" alt="Cycle de régulation : consigne utilisateur, calcul PID, commande chauffage, mesure température">
+    </div>
+    <div class="feature-text">
+      <h2>Un cycle de régulation continu</h2>
+      <p>
+        Une fois connecté à la carte, l'utilisateur définit une consigne de température et choisit un
+        mode de régulation : boucle ouverte, proportionnel-intégral, ou proportionnel-intégral-dérivé.
+        Le serveur calcule la commande à appliquer, la transmet au montage, puis reçoit en retour la
+        température mesurée pour ajuster la commande suivante.
+      </p>
+      <p>
+        Ce cycle se répète plusieurs fois par seconde et alimente en direct la courbe affichée à l'écran,
+        pour un retour visuel proche du temps réel sur le comportement du système.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== 4. Comment ça fonctionne (étapes) ===== -->
+  <section class="section reveal">
+    <h2 class="section-title">Comment ça fonctionne</h2>
+    <p class="section-intro">Quatre étapes relient votre navigateur au montage physique installé au laboratoire.</p>
+
+    <ol class="timeline">
+      <li class="timeline-step">
+        <span class="step-number">I</span>
+        <div class="step-body">
+          <h3>Un agent veille sur le matériel</h3>
+          <p>Un petit logiciel, installé sur l'ordinateur du laboratoire branché à l'Arduino, reste connecté en
+          permanence au serveur. C'est lui qui donne accès au montage, où que vous soyez.</p>
+        </div>
+      </li>
+      <li class="timeline-step">
+        <span class="step-number">II</span>
+        <div class="step-body">
+          <h3>Vous prenez la main</h3>
+          <p>Depuis la page de contrôle, vous choisissez une consigne de température et un mode de régulation
+          (boucle ouverte, PI ou PID). Votre commande part vers le serveur, puis vers l'agent, puis vers l'Arduino.</p>
+        </div>
+      </li>
+      <li class="timeline-step">
+        <span class="step-number">III</span>
+        <div class="step-body">
+          <h3>La mesure revient en direct</h3>
+          <p>Le capteur de température renvoie sa mesure en continu. La courbe affichée à l'écran se met à jour
+          plusieurs fois par seconde, pour un retour visuel proche du temps réel.</p>
+        </div>
+      </li>
+      <li class="timeline-step">
+        <span class="step-number">IV</span>
+        <div class="step-body">
+          <h3>Le travail pratique se poursuit en ligne</h3>
+          <p>Une fois la manipulation terminée, vous répondez aux questions du TP directement sur la plateforme.
+          Votre enseignant corrige, commente et note votre copie depuis son propre espace.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ===== 4. Objectifs ===== -->
+  <section class="feature reverse reveal">
+    <div class="feature-media">
+      <img src="static/image/etude.png" alt="Objectifs pédagogiques">
+    </div>
+    <div class="feature-text">
+      <h2>Objectifs du projet</h2>
+      <ul class="check-list">
+        <li>Donner accès à un système de contrôle réel, sans dépendre du nombre de cartes disponibles au laboratoire.</li>
+        <li>Permettre l'observation en direct du comportement d'un système régulé, avec enregistrement et export des données.</li>
+        <li>Intégrer le pilotage de l'expérience à un parcours pédagogique complet : travaux pratiques, questions, corrections et suivi des notes.</li>
+        <li>Proposer une base réutilisable par d'autres établissements souhaitant héberger leurs propres expériences.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== 5. Avantages ===== -->
+  <section class="feature reveal">
+    <div class="feature-media">
+      <img src="static/image/travail.png" alt="Avantages de la plateforme">
+    </div>
+    <div class="feature-text">
+      <h2>Ce que la plateforme apporte</h2>
+      <ul class="check-list">
+        <li>Un accès simultané pour plusieurs utilisateurs, chacun disposant de sa propre session de travail.</li>
+        <li>Une disponibilité qui ne dépend plus des horaires du laboratoire ni du nombre de postes équipés.</li>
+        <li>Une traçabilité complète des manipulations et des résultats, utile à l'évaluation comme au suivi pédagogique.</li>
+        <li>Une architecture modulaire, qui permet de faire évoluer l'interface, les travaux pratiques ou le matériel sans reconstruire l'application.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== Aperçu / galerie ===== -->
+  <section class="section reveal">
+    <h2 class="section-title">Interfaces principales</h2>
+    <div class="plate-grid" id="plateGrid">
+      <figure class="plate" data-full="static/image/thermostat.png">
+        <div class="plate-frame">
+          <img src="static/image/thermostat.png" alt="Page de contrôle du thermostat">
+        </div>
+        <figcaption>Contrôle de l'expérience : consigne, mode de régulation et courbe en direct.</figcaption>
+      </figure>
+
+      <figure class="plate" data-full="static/image/travail.png">
+        <div class="plate-frame">
+          <img src="static/image/travail.png" alt="Liste des travaux pratiques">
+        </div>
+        <figcaption>Travaux pratiques disponibles pour un étudiant.</figcaption>
+      </figure>
+
+      <figure class="plate" data-full="static/image/code.png">
+        <div class="plate-frame">
+          <img src="static/image/code.png" alt="Interface de correction">
+        </div>
+        <figcaption>Correction, avec commentaires par question et appréciation générale.</figcaption>
+      </figure>
+
+      <figure class="plate" data-full="static/image/livre.png">
+        <div class="plate-frame">
+          <img src="static/image/livre.png" alt="Bibliothèque de documentation">
+        </div>
+        <figcaption>Bibliothèque de documentation mise à disposition des étudiants.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===== Auteur ===== -->
+  <section class="section reveal">
+    <h2 class="section-title">Auteur</h2>
+    <div class="author-card">
+      <div class="author-photo">
+        <i class="fa-solid fa-user"></i>
+      </div>
+      <div class="author-body">
+        <h3 class="author-name">Boureima Issa Adamou Razak</h3>
+        <p class="author-role">Étudiant en Master Physique, option Électronique, Électrotechnique et Automatisme (EEA) — Université Abdou Moumouni, Niamey</p>
+        <p class="author-bio">
+          Ce projet est mon mémoire de fin d'études. Je l'ai conçu et développé de bout en bout — matériel,
+          serveur, interface — pour répondre à une difficulté que j'ai moi-même connue comme étudiant :
+          l'accès limité au matériel de laboratoire. Cette plateforme est une proposition concrète pour
+          rendre les travaux pratiques de contrôle plus accessibles dans les universités techniques du Niger.
+        </p>
+        <div class="author-links">
+          <a href="#"><i class="fa-regular fa-envelope"></i> Email</a>
+          <a href="#"><i class="fa-brands fa-github"></i> GitHub</a>
+          <a href="#"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="contributors-title">Remerciements</h3>
+    <div class="contributors-grid">
+      <div class="contributor-card">
+        <div class="contributor-avatar"><i class="fa-solid fa-user"></i></div>
+        <h4 class="contributor-name">Nom Prénom</h4>
+        <p class="contributor-role">Rôle / encadrement</p>
+        <p class="contributor-bio">Courte biographie ou nature de la contribution apportée au projet.</p>
+      </div>
+      <div class="contributor-card">
+        <div class="contributor-avatar"><i class="fa-solid fa-user"></i></div>
+        <h4 class="contributor-name">Nom Prénom</h4>
+        <p class="contributor-role">Rôle / encadrement</p>
+        <p class="contributor-bio">Courte biographie ou nature de la contribution apportée au projet.</p>
+      </div>
+      <div class="contributor-card">
+        <div class="contributor-avatar"><i class="fa-solid fa-user"></i></div>
+        <h4 class="contributor-name">Nom Prénom</h4>
+        <p class="contributor-role">Rôle / encadrement</p>
+        <p class="contributor-bio">Courte biographie ou nature de la contribution apportée au projet.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Pied de page ===== -->
+  <footer class="site-footer">
+    <div class="footer-marks">
+      <img src="static/image/uam.jpg" alt="UAM">
+      <img src="static/image/fast.jpg" alt="FAST">
+    </div>
+    <p>Université Abdou Moumouni · Faculté des Sciences et Techniques<br>Mémoire de Master EEA — Promotion 2023/2025</p>
+  </footer>
+
+  <!-- ===== Lightbox ===== -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
+    <img src="" alt="" id="lightboxImg">
+    <p class="lightbox-caption" id="lightboxCaption"></p>
+  </div>
+
+  <script src="static/js/a_propos.js"></script>
+</body>
+</html>
