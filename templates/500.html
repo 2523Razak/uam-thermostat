@@ -3,13 +3,41 @@
 <head>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Erreur serveur - 500</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/errors.css') }}">
 </head>
-<body>
-    <h1>500 - Erreur interne du serveur</h1>
-    <p>Une erreur est survenue. Veuillez réessayer plus tard.</p>
-    <a href="{{ url_for('index') }}">Retour à l'accueil</a>    <script src="{{ url_for('static', filename='js/security.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/dialogs.js') }}"></script>
+<body class="error-500">
 
+    <div class="error-card">
+        <div class="error-logos">
+            <img src="{{ url_for('static', filename='image/uam.jpg') }}" alt="UAM">
+            <img src="{{ url_for('static', filename='image/fast.jpg') }}" alt="FAST">
+        </div>
+
+        <div class="error-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="error-code">500</div>
+        <h1 class="error-title">Erreur interne du serveur</h1>
+        <p class="error-text">
+            Une erreur inattendue est survenue de notre côté. Réessayez dans un instant ;
+            si le problème persiste, contactez un administrateur de la plateforme.
+        </p>
+
+        <div class="error-actions">
+            <a href="{{ url_for('index') }}" class="error-btn error-btn-primary">
+                <i class="fa-solid fa-house"></i> Retour à l'accueil
+            </a>
+            <a href="{{ url_for('a_propos') }}" class="error-btn error-btn-secondary">
+                <i class="fa-solid fa-circle-info"></i> À propos
+            </a>
+        </div>
+
+        <p class="error-footer">Plateforme Thermostat Intelligent — UAM / FAST</p>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/security.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dialogs.js') }}"></script>
 </body>
 </html>
