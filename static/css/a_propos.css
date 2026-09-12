@@ -1,5 +1,5 @@
 /* =====================================================================
-   À PROPOS — identité académique (papier ivoire / encre indigo / laiton)
+   À PROPOS
    ===================================================================== */
 
 :root {
@@ -214,43 +214,6 @@ ul { list-style: none; }
   background: var(--brass);
 }
 
-/* ---------- Diagramme d'architecture (SVG) ---------- */
-.node-box { fill: #fff; stroke: var(--line); stroke-width: 1.5; }
-.node-box--main { fill: var(--indigo); stroke: var(--indigo); }
-.node-box--dark { fill: var(--indigo-deep); stroke: var(--indigo-deep); }
-.node-box--sub { fill: var(--indigo-soft); stroke: var(--line); }
-
-.node-label {
-  font-family: 'Poppins', sans-serif;
-  font-size: 15px;
-  font-weight: 500;
-  fill: var(--indigo);
-  text-anchor: middle;
-  dominant-baseline: middle;
-}
-.node-label--light { fill: #fff; }
-.node-label--small { font-size: 12px; fill: var(--indigo); }
-
-.link { stroke: var(--brass); stroke-width: 1.6; }
-.link-label {
-  font-family: 'Poppins', sans-serif;
-  font-size: 11.5px;
-  fill: var(--ink-soft);
-  text-anchor: start;
-}
-
-/* ---------- Diagramme du cycle de régulation ---------- */
-.loop-track { fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 3 6; }
-.loop-node { fill: var(--indigo-soft); stroke: var(--brass); stroke-width: 1.5; }
-.loop-label {
-  font-family: 'Poppins', sans-serif;
-  font-size: 11.5px;
-  fill: var(--indigo);
-  text-anchor: middle;
-  dominant-baseline: middle;
-}
-.loop-arrow { fill: none; stroke: var(--brass); stroke-width: 1.6; }
-
 /* ---------- Sections génériques (galerie, auteur) ---------- */
 .section {
   max-width: 1080px;
@@ -326,46 +289,6 @@ figcaption {
 .author-links a { font-size: 14px; color: var(--indigo); display: inline-flex; align-items: center; gap: 6px; transition: color 0.2s ease; }
 .author-links a:hover { color: var(--brass); }
 
-/* ---------- Contributeurs ---------- */
-.contributors-title {
-  font-size: 18px;
-  margin-top: 44px;
-  margin-bottom: 22px;
-  padding-top: 32px;
-  border-top: 1px solid var(--line);
-}
-
-.contributors-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-
-.contributor-card {
-  text-align: center;
-  padding: 28px 20px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: #fff;
-  transition: border-color 0.25s ease, transform 0.25s ease;
-}
-
-.contributor-card:hover { border-color: var(--brass); transform: translateY(-3px); }
-
-.contributor-avatar {
-  width: 64px; height: 64px;
-  margin: 0 auto 16px;
-  border-radius: 50%;
-  background: var(--indigo-soft);
-  color: var(--indigo);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 24px;
-}
-
-.contributor-name { font-family: 'Fraunces', serif; font-size: 16px; color: var(--indigo); margin-bottom: 4px; }
-.contributor-role { font-size: 12.5px; color: var(--brass); margin-bottom: 10px; }
-.contributor-bio { font-size: 13.5px; color: var(--ink-soft); line-height: 1.6; }
-
 /* ---------- Pied de page ---------- */
 .site-footer { text-align: center; padding: 40px 24px 56px; border-top: 1px solid var(--line); }
 .footer-marks { display: flex; justify-content: center; gap: 14px; margin-bottom: 16px; }
@@ -425,7 +348,6 @@ figcaption {
   .plate-grid { grid-template-columns: 1fr; }
   .author-card { flex-direction: column; align-items: center; text-align: center; }
   .author-bio { text-align: left; }
-  .contributors-grid { grid-template-columns: 1fr; }
   .timeline { padding-left: 26px; }
   .step-number { left: -40px; }
 }
