@@ -84,15 +84,23 @@ socketio = SocketIO(app, cors_allowed_origins=os.environ.get('SOCKETIO_ALLOWED_O
 # ============================================================================
 # SÉCURITÉ - Configuration Flask / session / cookies
 # ============================================================================
+# IMPORTANT : en production (hébergement), définissez impérativement les
+# variables d'environnement SECRET_KEY, MAIL_PASSWORD, AGENT_SHARED_SECRET,
+# DATABASE_URL et ADMIN_DEFAULT_PASSWORD. Ne jamais committer de vrais
+# secrets dans le code source.
 
 _secret_key = os.environ.get('SECRET_KEY')
 if not _secret_key:
     if os.environ.get('FLASK_ENV') == 'production' or os.environ.get('RENDER') or os.environ.get('RAILWAY_ENVIRONMENT'):
-
+        # En production, on refuse de démarrer avec une clé par défaut :
+        # cela permettrait de forger des sessions/cookies utilisateurs.
         raise RuntimeError(
             "SECRET_KEY manquante ! Définissez la variable d'environnement "
             "SECRET_KEY avant de démarrer l'application en production."
         )
+    # En local/dev uniquement : clé aléatoire régénérée à chaque démarrage
+    # (les sessions ne survivent pas à un redémarrage, ce qui est acceptable
+    # en développement).
     _secret_key = secrets.token_hex(32)
     print("⚠️  SECRET_KEY absente de l'environnement : clé temporaire générée pour le développement local.")
 
@@ -107,10 +115,7 @@ app.config['SESSION_COOKIE_SECURE'] = os.environ.get('FORCE_HTTPS_COOKIES', 'tru
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=12)
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
 
-# ============================================================================
-# CONFIGURATION EMAIL
-# ============================================================================
-
+# Configuration email (les identifiants viennent OBLIGATOIREMENT de l'environnement)
 app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
 app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
 app.config['MAIL_USE_TLS'] = True
@@ -303,7 +308,8 @@ def index():
 def connections():
     if request.method == 'POST':
         try:
-            
+            # Protection anti brute-force : on bloque temporairement après
+            # plusieurs échecs consécutifs depuis la même adresse IP.
             is_locked, seconds_left = login_rate_limiter.is_locked()
             if is_locked:
                 minutes = max(1, seconds_left // 60)
@@ -345,6 +351,9 @@ def connections():
 
             if mot_de_passe_valide:
                 if doit_rehasher:
+                    # Migration transparente : l'ancien mot de passe en clair
+                    # est remplacé par un hash sécurisé dès la première
+                    # connexion réussie, sans aucune action de l'utilisateur.
                     utilisateur.password = hash_password(password)
                     db.session.commit()
 
@@ -372,6 +381,10 @@ def connections():
             print(f"Erreur connexion: {e}")
     
     return render_template('connections.html')
+
+@app.route('/a-propos')
+def a_propos():
+    return render_template('a_propos.html')
 
 @app.route('/inscription', methods=['GET', 'POST'])
 def inscription():
@@ -2016,9 +2029,10 @@ def create_default_admin():
         
         if admin_count == 0:
             print("👤 Création du compte administrateur par défaut...")
-            default_admin_password = 'Admin123'
-            print("⚠️  Mot de passe par défaut 'Admin123' utilisé pour le compte admin.")
-            print("⚠️  Pensez à le changer après la première connexion.")
+            default_admin_password = os.environ.get('ADMIN_DEFAULT_PASSWORD')
+            if not default_admin_password:
+                default_admin_password = secrets.token_urlsafe(12)
+                print("⚠️  ADMIN_DEFAULT_PASSWORD non définie : un mot de passe aléatoire a été généré (voir ci-dessous).")
             default_admin = Utilisateur(
                 nom='Admin',
                 prenom='System',
@@ -2120,6 +2134,57 @@ def initialiser_application():
 
 
 initialiser_application()
+
+
+# ============================================================================
+# GESTIONNAIRES D'ERREURS (403 / 404 / 500)
+# ============================================================================
+# Les templates 403.html, 404.html et 500.html existaient déjà dans le
+# projet mais n'étaient reliés à aucun @app.errorhandler : Flask affichait
+# donc sa page d'erreur par défaut. Les handlers ci-dessous les activent,
+# avec la même logique que le gestionnaire CSRF (utils/security.py) : une
+# requête API reçoit du JSON, une navigation classique reçoit la page HTML.
+
+def _souhaite_reponse_json():
+    """Détecte si la requête en erreur attend une réponse JSON (API) plutôt qu'une page HTML."""
+    return (
+        request.path.startswith('/api/')
+        or request.accept_mimetypes.best == 'application/json'
+        or request.is_json
+    )
+
+@app.errorhandler(403)
+def erreur_403(e):
+    if _souhaite_reponse_json():
+        return jsonify({
+            'success': False,
+            'message': "Vous n'avez pas l'autorisation d'accéder à cette ressource.",
+            'error': 'forbidden'
+        }), 403
+    return render_template('403.html'), 403
+
+@app.errorhandler(404)
+def erreur_404(e):
+    if _souhaite_reponse_json():
+        return jsonify({
+            'success': False,
+            'message': "Ressource introuvable.",
+            'error': 'not_found'
+        }), 404
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def erreur_500(e):
+    # On annule toute transaction en cours pour éviter de laisser la
+    # session de base de données dans un état incohérent après l'erreur.
+    db.session.rollback()
+    if _souhaite_reponse_json():
+        return jsonify({
+            'success': False,
+            'message': "Une erreur interne est survenue. Veuillez réessayer plus tard.",
+            'error': 'server_error'
+        }), 500
+    return render_template('500.html'), 500
 
 
 # ============================================================================
