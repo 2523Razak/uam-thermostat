@@ -105,7 +105,13 @@ if not _secret_key:
     print("⚠️  SECRET_KEY absente de l'environnement : clé temporaire générée pour le développement local.")
 
 app.config['SECRET_KEY'] = _secret_key
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///UAM_database.db')
+
+# Adaptation pour PostgreSQL Render
+db_url = os.environ.get('DATABASE_URL', 'sqlite:///UAM_database.db')
+if db_url and db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Cookies de session durcis
