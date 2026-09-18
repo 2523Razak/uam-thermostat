@@ -24,6 +24,7 @@ flask-migrate==4.0.4
 psycopg2-binary==2.9.6
 apscheduler==3.10.4
 requests==2.33.1
+psycopg2-binary
 
 # Communication temps réel avec l'agent local (cartes Arduino)
 flask-socketio==5.3.6
