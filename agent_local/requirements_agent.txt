@@ -1,0 +1,9 @@
+# agent_local/requirements_agent.txt
+# À installer sur la machine locale où sont branchées les cartes Arduino
+# (PAS sur le serveur Render/Railway - lui utilise requirements.txt)
+#
+#   pip install -r requirements_agent.txt
+
+pyserial==3.5
+python-socketio[client]==5.11.2
+websocket-client==1.8.0
