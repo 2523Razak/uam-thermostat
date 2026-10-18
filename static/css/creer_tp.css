@@ -1,0 +1,520 @@
+/* creer_tp.css */
+
+/* ===== RÉINITIALISATION ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ===== STYLES GÉNÉRAUX ===== */
+.corps-page {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #2c3e50;
+}
+
+.conteneur-principal {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+/* ===== EN-TÊTE ACADÉMIQUE ===== */
+.en-tete-academique {
+    background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+    color: white;
+    padding: 25px 30px;
+    border-bottom: 4px solid #ffc107;
+}
+
+.titre-page {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sous-titre-page {
+    font-size: 0.95rem;
+    opacity: 0.9;
+    font-weight: 400;
+}
+
+.badge-institution {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-top: 8px;
+    font-weight: 500;
+}
+
+/* ===== CONTENU PRINCIPAL ===== */
+.contenu-principal {
+    padding: 30px;
+}
+
+/* ===== INDICATEUR DE PROGRESSION ===== */
+.indicateur-progression {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+    position: relative;
+}
+
+.indicateur-progression::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 50px;
+    right: 50px;
+    height: 2px;
+    background: #e0e0e0;
+    z-index: 1;
+}
+
+.etape-progression {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    flex: 1;
+}
+
+.cercle-etape {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+    font-weight: 600;
+    color: #757575;
+    transition: all 0.3s ease;
+}
+
+.etape-progression.active .cercle-etape {
+    background: #1a237e;
+    border-color: #1a237e;
+    color: white;
+    transform: scale(1.1);
+}
+
+.etape-progression.completed .cercle-etape {
+    background: #4caf50;
+    border-color: #4caf50;
+    color: white;
+}
+
+.label-etape {
+    font-size: 0.85rem;
+    color: #757575;
+    font-weight: 500;
+}
+
+.etape-progression.active .label-etape {
+    color: #1a237e;
+    font-weight: 600;
+}
+
+/* ===== CONTENEURS D'ÉTAPE ===== */
+.conteneur-etape {
+    display: none;
+    animation: fadeIn 0.5s ease;
+}
+
+.conteneur-etape.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== CARTE DE CONTENU ===== */
+.carte-contenu {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 25px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 25px;
+}
+
+.titre-section {
+    font-size: 1.3rem;
+    color: #1a237e;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ===== GROUPES DE FORMULAIRES ===== */
+.groupe-formulaire {
+    margin-bottom: 25px;
+}
+
+.groupe-formulaire label {
+    display: block;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.groupe-formulaire label .requis {
+    color: #d32f2f;
+    margin-left: 3px;
+}
+
+.controle-formulaire {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1.5px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.controle-formulaire:focus {
+    outline: none;
+    border-color: #1a237e;
+    box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
+}
+
+.controle-formulaire.textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.indice-formulaire {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 6px;
+    font-style: italic;
+}
+
+/* ===== SECTION ÉTUDIANTS ===== */
+.section-etudiants {
+    background: #f0f7ff;
+    border: 1px solid #cce5ff;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.entete-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.compteur-etudiants {
+    background: #1a237e;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* ===== BOUTONS ===== */
+.bouton {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.bouton-principal {
+    background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+    color: white;
+}
+
+.bouton-principal:hover {
+    background: linear-gradient(135deg, #283593 0%, #303f9f 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(26, 35, 126, 0.2);
+}
+
+.bouton-secondaire {
+    background: #6c757d;
+    color: white;
+}
+
+.bouton-secondaire:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+.bouton-success {
+    background: linear-gradient(135deg, #2e7d32 0%, #388e3c 100%);
+    color: white;
+}
+
+.bouton-success:hover {
+    background: linear-gradient(135deg, #388e3c 0%, #43a047 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(46, 125, 50, 0.2);
+}
+
+.bouton-ajouter {
+    background: #1976d2;
+    color: white;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+/* ===== LISTE DES ÉTUDIANTS ===== */
+.liste-etudiants {
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background: white;
+    margin-top: 15px;
+}
+
+.etudiant-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid #f1f1f1;
+    transition: background-color 0.2s;
+}
+
+.etudiant-item:last-child {
+    border-bottom: none;
+}
+
+.etudiant-item:hover {
+    background-color: #f8f9fa;
+}
+
+.identifiant-etudiant {
+    font-family: 'Courier New', monospace;
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.bouton-supprimer {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.bouton-supprimer:hover {
+    background: #f8d7da;
+    color: #c82333;
+}
+
+/* ===== ZONE DE SAISIE EN MASSE ===== */
+.zone-saisie-masse {
+    margin-top: 25px;
+}
+
+.zone-saisie-masse label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #2c3e50;
+}
+
+.zone-saisie-masse textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1.5px solid #dee2e6;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    min-height: 100px;
+    resize: vertical;
+}
+
+.indice-saisie {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* ===== BARRE DE NAVIGATION ===== */
+.barre-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    border-top: 1px solid #e9ecef;
+    background: #f8f9fa;
+}
+
+/* ===== MESSAGES D'ALERTE ===== */
+.message-alerte {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.message-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.message-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.message-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.message-warning {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+/* ===== ÉTAT VIDE ===== */
+.etat-vide {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+}
+
+.icone-vide {
+    font-size: 3rem;
+    color: #dee2e6;
+    margin-bottom: 15px;
+}
+
+/* ===== CHARGEMENT ===== */
+.chargement {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+.chargement.active {
+    display: flex;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #1a237e;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ===== VERSION MOBILE ===== */
+@media (max-width: 768px) {
+    .contenu-principal {
+        padding: 20px;
+    }
+    
+    .indicateur-progression {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .indicateur-progression::before {
+        display: none;
+    }
+    
+    .etape-progression {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
+    }
+    
+    .cercle-etape {
+        margin: 0;
+        min-width: 40px;
+    }
+    
+    .barre-navigation {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .barre-navigation > div {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .bouton {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .entete-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}

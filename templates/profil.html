@@ -1,0 +1,207 @@
+{% extends "barmenu.html" %}
+
+{% block title %}Mon Profil{% endblock %}
+
+{% block page_styles %}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Lien vers le fichier CSS spécifique -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profil.css') }}">
+    <title>Mon Profil</title>
+{% endblock %}
+
+{% block content %}
+    <div class="content">
+        <div class="conteneur-principal">
+            <!-- Carte verte du haut -->
+            <div class="carte-profil-verte">
+                <div class="zone-photo">
+                    <img id="gravatar-avatar" src="" alt="Avatar" class="photo-ronde">
+                </div>
+
+                <div class="zone-infos">
+                    <h1>{{ session.get('user_prenom', '') }} {{ session.get('user_nom', '') }}</h1>
+                    <div class="email-info">
+                        <i class="far fa-envelope"></i> <span id="current-email">{{ session.get('user_email', '') }}</span>
+                    </div>
+
+                    <div class="liste-badges">
+                        <div class="badge" id="statut-badge">
+                            <!-- Le contenu sera rempli par JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="zone-boutons">
+                        <button class="bouton-blanc" onclick="afficherFormulaireMdp()">
+                            <i class="fas fa-key"></i> Changer le mot de passe
+                        </button>
+                        <button class="bouton-blanc" onclick="afficherFormulaireEmail()">
+                            <i class="fas fa-envelope"></i> Changer l'email
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4 Cartes d'informations -->
+            <div class="ligne-options">
+                <!-- Organisation -->
+                <div class="carte-option bordure-verte">
+                    <div class="carre-icone fond-vert">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <div class="texte-option">
+                        <h2>Organisation</h2>
+                        <div class="info-value" id="info-organisation">Chargement...</div>
+                    </div>
+                </div>
+
+                <!-- Matricule -->
+                <div class="carte-option bordure-bleue">
+                    <div class="carre-icone fond-bleu">
+                        <i class="fas fa-id-card"></i>
+                    </div>
+                    <div class="texte-option">
+                        <h2>Matricule</h2>
+                        <div class="info-value" id="info-matricule">Chargement...</div>
+                    </div>
+                </div>
+
+                <!-- Date de naissance -->
+                <div class="carte-option bordure-orange">
+                    <div class="carre-icone fond-orange">
+                        <i class="fas fa-birthday-cake"></i>
+                    </div>
+                    <div class="texte-option">
+                        <h2>Date de naissance</h2>
+                        <div class="info-value" id="info-date-naissance">Chargement...</div>
+                    </div>
+                </div>
+
+                <!-- Lieu de naissance -->
+                <div class="carte-option bordure-rouge">
+                    <div class="carre-icone fond-rouge">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="texte-option">
+                        <h2>Lieu de naissance</h2>
+                        <div class="info-value" id="info-lieu-naissance">Chargement...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overlay pour les formulaires -->
+        <div id="formulaire-overlay" class="formulaire-overlay" onclick="fermerFormulaire()"></div>
+
+        <!-- Formulaire pour changer le mot de passe -->
+        <div id="formulaire-mdp" class="formulaire-modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-key"></i> Changer le mot de passe</h3>
+                <button class="btn-fermer" onclick="fermerFormulaire()">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div id="message-mdp" class="form-message"></div>
+                
+                <div class="form-group">
+                    <label for="ancien-mdp">
+                        <i class="fas fa-lock"></i>
+                        Ancien mot de passe
+                    </label>
+                    <input type="password" id="ancien-mdp" placeholder="Entrez votre mot de passe actuel">
+                    <div id="ancien-mdp-error" class="validation-message validation-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="nouveau-mdp">
+                        <i class="fas fa-key"></i>
+                        Nouveau mot de passe
+                    </label>
+                    <input type="password" id="nouveau-mdp" placeholder="Créez un nouveau mot de passe">
+                    <div id="nouveau-mdp-error" class="validation-message validation-error"></div>
+                    
+                    <!-- Indicateur de force du mot de passe -->
+                    <div class="password-strength">
+                        <div id="strength-meter" class="strength-meter"></div>
+                    </div>
+                    <div id="strength-label" class="strength-label"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmation-mdp">
+                        <i class="fas fa-check-circle"></i>
+                        Confirmer le mot de passe
+                    </label>
+                    <input type="password" id="confirmation-mdp" placeholder="Retapez votre nouveau mot de passe">
+                    <div id="confirmation-mdp-error" class="validation-message validation-error"></div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-modal btn-annuler" onclick="fermerFormulaire()">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+                <button class="btn-modal btn-valider" onclick="changerMotDePasse()" id="btn-valider-mdp">
+                    <i class="fas fa-check"></i> Valider
+                </button>
+            </div>
+        </div>
+
+        <!-- Formulaire pour changer l'email -->
+        <div id="formulaire-email" class="formulaire-modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-envelope"></i> Changer l'adresse email</h3>
+                <button class="btn-fermer" onclick="fermerFormulaire()">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div id="message-email" class="form-message"></div>
+                
+                <div class="form-group">
+                    <label for="mot-de-passe-email">
+                        <i class="fas fa-lock"></i>
+                        Mot de passe actuel
+                    </label>
+                    <input type="password" id="mot-de-passe-email" placeholder="Entrez votre mot de passe actuel">
+                    <div id="mot-de-passe-email-error" class="validation-message validation-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="nouvel-email">
+                        <i class="fas fa-envelope"></i>
+                        Nouvel email
+                    </label>
+                    <input type="email" id="nouvel-email" placeholder="exemple@domaine.com">
+                    <div id="nouvel-email-error" class="validation-message validation-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmation-email">
+                        <i class="fas fa-check-circle"></i>
+                        Confirmer l'email
+                    </label>
+                    <input type="email" id="confirmation-email" placeholder="Confirmez votre nouvel email">
+                    <div id="confirmation-email-error" class="validation-message validation-error"></div>
+                </div>
+                
+                <div class="form-message info">
+                    <i class="fas fa-info-circle"></i>
+                    Un email de confirmation sera envoyé à votre nouvelle adresse.
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-modal btn-annuler" onclick="fermerFormulaire()">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+                <button class="btn-modal btn-valider" onclick="changerEmail()" id="btn-valider-email">
+                    <i class="fas fa-check"></i> Valider
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- Lien vers le fichier JavaScript spécifique -->
+    <script src="{{ url_for('static', filename='js/profil.js') }}"></script>
+{% endblock %}

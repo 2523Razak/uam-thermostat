@@ -1,0 +1,316 @@
+/* footer.css */
+
+/* ==========================================================================
+   FOOTER STYLES COMPLETS - POSITIONNEMENT CORRIGÉ
+   ========================================================================== */
+
+/* POSITIONNEMENT ABSOLU POUR LE FOOTER */
+.academic-footer {
+    position: fixed;
+    bottom: 0;
+    left: 260px; /* Largeur de la sidebar */
+    right: 0;
+    height: auto;
+    background: linear-gradient(135deg, #1a1a5c 0%, #312C85 100%);
+    color: white;
+    padding: 20px 0 15px 0;
+    border-top: 3px solid #4a55ff;
+    box-shadow: 0 -4px 15px rgba(49, 44, 133, 0.2);
+    /*z-index: 100;*/
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Effet de bordure animée */
+.academic-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, 
+        #4a55ff 0%, 
+        #88A0F1 25%, 
+        #4a55ff 50%, 
+        #88A0F1 75%, 
+        #4a55ff 100%
+    );
+    background-size: 200% 100%;
+    animation: footerShimmer 4s infinite linear;
+}
+
+@keyframes footerShimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Conteneur principal */
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Grille des sections */
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 20px;
+}
+
+/* Style des sections */
+.footer-section {
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.footer-section:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-3px);
+}
+
+.footer-section h4 {
+    color: #88A0F1;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(136, 160, 241, 0.3);
+}
+
+.footer-section h4 i {
+    font-size: 1.1rem;
+    color: #4a55ff;
+}
+
+.footer-section p {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.footer-section p i {
+    margin-top: 2px;
+    width: 16px;
+    color: #88A0F1;
+}
+
+/* Liste des liens */
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 8px;
+}
+
+.footer-section ul li a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 0;
+}
+
+.footer-section ul li a:hover {
+    color: #4a55ff;
+    transform: translateX(5px);
+}
+
+.footer-section ul li a i {
+    font-size: 0.7rem;
+    width: 12px;
+    color: #88A0F1;
+}
+
+/* Divider */
+.footer-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(136, 160, 241, 0.4), 
+        rgba(74, 85, 255, 0.4), 
+        transparent
+    );
+    margin: 15px 0;
+}
+
+/* Section inférieure */
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding-top: 10px;
+}
+
+/* Logo */
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-logo img {
+    width: 25px;
+    height: 25px;
+    filter: brightness(0) invert(1);
+}
+
+.footer-logo span {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: white;
+}
+
+.footer-badge {
+    background: rgba(74, 85, 255, 0.2);
+    color: #88A0F1;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    border: 1px solid rgba(136, 160, 241, 0.3);
+    margin-left: 8px;
+}
+
+/* Copyright */
+.copyright {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    flex: 1;
+}
+
+/* Réseaux sociaux */
+.footer-social {
+    display: flex;
+    gap: 12px;
+}
+
+.footer-social a {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-social a:hover {
+    background: #4a55ff;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(74, 85, 255, 0.3);
+    border-color: #4a55ff;
+}
+
+/* ==========================================================================
+   AJOUT D'ESPACE POUR LE CONTENU PRINCIPAL
+   ========================================================================== */
+
+/* Cette règle ajoute de l'espace en bas du contenu principal */
+body > main.content {
+    padding-bottom: 200px !important;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+
+@media (max-width: 992px) {
+    .academic-footer {
+        left: 200px;
+        position: absolute; /* Change en absolute pour mobile */
+        bottom: 0;
+    }
+    
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    /* Ajouter plus d'espace pour le contenu sur mobile */
+    body > main.content {
+        padding-bottom: 250px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .academic-footer {
+        left: 0;
+        position: relative;
+        margin-top: 20px;
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .footer-section {
+        padding: 12px;
+    }
+    
+    /* Réduire l'espace sur mobile */
+    body > main.content {
+        padding-bottom: 150px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .academic-footer {
+        padding: 15px 0 10px 0;
+    }
+    
+    .footer-section h4 {
+        font-size: 0.95rem;
+    }
+    
+    .footer-section p,
+    .footer-section ul li a {
+        font-size: 0.8rem;
+    }
+    
+    .copyright {
+        font-size: 0.75rem;
+    }
+    
+    .footer-social a {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+}

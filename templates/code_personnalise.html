@@ -1,0 +1,776 @@
+{% extends "barmenu.html" %}
+
+{% block page_styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/code_personnalise.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
+    <title>Éditeur de Code Personnalisé</title>
+{% endblock %}
+
+{% block content %}
+<main class="content">
+    <div class="en-tete-page">
+        <h2>Éditeur de Code Personnalisé</h2>
+        <p>Écrivez et testez votre propre algorithme de contrôle</p>
+    </div>
+
+    <div class="grille-editeur">
+        
+        <div class="colonne-gauche">
+            
+            <div class="carte carte-editeur">
+                <div class="entete-carte">
+                    <h4> Votre Code</h4>
+                    <span class="badge-inactif">Inactif</span>
+                </div>
+                
+                <textarea id="zone-code" class="zone-texte-code" placeholder="// Écrivez votre code ici..."></textarea>
+                
+                <div class="actions-editeur">
+                    <button class="bouton-sauvegarder">
+                        <span class="icone">💾</span> Sauvegarder
+                    </button>
+                    <button class="bouton-activer">
+                        <span class="icone">▶</span> Activer le Code
+                    </button>
+                </div>
+            </div>
+
+            <div class="carte carte-instructions">
+                <h4>Instructions</h4>
+                <p class="sous-titre-instr">Structure obligatoire du code :</p>
+                <div class="instructions-essentielles">
+                    <div class="instruction-section">
+                        <h5>✅ <strong>CE QUE VOUS DEVEZ ABSOLUMENT FAIRE</strong></h5>
+                        
+                        <div class="instruction-item">
+                            <h6>1. Structure obligatoire :</h6>
+                            <pre class="code-exemple-mini">def control(error, dt, **kwargs):
+    # Votre code ici
+    return nombre_entre_0_et_100</pre>
+                        </div>
+                        
+                        <div class="instruction-item">
+                            <h6>2. Règles strictes :</h6>
+                            <ul>
+                                <li>✅ Fonction nommée <strong>`control`</strong> (exactement !)</li>
+                                <li>✅ Premiers paramètres : <strong>`error`</strong> et <strong>`dt`</strong> (dans cet ordre)</li>
+                                <li>✅ Retour : <strong>nombre</strong> (0-100) ou <strong>tuple</strong> `(sortie, état)`</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="instruction-section">
+                        <h5>🔧 <strong>Comment écrire votre contrôleur :</strong></h5>
+                        
+                        <div class="instruction-item">
+                            <h6>Option 1 : Simple (recommandé pour débuter)</h6>
+                            <pre class="code-exemple-mini">def control(error, dt, **kwargs):
+    kp = kwargs.get('kp', 2.0)  # Récupère votre réglage
+    output = kp * error         # Calcul proportionnel
+    return max(0, min(100, output))  # Limite 0-100%</pre>
+                        </div>
+                        
+                        <div class="instruction-item">
+                            <h6>Option 2 : Complet (avec intégrale)</h6>
+                            <pre class="code-exemple-mini">def control(error, dt, integral_state=0, **kwargs):
+    kp = kwargs.get('kp', 1.5)
+    ki = kwargs.get('ki', 0.05)
+    
+    integral_state += error * dt
+    integral_state = max(-100, min(100, integral_state))
+    
+    output = (kp * error) + (ki * integral_state)
+    return max(0, min(100, output)), integral_state</pre>
+                        </div>
+                    </div>
+                    
+                    <div class="instruction-section">
+                        <h5>❌ <strong>CE QUI EST INTERDIT (ne marchera pas) :</strong></h5>
+                        <ul class="liste-interdits">
+                            <li><strong>❌ Mauvais nom</strong> : `def mon_controleur(...)`</li>
+                            <li><strong>❌ Paramètres manquants</strong> : `def control():`</li>
+                            <li><strong>❌ Mauvais retour</strong> : `return "50"` ou `return {}}`</li>
+                            <li><strong>❌ Import/exec</strong> : `import os`, `exec()`, `eval()`</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="instruction-section">
+                        <h5><strong>Procédure rapide :</strong></h5>
+                        <ol class="liste-procedure">
+                            <li>Écrivez votre fonction <code>control</code></li>
+                            <li>Sauvegardez avec le bouton "Sauvegarder"</li>
+                            <li>Activez avec "Activer le Code"</li>
+                            <li>Testez dans le tableau de bord</li>
+                        </ol>
+                        <p class="note-securite"><strong>Note de sécurité :</strong> En cas d'erreur, le système bascule automatiquement sur le contrôleur par défaut (sans risque).</p>
+                    </div>
+                </div>
+
+                <div class="boite-conseils">
+                    <p><strong>💡 Conseils supplémentaires :</strong></p>
+                    <ul>
+                        <li>Testez différentes valeurs de gains (Kp, Ki, Kd)</li>
+                        <li>N'oubliez pas de gérer les saturations (0-100%)</li>
+                        <li>Le contrôleur personnalisé apparaîtra comme "Personnalisé" dans le tableau de bord</li>
+                        <li>Votre code est sauvegardé sur le serveur et localement</li>
+                        <li>Utilisez <code>**kwargs</code> pour récupérer vos paramètres de réglage</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="colonne-droite">
+            
+            <div class="carte carte-exemples">
+                <h4>Exemples de Code</h4>
+                
+                <div class="selecteur-exemples">
+                    <button class="btn-exemple actif">PI</button>
+                    <button class="btn-exemple">PID</button>
+                    <button class="btn-exemple">MPC</button>
+                </div>
+
+                <p class="desc-exemple">Exemple de contrôleur PI (Proportionnel-Intégral) de base.</p>
+
+                <div class="apercu-code">
+                    <pre id="code-preview"># Aperçu du code...</pre>
+                </div>
+
+                <button class="bouton-charger-exemple">
+                    📤 Charger cet exemple
+                </button>
+            </div>
+
+            <div class="carte carte-variables">
+                <h4>Variables Disponibles</h4>
+                <div class="liste-variables">
+                    <div class="item-variable">
+                        <span class="nom-var">error</span>
+                        <span class="desc-var">Différence consigne/mesure</span>
+                    </div>
+                    <div class="item-variable">
+                        <span class="nom-var">dt</span>
+                        <span class="desc-var">Temps écoulé (secondes)</span>
+                    </div>
+                    <div class="item-variable">
+                        <span class="nom-var">currentTemp</span>
+                        <span class="desc-var">Température actuelle</span>
+                    </div>
+                    <div class="item-variable">
+                        <span class="nom-var">last_error</span>
+                        <span class="desc-var">Erreur précédente</span>
+                    </div>
+                    <div class="item-variable">
+                        <span class="nom-var">integral_state</span>
+                        <span class="desc-var">État de l'intégrale</span>
+                    </div>
+                    <div class="item-variable">
+                        <span class="nom-var">kwargs</span>
+                        <span class="desc-var">Paramètres de réglage (Kp, Ki, Kd)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carte carte-etat">
+                <h4>État du Code</h4>
+                <div class="boite-info-etat">
+                    <p><strong>ⓘ Aucun code actif</strong></p>
+                    <p class="texte-gris">Utilise le contrôleur par défaut.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/wrap/hardwrap.min.js"></script>
+
+<script>
+    let editeur;
+    let surveillanceTemperatureApp = null;
+    let codeDejaCharge = false;
+    
+    // Contenu des différents exemples (en Python) - VERSION COURTES
+    const exemplesCode = {
+        'PI': {
+            description: "Exemple de contrôleur PI (Proportionnel-Intégral) de base.",
+            code: `def control(error, dt, integral_state=0, **kwargs):
+    # Récupérer les gains depuis kwargs ou utiliser les valeurs par défaut
+    kp = kwargs.get('kp', 1.5)
+    ki = kwargs.get('ki', 0.05)
+    
+    # Mise à jour de l'intégrale
+    integral_state += error * dt
+    # Limite pour éviter l'intégrale winding
+    integral_state = max(-100, min(100, integral_state))
+    
+    # Calcul de la sortie
+    output = (kp * error) + (ki * integral_state)
+    
+    # Saturation finale (0-100%)
+    output = max(0, min(100, output))
+    
+    # Retourner la sortie et l'état de l'intégrale
+    return output, integral_state`
+        },
+        'PID': {
+            description: "Exemple de contrôleur PID (Proportionnel-Intégral-Dérivé) standard.",
+            code: `def control(error, dt, last_error=0, integral_state=0, **kwargs):
+    # Récupérer les gains depuis kwargs
+    kp = kwargs.get('kp', 2.0)
+    ki = kwargs.get('ki', 0.08)
+    kd = kwargs.get('kd', 0.1)
+    
+    # Mise à jour de l'intégrale
+    integral_state += error * dt
+    integral_state = max(-100, min(100, integral_state))
+    
+    # Calcul de la dérivée
+    derivative = (error - last_error) / dt if dt > 0 else 0
+    
+    # Calcul de la sortie PID
+    output = (kp * error) + (ki * integral_state) + (kd * derivative)
+    
+    # Saturation (0-100%)
+    output = max(0, min(100, output))
+    
+    # Retourner la sortie et les états
+    return output, integral_state`
+        },
+        'MPC': {
+            description: "Exemple simplifié de Modèle de Contrôle Prédictif (MPC).",
+            code: `def control(error, dt, state_history=[], **kwargs):
+    # Récupérer les paramètres
+    kp = kwargs.get('kp', 2.0)
+    ki = kwargs.get('ki', 0.05)
+    prediction_horizon = kwargs.get('prediction_horizon', 5)
+    
+    # État simple pour l'exemple
+    if len(state_history) < 2:
+        output = kp * error
+    else:
+        recent_error = state_history[-1]['error']
+        error_change = error - recent_error
+        predicted_error = error + error_change * prediction_horizon
+        output = (kp * predicted_error) + (ki * error * dt)
+    
+    # Saturation obligatoire
+    output = max(0, min(100, output))
+    
+    return output`
+        }
+    };
+
+    /**
+     * Tronque le texte pour qu'il tienne dans l'espace limité
+     */
+    function tronquerTextePourApercu(texte, maxLignes = 5, maxCaracteresParLigne = 40) {
+        const lignes = texte.split('\n');
+        let resultat = [];
+        
+        for (let i = 0; i < Math.min(lignes.length, maxLignes); i++) {
+            let ligne = lignes[i];
+            
+            // Tronquer les lignes trop longues
+            if (ligne.length > maxCaracteresParLigne) {
+                ligne = ligne.substring(0, maxCaracteresParLigne - 3) + '...';
+            }
+            
+            resultat.push(ligne);
+        }
+        
+        // Ajouter "..." si le code a plus de lignes que maxLignes
+        if (lignes.length > maxLignes) {
+            resultat.push('...');
+        }
+        
+        return resultat.join('\n');
+    }
+
+    /**
+     * Charge le code et la description pour le type d'exemple donné.
+     * @param {string} type - Le type de contrôleur ('PI', 'PID', 'MPC').
+     * @param {boolean} chargerDansEditeur - Si vrai, met le code dans l'éditeur.
+     */
+    function chargerExemple(type, chargerDansEditeur = false) {
+        const exemple = exemplesCode[type];
+        if (!exemple) return;
+
+        // Met à jour la description
+        document.querySelector('.desc-exemple').textContent = exemple.description;
+        
+        // Affiche un aperçu TRONQUÉ pour garder la même taille
+        const codePreview = document.getElementById('code-preview');
+        if (codePreview) {
+            const texteTronque = tronquerTextePourApercu(exemple.code, 5, 40);
+            codePreview.textContent = texteTronque;
+        }
+
+        // Charge le code COMPLET dans l'éditeur si demandé
+        if (chargerDansEditeur && editeur) {
+            editeur.setValue(exemple.code);
+        }
+    }
+
+    /**
+     * Gère le clic sur les boutons PI/PID/MPC (change l'état actif et l'aperçu).
+     */
+    function gererSelecteurExemple(event) {
+        const boutonClique = event.target;
+        if (!boutonClique.classList.contains('btn-exemple')) return;
+
+        // 1. Désactiver tous les boutons
+        document.querySelectorAll('.btn-exemple').forEach(btn => {
+            btn.classList.remove('actif');
+        });
+
+        // 2. Activer le bouton cliqué
+        boutonClique.classList.add('actif');
+        
+        // 3. Mettre à jour l'aperçu statique (false = NE PAS charger dans l'éditeur)
+        chargerExemple(boutonClique.textContent.trim(), false);
+        
+        // 4. Vérifier s'il y a un code personnalisé sauvegardé pour ce type
+        setTimeout(() => {
+            chargerCodePersonnaliseUtilisateur();
+        }, 100);
+    }
+
+    /**
+     * Récupère le code depuis l'éditeur
+     */
+    function recupererCodeDepuisEditeur() {
+        if (!editeur) {
+            console.error("Éditeur CodeMirror non initialisé");
+            return '';
+        }
+        return editeur.getValue();
+    }
+
+    /**
+     * Affiche un message à l'utilisateur
+     */
+    function afficherMessage(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            max-width: 300px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-family: 'Poppins', sans-serif;
+        `;
+        
+        const couleurs = {
+            success: '#38a169',
+            error: '#e53e3e',
+            warning: '#d69e2e',
+            info: '#3182ce'
+        };
+        
+        notification.style.backgroundColor = couleurs[type] || couleurs.info;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (notification.parentNode) {
+                document.body.removeChild(notification);
+            }
+        }, 4000);
+    }
+
+    /**
+     * Met à jour l'état du code personnalisé dans l'interface
+     */
+    function mettreAJourEtatCodePersonnalise(typeControleur, aCodePersonnalise = false, codeHash = null, estActif = false) {
+        const badge = document.querySelector('.entete-carte span[class*="badge-"]');
+        const etatBox = document.querySelector('.boite-info-etat');
+        
+        if (!badge || !etatBox) {
+            console.log("Éléments d'interface non trouvés, tentative de récupération...");
+            setTimeout(() => {
+                mettreAJourEtatCodePersonnalise(typeControleur, aCodePersonnalise, codeHash, estActif);
+            }, 500);
+            return;
+        }
+        
+        if (aCodePersonnalise && codeHash) {
+            if (estActif) {
+                badge.textContent = 'Actif';
+                etatBox.innerHTML = `
+                    <p><strong>✅ Code ${typeControleur.toUpperCase()} personnalisé actif</strong></p>
+                    <p class="texte-gris">Utilise votre algorithme personnalisé.</p>
+                `;
+            } else {
+                badge.textContent = 'Personnalisé';
+                etatBox.innerHTML = `
+                    <p><strong>⚡ Code ${typeControleur.toUpperCase()} personnalisé</strong></p>
+                    <p class="texte-gris">Prêt à être activé.</p>
+                `;
+            }
+        } else {
+            badge.textContent = 'Inactif';
+            etatBox.innerHTML = `
+                <p><strong>ⓘ Aucun code actif</strong></p>
+                <p class="texte-gris">Utilise le contrôleur par défaut.</p>
+            `;
+        }
+    }
+
+    /**
+     * Charge le code personnalisé depuis le serveur ou le localStorage
+     */
+    async function chargerCodePersonnaliseUtilisateur() {
+        if (codeDejaCharge) return;
+        
+        try {
+            const typeControleur = document.querySelector('.btn-exemple.actif').textContent.trim().toLowerCase();
+            const idConnexion = localStorage.getItem('idConnexionArduino');
+            
+            let code = null;
+            let codeHash = null;
+            let estActif = false;
+            
+            if (idConnexion) {
+                // Essayer de charger depuis le serveur
+                try {
+                    const reponse = await fetch(`/api/custom_code/get?connection_id=${idConnexion}&code_type=${typeControleur}`);
+                    const resultat = await reponse.json();
+                    
+                    if (resultat.success && resultat.code) {
+                        code = resultat.code;
+                        codeHash = resultat.code_hash;
+                        estActif = resultat.is_active || false;
+                        
+                        console.log(`Code ${typeControleur} chargé depuis le serveur`);
+                    }
+                } catch (erreurServeur) {
+                    console.log('Serveur non disponible, tentative de chargement local');
+                }
+            }
+            
+            // Si pas de code depuis le serveur, essayer le localStorage
+            if (!code) {
+                const codeLocal = localStorage.getItem(`codePersonnalise_${typeControleur}`);
+                const hashLocal = localStorage.getItem(`codePersonnaliseHash_${typeControleur}`);
+                const estActifLocal = localStorage.getItem(`codePersonnaliseActive_${typeControleur}`) === 'true';
+                
+                if (codeLocal) {
+                    code = codeLocal;
+                    codeHash = hashLocal || 'N/A';
+                    estActif = estActifLocal;
+                    
+                    console.log(`Code ${typeControleur} chargé depuis localStorage`);
+                }
+            }
+            
+            // Charger le code dans l'éditeur
+            if (code && editeur) {
+                editeur.setValue(code);
+                codeDejaCharge = true;
+                
+                // Mettre à jour l'état
+                mettreAJourEtatCodePersonnalise(typeControleur, true, codeHash, estActif);
+                
+                return true;
+            }
+        } catch (erreur) {
+            console.error('Erreur chargement code personnalisé:', erreur);
+        }
+        
+        return false;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // 1. Initialisation de CodeMirror avec RETOUR À LA LIGNE AUTOMATIQUE
+        var zoneTexte = document.getElementById("zone-code");
+        editeur = CodeMirror.fromTextArea(zoneTexte, {
+            mode: { name: "python", version: 3 }, 
+            theme: "dracula",      
+            lineNumbers: true,     
+            indentUnit: 4,         
+            matchBrackets: true,
+            autoCloseBrackets: true,
+            lineWrapping: true,
+            viewportMargin: Infinity,
+            extraKeys: {
+                "Ctrl-S": function(cm) {
+                    // Ctrl+S pour sauvegarder
+                    document.querySelector('.bouton-sauvegarder').click();
+                }
+            }
+        });
+        
+        // FIXER LA TAILLE de l'éditeur
+        editeur.setSize("100%", "400px");
+        
+        // ** Initialiser l'APERÇU statique avec l'exemple PI **
+        chargerExemple('PI', false); 
+        
+        // 2. Gestion des boutons PI/PID/MPC
+        document.querySelector('.selecteur-exemples').addEventListener('click', gererSelecteurExemple);
+
+        // 3. Gestion du bouton "Charger cet exemple"
+        document.querySelector('.bouton-charger-exemple').addEventListener('click', function() {
+            const typeActif = document.querySelector('.btn-exemple.actif').textContent.trim();
+            // Charger l'exemple DANS l'éditeur (true)
+            chargerExemple(typeActif, true); 
+        });
+
+        // 4. Gestion du bouton "Sauvegarder"
+        document.querySelector('.bouton-sauvegarder').addEventListener('click', async function() {
+            const code = recupererCodeDepuisEditeur();
+            const typeControleur = document.querySelector('.btn-exemple.actif').textContent.trim().toLowerCase();
+            
+            if (!code || code.trim() === '') {
+                afficherMessage('Le code ne peut pas être vide', 'error');
+                return;
+            }
+            
+            // Vérifier la structure de base du code
+            if (!code.includes('def control')) {
+                afficherMessage('Votre code doit contenir une fonction nommée "control"', 'error');
+                return;
+            }
+            
+            const idConnexion = localStorage.getItem('idConnexionArduino');
+            if (!idConnexion) {
+                afficherMessage('Veuillez d\'abord vous connecter à un Arduino', 'warning');
+                return;
+            }
+            
+            // Appel direct à l'API
+            try {
+                afficherMessage('Sauvegarde du code...', 'info');
+                
+                const reponse = await fetch('/api/custom_code/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        connection_id: idConnexion,
+                        code_type: typeControleur,
+                        code: code,
+                        name: `Code ${typeControleur.toUpperCase()} personnalisé`,
+                        description: 'Code écrit dans l\'éditeur personnalisé'
+                    })
+                });
+                
+                const resultat = await reponse.json();
+                
+                if (resultat.success) {
+                    afficherMessage('Code sauvegardé avec succès', 'success');
+                    
+                    const codeHash = resultat.code_hash || 'local_' + Date.now();
+                    mettreAJourEtatCodePersonnalise(typeControleur, true, codeHash, false);
+                    
+                    // Sauvegarder localement
+                    localStorage.setItem(`codePersonnalise_${typeControleur}`, code);
+                    localStorage.setItem(`codePersonnaliseHash_${typeControleur}`, codeHash);
+                    localStorage.setItem(`codePersonnaliseActive_${typeControleur}`, 'false');
+                } else {
+                    afficherMessage(resultat.message, 'error');
+                }
+            } catch (erreur) {
+                console.error('Erreur sauvegarde code:', erreur);
+                afficherMessage('Erreur de sauvegarde', 'error');
+            }
+        });
+
+        // 5. Gestion du bouton "Activer le Code"
+        document.querySelector('.bouton-activer').addEventListener('click', async function() {
+            const typeControleur = document.querySelector('.btn-exemple.actif').textContent.trim().toLowerCase();
+            const idConnexion = localStorage.getItem('idConnexionArduino');
+            
+            if (!idConnexion) {
+                afficherMessage('Veuillez d\'abord vous connecter à un Arduino', 'warning');
+                return;
+            }
+            
+            const code = recupererCodeDepuisEditeur();
+            if (!code || code.trim() === '') {
+                afficherMessage('Vous devez d\'abord écrire un code', 'error');
+                return;
+            }
+            
+            // Vérifier la structure de base
+            if (!code.includes('def control')) {
+                afficherMessage('Erreur : Votre code doit contenir une fonction "control(error, dt, ...)"', 'error');
+                return;
+            }
+            
+            try {
+                afficherMessage('Activation du code...', 'info');
+                
+                const reponse = await fetch('/api/custom_code/activate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        connection_id: idConnexion,
+                        code_type: typeControleur
+                    })
+                });
+                
+                const resultat = await reponse.json();
+                
+                if (resultat.success) {
+                    afficherMessage(`Code ${typeControleur.toUpperCase()} activé avec succès`, 'success');
+                    
+                    const badge = document.querySelector('.entete-carte span[class*="badge-"]');
+                    const etatBox = document.querySelector('.boite-info-etat');
+                    
+                    if (badge) badge.textContent = 'Actif';
+                    if (etatBox) {
+                        etatBox.innerHTML = `
+                            <p><strong>✅ Code ${typeControleur.toUpperCase()} personnalisé actif</strong></p>
+                            <p class="texte-gris">Utilise votre algorithme personnalisé.</p>
+                        `;
+                    }
+                    
+                    localStorage.setItem(`codePersonnaliseActive_${typeControleur}`, 'true');
+                } else {
+                    afficherMessage(resultat.message, 'error');
+                }
+            } catch (erreur) {
+                console.error('Erreur activation code:', erreur);
+                afficherMessage('Erreur d\'activation', 'error');
+            }
+        });
+
+        // 6. Vérifier et charger le code personnalisé au démarrage
+        setTimeout(() => {
+            chargerCodePersonnaliseUtilisateur();
+        }, 1000);
+        
+        // 7. Gestion du changement de type de contrôleur
+        document.querySelector('.selecteur-exemples').addEventListener('click', async function(event) {
+            if (!event.target.classList.contains('btn-exemple')) return;
+            
+            // Mettre à jour l'affichage
+            gererSelecteurExemple(event);
+            
+            // Réinitialiser le flag de chargement
+            codeDejaCharge = false;
+            
+            // Charger le code pour ce type
+            setTimeout(() => {
+                chargerCodePersonnaliseUtilisateur();
+            }, 200);
+        });
+    });
+
+    // Exposer les fonctions globalement
+    window.getEditeurCode = function() {
+        return editeur;
+    };
+    
+    window.recupererCodeEditeur = recupererCodeDepuisEditeur;
+</script>
+
+<style>
+    .instructions-essentielles {
+        margin: 15px 0;
+        font-size: 0.9rem;
+    }
+    
+    .instruction-section {
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .instruction-section:last-child {
+        border-bottom: none;
+    }
+    
+    .instruction-section h5 {
+        margin: 10px 0 15px 0;
+        color: #2d3748;
+        font-size: 0.95rem;
+    }
+    
+    .instruction-section h6 {
+        margin: 10px 0 5px 0;
+        color: #4a5568;
+        font-size: 0.9rem;
+    }
+    
+    .instruction-item {
+        margin: 10px 0;
+    }
+    
+    .code-exemple-mini {
+        background-color: #f7fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        padding: 8px 10px;
+        font-family: 'Monaco', 'Courier New', monospace;
+        font-size: 0.85rem;
+        margin: 8px 0;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        color: #2d3748;
+    }
+    
+    .liste-interdits {
+        list-style-type: none;
+        padding-left: 0;
+        margin: 10px 0;
+    }
+    
+    .liste-interdits li {
+        padding: 5px 0;
+        color: #c53030;
+        font-size: 0.85rem;
+    }
+    
+    .liste-procedure {
+        padding-left: 20px;
+        margin: 10px 0;
+        font-size: 0.85rem;
+    }
+    
+    .liste-procedure li {
+        margin: 5px 0;
+    }
+    
+    .note-securite {
+        margin-top: 10px;
+        padding: 8px 12px;
+        background-color: #fffaf0;
+        border-left: 4px solid #ed8936;
+        font-size: 0.85rem;
+        color: #744210;
+    }
+    
+    .liste-instructions li,
+    .boite-conseils ul li {
+        margin: 5px 0;
+        font-size: 0.9rem;
+    }
+    
+    .instruction-section ul {
+        padding-left: 20px;
+        margin: 8px 0;
+    }
+    
+    .instruction-section ul li {
+        margin: 4px 0;
+        font-size: 0.85rem;
+    }
+</style>
+{% endblock %}

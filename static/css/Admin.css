@@ -1,0 +1,845 @@
+/* === RÉINITIALISATION === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* === STYLES GÉNÉRAUX === */
+.corps-page {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #010207 0%, #cbc4d1 100%);
+    min-height: 100vh;
+    padding: 15px;
+}
+
+/* Conteneur principal */
+.conteneur-principal {
+    max-width: 2560px;
+    margin: 0 auto;
+}
+
+/* === EN-TÊTE PRINCIPALE === */
+.en-tete-principal {
+    text-align: center;
+    margin-bottom: 25px;
+    color: white;
+}
+
+.titre-principal {
+    font-size: 2rem;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.sous-titre {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* === CARTES DE STATISTIQUES === */
+.cartes-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.carte-stat {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.icone-stat {
+    font-size: 2rem;
+    margin-bottom: 12px;
+    color: #c1332f;
+}
+
+.nombre-stat {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.texte-stat {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+/* === CONTENEUR DU TABLEAU === */
+.conteneur-tableau {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* === EN-TÊTE DU TABLEAU === */
+.en-tete-tableau {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.titre-et-filtres {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.titre-tableau {
+    color: #333;
+    font-size: 1.3rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Conteneur pour les boutons d'action principale */
+.boutons-actions-principales {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.boutons-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Conteneur des filtres et recherche */
+.filtres-et-recherche {
+    display: flex; 
+    align-items: center; 
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-left: 10px;
+}
+
+/* Style pour le sélecteur de filtre Organisation */
+.filtre-organisation-group {
+    position: relative;
+}
+
+.select-organisation {
+    padding: 10px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    width: 200px;
+    transition: all 0.3s ease;
+    background: white;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287%2069.8L146.2%20210.6%205.4%2069.8c-3.7-3.7-9.8-3.7-13.5%200s-3.7%209.8%200%2013.5l140.7%20140.7c3.7%203.7%209.8%203.7%2013.5%200L287%2083.3c3.7-3.7%203.7-9.8%200-13.5z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 10px;
+    cursor: pointer;
+}
+
+.select-organisation:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* === BARRE DE RECHERCHE === */
+.barre-recherche {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.champ-recherche {
+    padding: 10px 40px 10px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    width: 250px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.champ-recherche:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.icone-recherche {
+    position: absolute;
+    right: 15px;
+    color: #666;
+    pointer-events: none;
+}
+
+/* === FILTRES STATUT === */
+.filtres-statut {
+    display: flex;
+    gap: 10px;
+}
+
+/* === BOUTONS === */
+.bouton {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+}
+
+.bouton-principal {
+    background: #47e55f;
+    color: white;
+}
+
+/* Style pour le bouton Créer TP */
+.bouton-tp {
+    background: #9c27b0;
+    color: white;
+}
+
+.bouton-secondaire {
+    background: #6c757d;
+    color: white;
+}
+
+.bouton-admin {
+    background: #ffc107;
+    color: #212529;
+}
+
+.bouton-user {
+    background: #17a2b8;
+    color: white;
+}
+
+.bouton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.bouton-tp:hover {
+    background: #7b1fa2;
+}
+
+/* === TABLEAU === */
+.tableau-utilisateurs {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-size: 0.85rem;
+}
+
+/* En-tête du tableau */
+.en-tete-colonnes {
+    background: linear-gradient(135deg, #f6b606, #4ba24b);
+    color: white;
+}
+
+.cellule-entete {
+    padding: 12px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.cellule-donnee {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #555;
+    font-size: 0.85rem;
+    position: relative;
+}
+
+/* Lignes du tableau avec couleurs selon le statut */
+.ligne-utilisateur {
+    transition: all 0.3s ease;
+}
+
+.ligne-utilisateur[data-statut="admin"] {
+    background: linear-gradient(135deg, #fff9e6, #fff3cd);
+    border-left: 4px solid #ffc107;
+}
+
+.ligne-utilisateur[data-statut="bloque"] {
+    background: linear-gradient(135deg, #fdeaea, #f8d7da);
+    border-left: 4px solid #dc3545;
+}
+
+.ligne-utilisateur[data-statut="user"] {
+    background: white;
+    border-left: 4px solid transparent;
+}
+
+.ligne-utilisateur:hover {
+    transform: translateX(3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.ligne-utilisateur[data-statut="admin"]:hover {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+}
+
+.ligne-utilisateur[data-statut="bloque"]:hover {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+}
+
+.ligne-utilisateur[data-statut="user"]:hover {
+    background: #f8f9fa;
+}
+
+/* === AVATAR UTILISATEUR === */
+.avatar-utilisateur {
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.info-utilisateur {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nom-utilisateur {
+    font-weight: 500;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.id-utilisateur {
+    font-size: 0.75rem;
+    color: #666;
+}
+
+/* === BADGE STATUT === */
+.badge {
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.badge-succes {
+    background: #d4edda;
+    color: #155724;
+}
+
+.badge-admin {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.badge-bloque {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.badge-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+/* === MENU D'ACTIONS HORIZONTAL === */
+.menu-actions {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    gap: 5px;
+}
+
+.ligne-utilisateur:hover .menu-actions {
+    opacity: 1;
+}
+
+.bouton-action {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    font-size: 0.8rem;
+}
+
+.bouton-supprimer {
+    background: #dc3545;
+}
+
+.bouton-bloquer {
+    background: #ffc107;
+}
+
+.bouton-admin-action {
+    background: #007bff;
+}
+
+.bouton-user-action {
+    background: #17a2b8;
+}
+
+.bouton-action:hover {
+    transform: scale(1.1);
+}
+
+/* === STYLE POUR LE BOUTON D'ACTIVATION === */
+.statut-with-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.bouton-activer-manuel {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.bouton-activer-manuel:hover {
+    background: linear-gradient(135deg, #218838, #1aa179);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.bouton-activer-manuel:active {
+    transform: translateY(0);
+}
+
+.bouton-activer-manuel i {
+    font-size: 0.75rem;
+}
+
+.bouton-activer-manuel:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Message de notification simple */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.notification.success {
+    background: #28a745;
+}
+
+.notification.error {
+    background: #dc3545;
+}
+
+.notification.info {
+    background: #17a2b8;
+}
+
+/* === ÉTAT VIDE (QUAND AUCUN UTILISATEUR) === */
+.etat-vide {
+    text-align: center;
+    padding: 50px 20px;
+    color: #666;
+}
+
+.icone-vide {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    color: #ddd;
+}
+
+.titre-vide {
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+/* === POP-UPS PERSONNALISÉS === */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.popup-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.popup {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    transform: translateY(-30px);
+    transition: transform 0.3s ease;
+    overflow: hidden;
+}
+
+.popup-overlay.active .popup {
+    transform: translateY(0);
+}
+
+.popup-header {
+    background: linear-gradient(135deg, #f6b606, #4ba24b);
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.popup-header.confirmation {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+}
+
+.popup-header.blocage {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+}
+
+.popup-titre {
+    font-size: 1.3rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.popup-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.popup-close:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.popup-body {
+    padding: 25px;
+}
+
+.popup-message {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.popup-textearea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    resize: vertical;
+    min-height: 100px;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.popup-textearea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.popup-exemples {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    color: #666;
+    border-left: 4px solid #007bff;
+}
+
+.popup-exemples ul {
+    margin-left: 20px;
+    margin-top: 5px;
+}
+
+.popup-exemples li {
+    margin-bottom: 3px;
+}
+
+.popup-boutons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.popup-bouton {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.popup-bouton.confirmer {
+    background: #28a745;
+    color: white;
+}
+
+.popup-bouton.confirmer:hover {
+    background: #218838;
+    transform: translateY(-2px);
+}
+
+.popup-bouton.annuler {
+    background: #6c757d;
+    color: white;
+}
+
+.popup-bouton.annuler:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+.popup-bouton.bloquer {
+    background: #ffc107;
+    color: #212529;
+}
+
+.popup-bouton.bloquer:hover {
+    background: #e0a800;
+    transform: translateY(-2px);
+}
+
+.popup-bouton.secondaire {
+    background: #17a2b8;
+    color: white;
+}
+
+.popup-bouton.secondaire:hover {
+    background: #138496;
+    transform: translateY(-2px);
+}
+
+.popup-icone {
+    font-size: 1.2rem;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 1024px) {
+    .cartes-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .en-tete-tableau {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .titre-et-filtres {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .filtres-et-recherche {
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+        margin-left: 0;
+    }
+    
+    .filtres-statut {
+        margin-left: 0;
+        justify-content: center;
+    }
+    
+    .barre-recherche {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .champ-recherche {
+        width: 100%;
+    }
+    
+    .select-organisation {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .boutons-actions-principales {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+    
+    .boutons-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .bouton {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .tableau-utilisateurs {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    .cellule-entete, .cellule-donnee {
+        padding: 8px;
+        font-size: 0.75rem;
+    }
+    
+    .bouton {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .menu-actions {
+        position: static;
+        transform: none;
+        opacity: 1;
+        display: flex;
+        justify-content: center;
+        margin-top: 8px;
+        gap: 8px;
+    }
+    
+    .bouton-action {
+        width: 35px;
+        height: 35px;
+    }
+
+    .statut-with-button {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .bouton-activer-manuel {
+        padding: 4px 10px;
+        font-size: 0.65rem;
+    }
+
+    .popup {
+        width: 95%;
+        margin: 10px;
+    }
+    
+    .popup-header {
+        padding: 15px;
+    }
+    
+    .popup-body {
+        padding: 20px;
+    }
+    
+    .popup-boutons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .popup-bouton {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Ajout pour très grands écrans */
+@media (min-width: 1200px) {
+    .filtres-et-recherche {
+        gap: 25px;
+    }
+}

@@ -1,0 +1,150 @@
+/* --- VARIABLES --- */
+:root {
+    --couleur-primaire: #5b46d8;
+    --couleur-texte: #333;
+    --couleur-texte-leger: #666;
+    --fond-carte: #ffffff;
+    --fond-equation: #eef2ff;
+}
+
+/* --- CONTENEUR DE DOCUMENTATION --- */
+/* On s'adapte à la div .content parente */
+.conteneur-documentation {
+    width: 100%;
+    /* Pas de padding ici car .content en a déjà */
+}
+
+/* --- EN-TÊTE --- */
+.en-tete-doc {
+    margin-bottom: 25px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 15px;
+}
+
+.titre-page {
+    font-size: 24px; /* Taille ajustée */
+    color: var(--couleur-texte);
+    margin: 0 0 8px 0;
+    font-weight: 600;
+}
+
+.sous-titre {
+    font-size: 14px;
+    color: var(--couleur-texte-leger);
+    margin: 0;
+}
+
+/* --- ONGLETS --- */
+.conteneur-onglets {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #eee;
+    flex-wrap: wrap;
+}
+
+.bouton-onglet {
+    background: none;
+    border: none;
+    padding: 10px 5px;
+    font-size: 15px;
+    color: var(--couleur-texte-leger);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    font-family: inherit; /* Utilise la police Poppins de votre site */
+}
+
+.bouton-onglet.actif {
+    color: var(--couleur-primaire);
+    border-bottom: 3px solid var(--couleur-primaire);
+    font-weight: 600;
+}
+
+.bouton-onglet:hover {
+    color: var(--couleur-primaire);
+}
+
+/* --- CARTES --- */
+.carte-info {
+    background-color: var(--fond-carte);
+    padding: 25px;
+    border-radius: 15px; /* Même arrondi que vos autres cartes */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Même ombre que style.css */
+    margin-bottom: 25px;
+    border: 1px solid #eef2f7;
+}
+
+.titre-carte {
+    font-size: 18px;
+    margin-top: 0;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    color: #342B98; /* Utilise le bleu foncé de votre thème */
+    font-weight: 600;
+}
+
+.carte-info p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #444;
+}
+
+/* --- ÉQUATION --- */
+.boite-equation {
+    background-color: var(--fond-equation);
+    padding: 20px;
+    border-radius: 6px;
+    text-align: center;
+    margin: 20px 0;
+    border-left: 4px solid var(--couleur-primaire);
+    overflow-x: auto;
+}
+
+.formule-equation {
+    font-family: monospace;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #000;
+}
+
+.etiquette-equation {
+    font-size: 0.8rem;
+    color: var(--couleur-texte-leger);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    text-align: left;
+    font-weight: 600;
+}
+
+/* --- VARIABLES --- */
+.liste-variables {
+    list-style: none;
+    padding: 0;
+}
+
+.liste-variables li {
+    margin-bottom: 15px;
+    padding-left: 15px;
+    border-left: 3px solid #ddd;
+}
+
+.nom-variable {
+    font-weight: 600;
+    color: var(--couleur-primaire);
+    font-size: 0.95rem;
+    display: block;
+}
+
+.desc-variable {
+    margin: 4px 0 0 0 !important;
+    font-size: 0.85rem !important;
+    color: #555 !important;
+}
+
+.carte-bas {
+    border: 1px solid #eee;
+    box-shadow: none;
+    background-color: #fcfcfc;
+}

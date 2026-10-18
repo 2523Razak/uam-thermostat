@@ -1,0 +1,453 @@
+/* --- RESET ET BASE --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f8f6f6;
+}
+
+/* --- CONTENEUR PRINCIPAL --- */
+.login-container {
+    display: flex;
+    width: 1090px; 
+    max-width: 100%;
+    max-height: 95vh; 
+    height: auto; 
+    background-color: #1f1f1f;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+/* --- PARTIE GAUCHE- DOUBLE LOGO --- */
+.left-panel {
+    flex: 1;
+    background-color: #1ea95e;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; 
+    color: white;
+    padding: 40px;
+    text-align: center;
+    position: relative;
+}
+
+/* Conteneur Flex pour aligner les deux logos côte à côte */
+.logos-wrapper-left {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    justify-content: center; 
+    width: 100%;
+}
+
+/* Style commun pour les deux logos circulaires */
+.logo-circle {
+    width: 100px;
+    height: 100px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    margin-bottom: 10px;
+    border: 2px solid rgba(255,255,255,0.3);
+    overflow: hidden; 
+    padding: 0;
+}
+
+/* Style spécifique pour le deuxième logo*/
+.logo-circle.logo-secondary {
+    width: 80px; 
+    height: 80px;
+    align-self: center; 
+}
+
+/* Règle commune pour toutes les images de logo */
+.logo-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    display: block;
+}
+
+.brand-name {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ff6b35;
+    margin-bottom: 5px;
+}
+
+.brand-subtitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    opacity: 0.9;
+    max-width: 300px;
+    margin-bottom: 20px;
+}
+
+.secure-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Lien de retour/changement de page sur le panneau gauche */
+.switch-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    text-decoration: none;
+    margin-top: 30px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.switch-link:hover {
+    opacity: 1;
+}
+
+/* --- PARTIE DROITE (FORMULAIRE) - SCROLLABLE --- */
+.right-panel {
+    flex: 1;
+    background-color: #1a1a1a;
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow-y: auto;
+}
+
+/* TITRES CENTRÉS */
+h2.form-title {
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+p.form-subtitle {
+    color: #aaa;
+    font-size: 0.9rem;
+    margin-bottom: 35px;
+    text-align: center;
+}
+
+/* --- STYLES COMMUNS AU FORMULAIRE --- */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    color: #e0e0e0;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+input {
+    width: 100%;
+    padding: 12px 15px 12px 40px;
+    border-radius: 8px;
+    border: none;
+    background-color: #ebf0f7;
+    color: #333;
+    font-size: 1rem;
+    outline: none;
+    font-weight: 500;
+}
+
+input:focus {
+    box-shadow: 0 0 0 2px #1ea95e;
+}
+
+/* Icône principale dans le champ (ex: mail, lock, user) */
+.input-wrapper .icon-field {
+    position: absolute;
+    left: 15px; 
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ff6b35; 
+    font-size: 0.9rem;
+    z-index: 5;
+}
+
+/* Icône OEIL (pour le mot de passe, positionnée à droite) */
+.eye-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ff6b35;
+    cursor: pointer;
+    z-index: 10;
+    padding: 5px;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 12px;
+    background-color: #1ea95e;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-submit:hover {
+    background-color: #168f4f;
+}
+
+/* --- STYLES SPECIFIQUES A L'INSCRIPTION (Champs côte à côte) --- */
+
+/* Conteneur pour aligner les champs côte à côte (Nom/Prénom, Date/Lieu) */
+.form-row {
+    display: flex;
+    gap: 15px; 
+    width: 100%;
+}
+
+/* Chaque champ prend la moitié de l'espace */
+.half-width {
+    flex: 1;
+}
+
+.form-row .form-group {
+    margin-bottom: 20px;
+}
+
+/* --- PIED DU FORMULAIRE (LIENS) --- */
+.form-footer {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9rem;
+    width: 100%;
+}
+
+.right-panel #login-footer {
+    justify-content: space-between;
+}
+
+.form-footer a {
+    color: #aaa;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.form-footer a:hover {
+    color: #ff6b35;
+    text-decoration: underline;
+}
+
+/* --- RESPONSIVE --- */
+
+/* Pour les tablettes (768px à 992px) - Garder l'affichage côte à côte */
+@media (max-width: 992px) {
+    .login-container {
+        width: 95%;
+        max-width: 800px;
+    }
+    
+    .left-panel, .right-panel {
+        padding: 30px;
+    }
+    
+    .logos-wrapper-left {
+        gap: 10px;
+    }
+    
+    .logo-circle {
+        width: 90px;
+        height: 90px;
+    }
+    
+    .logo-circle.logo-secondary {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .brand-name {
+        font-size: 1.8rem;
+    }
+    
+    .description {
+        font-size: 0.85rem;
+        max-width: 280px;
+        margin-bottom: 30px;
+    }
+}
+
+/* Pour les téléphones (moins de 768px) - Passer en mode colonne */
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+        max-height: none;
+        height: auto;
+        margin: 20px 0;
+        border-radius: 15px;
+    }
+    
+    .left-panel, .right-panel {
+        padding: 25px 20px;
+    }
+    
+    .right-panel {
+        overflow-y: visible;
+    }
+    
+    /* Les champs côte à côte passent en colonne */
+    .form-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .half-width {
+        width: 100%;
+        flex: none;
+    }
+    
+    /* Ajustement des logos sans changer la position */
+    .logos-wrapper-left {
+        gap: 10px;
+    }
+    
+    .logo-circle {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 15px;
+    }
+    
+    .logo-circle.logo-secondary {
+        width: 65px;
+        height: 65px;
+        margin-bottom: 15px;
+    }
+    
+    .brand-name {
+        font-size: 1.7rem;
+        margin-bottom: 5px;
+    }
+    
+    .brand-subtitle {
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
+    
+    .description {
+        max-width: 100%;
+        font-size: 0.85rem;
+        margin-bottom: 25px;
+    }
+    
+    .secure-badge {
+        margin-top: 10px;
+    }
+    
+    .switch-link {
+        margin-top: 20px;
+    }
+}
+
+/* Pour les très petits téléphones (moins de 480px) */
+@media (max-width: 480px) {
+    .login-container {
+        width: 100%;
+        border-radius: 0;
+        margin: 0;
+        min-height: 100vh;
+    }
+    
+    .left-panel, .right-panel {
+        padding: 20px 15px;
+    }
+    
+    h2.form-title {
+        font-size: 1.3rem;
+    }
+    
+    input {
+        padding: 10px 15px 10px 35px;
+        font-size: 0.95rem;
+    }
+    
+    .input-wrapper .icon-field {
+        left: 10px;
+        font-size: 0.85rem;
+    }
+    
+    .eye-icon {
+        right: 10px;
+    }
+    
+    .btn-submit {
+        padding: 10px;
+        font-size: 0.95rem;
+    }
+    
+    .logo-circle {
+        width: 70px;
+        height: 70px;
+        margin-bottom: 15px;
+    }
+    
+    .logo-circle.logo-secondary {
+        width: 55px;
+        height: 55px;
+        margin-bottom: 15px;
+    }
+    
+    .brand-name {
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+    }
+    
+    .brand-subtitle {
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+    
+    .description {
+        margin-bottom: 20px;
+    }
+    
+    .secure-badge {
+        font-size: 0.85rem;
+    }
+    
+    .switch-link {
+        margin-top: 15px;
+        font-size: 0.85rem;
+    }
+}

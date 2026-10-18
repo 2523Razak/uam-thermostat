@@ -1,0 +1,1148 @@
+/* ===== RÉINITIALISATION ===== */
+.conteneur-principal {
+    max-width: 2560px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+/* ===== EN-TÊTE ===== */
+.en-tete-details {
+    background: linear-gradient(135deg, #283593 0%, #1a237e 100%);
+    color: white;
+    padding: 25px 30px;
+    border-bottom: 4px solid #4caf50;
+}
+
+.header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.btn-retour {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-retour:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateX(-3px);
+}
+
+.titre-details {
+    font-size: 1.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.titre-tp-details {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.infos-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+}
+
+.statut-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.badge-module {
+    background: rgba(76, 175, 80, 0.9);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.info-prof-header {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ===== CONTENU PRINCIPAL ===== */
+.contenu-details {
+    padding: 30px;
+}
+
+.grid-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border: 1px solid #e9ecef;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.card h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #283593;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f1f1f1;
+}
+
+/* ===== CARTE DESCRIPTION ===== */
+.card-description {
+    grid-column: span 2;
+}
+
+.description-content {
+    line-height: 1.6;
+    color: #495057;
+}
+
+.description-content p {
+    margin-bottom: 15px;
+}
+
+.description-content p:last-child {
+    margin-bottom: 0;
+}
+
+.no-description {
+    color: #6c757d;
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+}
+
+/* ===== CARTE INFORMATIONS ===== */
+.infos-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.info-item-detail {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.info-item-detail i {
+    color: #283593;
+    font-size: 1.2rem;
+    margin-top: 2px;
+    min-width: 24px;
+}
+
+.info-content {
+    flex: 1;
+}
+
+.info-label {
+    display: block;
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.info-value {
+    display: block;
+    font-size: 1rem;
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.info-sub {
+    display: block;
+    font-size: 0.8rem;
+    color: #4caf50;
+    font-weight: 500;
+}
+
+.info-sub.expire {
+    color: #f44336;
+}
+
+.info-sub.urgent {
+    color: #ff9800;
+}
+
+/* ===== CARTE PROGRESSION ===== */
+.progression-content {
+    text-align: center;
+}
+
+.progress-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #283593;
+}
+
+.stat-percent {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #4caf50;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 12px;
+    background: #e9ecef;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4caf50, #2e7d32);
+    border-radius: 6px;
+    transition: width 0.5s ease;
+}
+
+.progress-status {
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.progress-status p {
+    margin: 0;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* ===== CARTE QUESTIONS ===== */
+.card-questions {
+    grid-column: span 2;
+}
+
+.questions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.question-item {
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.question-item:hover {
+    background: white;
+    border-color: #283593;
+    transform: translateX(5px);
+}
+
+.question-item.repondu {
+    border-left: 4px solid #4caf50;
+}
+
+.question-item.non-repondu {
+    border-left: 4px solid #ff9800;
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.question-num {
+    font-weight: 600;
+    color: #283593;
+    font-size: 1rem;
+}
+
+.question-points {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.question-content p {
+    margin: 0;
+    color: #495057;
+    line-height: 1.5;
+}
+
+.question-status {
+    margin-top: 10px;
+    text-align: right;
+}
+
+.status-repondu {
+    color: #4caf50;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-non-repondu {
+    color: #ff9800;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.no-questions {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+}
+
+.no-questions i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+/* ===== ACTIONS ===== */
+.actions-details {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding-top: 30px;
+    border-top: 2px solid #f1f1f1;
+    flex-wrap: wrap;
+}
+
+.btn-action {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    border: none;
+}
+
+.btn-principal {
+    background: linear-gradient(135deg, #283593 0%, #1a237e 100%);
+    color: white;
+}
+
+.btn-principal:hover {
+    background: linear-gradient(135deg, #1a237e 0%, #0d1749 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(40, 53, 147, 0.2);
+}
+
+.btn-secondaire {
+    background: #4caf50;
+    color: white;
+}
+
+.btn-secondaire:hover {
+    background: #388e3c;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(76, 175, 80, 0.2);
+}
+
+.btn-retour {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-retour:hover {
+    background: #5a6268;
+    transform: translateY(-3px);
+}
+
+/* ===== MESSAGES D'ALERTE ===== */
+.message-alerte {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.message-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.message-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.message-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.message-warning {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+/* ===== STYLES POUR LES IMAGES ET LE MODAL ===== */
+.image-header,
+.image-subheader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.image-header i,
+.image-subheader i {
+    color: #4caf50;
+}
+
+.image-header strong,
+.image-subheader strong {
+    color: #2e7d32;
+}
+
+.image-section {
+    margin: 15px 0;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.image-question {
+    background: #e8f5e9;
+    border-left: 4px solid #4caf50;
+}
+
+.image-reponse {
+    background: #e3f2fd;
+    border-left: 4px solid #2196f3;
+}
+
+.image-container {
+    text-align: center;
+    margin: 15px 0;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.question-image {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 6px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.reponse-image {
+    max-width: 100%;
+    max-height: 250px;
+    border-radius: 6px;
+    border: 2px solid #90caf9;
+    box-shadow: 0 3px 10px rgba(33, 150, 243, 0.2);
+}
+
+.no-image-message {
+    color: #757575;
+    font-style: italic;
+    font-size: 0.9rem;
+    margin-top: 5px;
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 6px;
+    border-left: 4px solid #9e9e9e;
+}
+
+.reponse-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.reponse-header i {
+    color: #4caf50;
+    font-size: 1.2rem;
+}
+
+.reponse-header strong {
+    color: #2e7d32;
+    font-size: 1.1rem;
+}
+
+.reponse-options {
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    border-left: 4px solid #9e9e9e;
+}
+
+.options-title {
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #555;
+}
+
+.option-item {
+    margin-bottom: 5px;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.option-item.selected {
+    background: #e8f5e9;
+    border-left: 3px solid #4caf50;
+}
+
+.option-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.option-content i {
+    width: 20px;
+    color: #999;
+}
+
+.option-item.selected .option-content i {
+    color: #4caf50;
+}
+
+.option-item.selected .option-content span {
+    color: #1976d2;
+    font-weight: 500;
+}
+
+.selected-badge {
+    margin-left: 10px;
+    color: #4caf50;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.reponse-texte-wrapper {
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    border-left: 4px solid #9e9e9e;
+}
+
+.reponse-texte {
+    margin: 0;
+    color: #333;
+    white-space: pre-wrap;
+    line-height: 1.5;
+}
+
+.no-reponse-message {
+    margin-top: 15px;
+    padding: 15px;
+    background: #fff3e0;
+    border-radius: 6px;
+    border-left: 4px solid #ff9800;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #e65100;
+}
+
+.reponse-date {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.question-status {
+    margin-top: 10px;
+    text-align: right;
+}
+
+.status-repondu {
+    color: #4caf50;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-non-repondu {
+    color: #ff9800;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-note {
+    margin-left: 10px;
+    color: #4caf50;
+    font-weight: bold;
+}
+
+.file-info {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 10px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    padding: 8px;
+    background: #f9f9f9;
+    border-radius: 6px;
+}
+
+/* Animation pour les alertes */
+.message-alerte {
+    transition: opacity 0.3s ease;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 992px) {
+    .grid-details {
+        grid-template-columns: 1fr;
+    }
+    
+    .card-description,
+    .card-questions {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .contenu-details {
+        padding: 20px;
+    }
+    
+    .en-tete-details {
+        padding: 20px;
+    }
+    
+    .titre-tp-details {
+        font-size: 1.5rem;
+    }
+    
+    .infos-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .actions-details {
+        flex-direction: column;
+    }
+    
+    .btn-action {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .question-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .question-points {
+        align-self: flex-start;
+    }
+}
+
+/* Style pour le commentaire de l'étudiant */
+.reponse-texte-etudiant {
+    margin-top: 15px;
+    padding: 12px 15px;
+    background: #f0f8ff;
+    border-radius: 8px;
+    border-left: 4px solid #2196f3;
+}
+
+.reponse-texte-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    color: #1976d2;
+    font-size: 0.9rem;
+}
+
+.reponse-texte-header i {
+    font-size: 1rem;
+}
+
+.reponse-texte-content {
+    color: #333;
+    line-height: 1.5;
+    font-size: 0.95rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Style pour l'absence de commentaire */
+.no-comment-message {
+    margin-top: 15px;
+    padding: 10px 15px;
+    background: #f0f0f0;
+    border-radius: 8px;
+    border-left: 4px solid #9e9e9e;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #666;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+.no-comment-message i {
+    color: #999;
+    font-size: 1rem;
+}
+
+/* ===== STYLES POUR LES IMAGES AVEC LIEN ===== */
+.image-link {
+    display: inline-block;
+    position: relative;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.image-link:hover .question-image,
+.image-link:hover .reponse-image {
+    opacity: 0.9;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+
+.image-zoom-icon {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.image-link:hover .image-zoom-icon {
+    opacity: 1;
+}
+
+.image-zoom-icon i {
+    font-size: 0.7rem;
+}
+
+/* Image de la question */
+.question-image {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 6px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+}
+
+/* Image de réponse */
+.reponse-image {
+    max-width: 100%;
+    max-height: 250px;
+    border-radius: 6px;
+    border: 2px solid #90caf9;
+    box-shadow: 0 3px 10px rgba(33, 150, 243, 0.2);
+    transition: all 0.2s ease;
+}
+
+/* Header des images */
+.image-header,
+.image-subheader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.image-header i,
+.image-subheader i {
+    color: #4caf50;
+}
+
+.image-header strong,
+.image-subheader strong {
+    color: #2e7d32;
+}
+
+/* Sections d'images */
+.image-section {
+    margin: 15px 0;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.image-question {
+    background: #e8f5e9;
+    border-left: 4px solid #4caf50;
+}
+
+.image-reponse {
+    background: #e3f2fd;
+    border-left: 4px solid #2196f3;
+}
+
+.image-container {
+    text-align: center;
+    margin: 15px 0;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+/* Message quand pas d'image */
+.no-image-message {
+    color: #757575;
+    font-style: italic;
+    font-size: 0.9rem;
+    margin-top: 5px;
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 6px;
+    border-left: 4px solid #9e9e9e;
+}
+
+/* En-tête de réponse */
+.reponse-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.reponse-header i {
+    color: #4caf50;
+    font-size: 1.2rem;
+}
+
+.reponse-header strong {
+    color: #2e7d32;
+    font-size: 1.1rem;
+}
+
+/* Options QCM */
+.reponse-options {
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    border-left: 4px solid #9e9e9e;
+}
+
+.options-title {
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #555;
+}
+
+.option-item {
+    margin-bottom: 5px;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.option-item.selected {
+    background: #e8f5e9;
+    border-left: 3px solid #4caf50;
+}
+
+.option-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.option-content i {
+    width: 20px;
+    color: #999;
+}
+
+.option-item.selected .option-content i {
+    color: #4caf50;
+}
+
+.option-item.selected .option-content span {
+    color: #1976d2;
+    font-weight: 500;
+}
+
+.selected-badge {
+    margin-left: 10px;
+    color: #4caf50;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+/* Texte de réponse */
+.reponse-texte-wrapper {
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    border-left: 4px solid #9e9e9e;
+}
+
+.reponse-texte {
+    margin: 0;
+    color: #333;
+    white-space: pre-wrap;
+    line-height: 1.5;
+}
+
+/* Message pas de réponse */
+.no-reponse-message {
+    margin-top: 15px;
+    padding: 15px;
+    background: #fff3e0;
+    border-radius: 6px;
+    border-left: 4px solid #ff9800;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #e65100;
+}
+
+/* Date de réponse */
+.reponse-date {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+/* Statut des questions */
+.question-status {
+    margin-top: 10px;
+    text-align: right;
+}
+
+.status-repondu {
+    color: #4caf50;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-non-repondu {
+    color: #ff9800;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-note {
+    margin-left: 10px;
+    color: #4caf50;
+    font-weight: bold;
+}
+
+/* Commentaire */
+.commentaire-section {
+    margin-top: 15px;
+    padding: 15px;
+    background: #fffde7;
+    border-radius: 8px;
+    border-left: 4px solid #ffc107;
+}
+
+.commentaire-label {
+    font-weight: 600;
+    color: #ff8f00;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.commentaire-content {
+    color: #5d4037;
+    line-height: 1.5;
+    font-size: 0.95rem;
+    white-space: pre-wrap;
+}
+
+/* Note */
+.note-section {
+    margin-top: 10px;
+    padding: 12px;
+    background: #e8f5e9;
+    border-radius: 6px;
+    border-left: 4px solid #4caf50;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.note-value {
+    color: #2e7d32;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.note-perfect {
+    color: #4caf50;
+    font-weight: bold;
+}
+
+/* Informations fichier */
+.file-info {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 10px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    padding: 8px;
+    background: #f9f9f9;
+    border-radius: 6px;
+}
+
+/* Animation des alertes */
+.message-alerte {
+    transition: opacity 0.3s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .image-zoom-icon {
+        padding: 3px 8px;
+        font-size: 0.7rem;
+    }
+    
+    .image-zoom-icon i {
+        font-size: 0.6rem;
+    }
+    
+    .question-image {
+        max-height: 200px;
+    }
+    
+    .reponse-image {
+        max-height: 180px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-top {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .titre-details {
+        font-size: 1.3rem;
+    }
+    
+    .card {
+        padding: 20px;
+    }
+    
+    .progress-stats {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .info-item-detail {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .info-item-detail i {
+        align-self: flex-start;
+    }
+}

@@ -1,0 +1,258 @@
+{% extends "barmenu.html" %}
+
+{% block page_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/repondre_questions.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="repondre-questions-container">
+
+    <!-- En-tête académique -->
+    <header class="en-tete-academique">
+        <h1 class="titre-principal">
+            <i class="fas fa-pencil-alt"></i> {{ tp.titre }}
+        </h1>
+        <div class="sous-titre">
+            Travail pratique - Formulaire de réponse
+        </div>
+        
+        <div class="informations-tp">
+            <div class="info-item">
+                <i class="fas fa-user-graduate"></i>
+                <span><strong>Étudiant:</strong> {{ etudiant.prenom }} {{ etudiant.nom }}</span>
+            </div>
+            
+            {% if tp.module %}
+            <div class="info-item">
+                <i class="fas fa-graduation-cap"></i>
+                <span><strong>Module:</strong> {{ tp.module }}</span>
+            </div>
+            {% endif %}
+            
+            <div class="info-item">
+                <i class="fas fa-user-tie"></i>
+                <span><strong>Professeur:</strong> {{ professeur.prenom }} {{ professeur.nom }}</span>
+            </div>
+            
+            {% if tp.date_limite %}
+            <div class="info-item">
+                <i class="fas fa-calendar-times"></i>
+                <span><strong>Date limite:</strong> {{ tp.date_limite.strftime('%d/%m/%Y à %H:%M') }}</span>
+            </div>
+            {% endif %}
+            
+            <div class="info-item">
+                <i class="fas fa-question-circle"></i>
+                <span><strong>Questions:</strong> {{ tp.nombre_questions }}</span>
+            </div>
+            
+            {% if tp.date_limite %}
+            <div class="info-item">
+                <i class="fas fa-clock"></i>
+                <span><strong>Temps restant:</strong> <span id="temps-restant-text">Calcul en cours...</span></span>
+            </div>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Barre de progression -->
+    <div class="progress-container">
+        <div class="progress-header">
+            <div class="progress-info">
+                <div class="progress-label">Progression</div>
+                <div class="progress-value" id="progress-value">0%</div>
+                <div class="progress-label" id="questions-answered">0/0 répondues</div>
+            </div>
+            
+            <div class="timer-container">
+                {% if tp.temps_limite %}
+                <div class="timer" id="timer" data-minutes="{{ tp.temps_limite }}">
+                    <i class="fas fa-clock"></i>
+                    <span id="timer-text">--:--</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-bar" style="width: 0%"></div>
+        </div>
+    </div>
+
+    <!-- Instructions -->
+    <div class="instructions-container">
+        <h2 class="titre-section">
+            <i class="fas fa-info-circle"></i> Instructions importantes
+        </h2>
+        <ul class="liste-instructions">
+            <li>Vos réponses sont <strong>sauvegardées automatiquement</strong> en arrière-plan</li>
+            <li>Vous pouvez quitter et revenir plus tard, vos réponses seront conservées</li>
+            <li>Répondez aux questions dans l'ordre ou utilisez la navigation</li>
+            <li>Pour les questions à choix multiple, sélectionnez une seule réponse</li>
+            <li>Pour les cases à cocher, sélectionnez une ou plusieurs réponses</li>
+            <li>Pour les images, téléchargez uniquement des fichiers image (max 16MB)</li>
+            <li>Les images sont sauvegardées automatiquement lors de l'upload</li>
+            <li>Une fois satisfait(e), cliquez sur "Soumettre"</li>
+            <li>Vous pouvez soumettre même si des questions ne sont pas répondues</li>
+        </ul>
+    </div>
+
+    <!-- Conteneur de question -->
+    <div class="question-container" id="question-container">
+        <div class="question-header">
+            <span class="question-number" id="question-numero">Question 1/0</span>
+            <span class="question-points" id="question-points">
+                <i class="fas fa-star"></i> 0.0 points
+            </span>
+            <span class="question-status" id="question-status">
+                <i class="fas fa-circle"></i> Non répondu
+            </span>
+        </div>
+        
+        <div class="question-text" id="question-texte">
+            Chargement de la question...
+        </div>
+        
+        <!-- Zone de réponse dynamique -->
+        <div id="reponse-container">
+            <div style="text-align: center; padding: 40px; color: #6c757d;">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
+                <p style="margin-top: 15px;">Chargement du formulaire...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation des questions -->
+    <div class="question-navigation">
+        <div class="nav-buttons">
+            <button class="nav-button prev" id="prev-question" onclick="questionPrecedente()">
+                <i class="fas fa-arrow-left"></i>
+                Précédent
+            </button>
+            
+            <button class="nav-button next" id="next-question" onclick="questionSuivante()">
+                Suivant
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        
+        <div class="question-jump" id="question-jump">
+            <!-- Les boutons de navigation seront générés ici -->
+        </div>
+        
+        <div class="action-buttons">
+            <button class="nav-button save-btn" onclick="forcerSauvegarde()">
+                <i class="fas fa-save"></i>
+                Sauvegarder
+            </button>
+            
+            <button class="nav-button submit-btn" onclick="afficherModalSoumission()">
+                <i class="fas fa-paper-plane"></i>
+                Soumettre
+            </button>
+            
+        </div>
+    </div>
+</div>
+
+<!-- Modal de soumission -->
+<div class="modal-overlay" id="submission-modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-icon">
+                <i class="fas fa-paper-plane"></i>
+            </div>
+            <h3 class="modal-title">Soumettre votre travail</h3>
+        </div>
+        
+        <div class="modal-body">
+            <div class="summary-item">
+                <span class="summary-label">Total des questions:</span>
+                <span class="summary-value" id="total-questions">0</span>
+            </div>
+            
+            <div class="summary-item">
+                <span class="summary-label">Questions répondues:</span>
+                <span class="summary-value answered" id="answered-count">0</span>
+            </div>
+            
+            <div class="summary-item">
+                <span class="summary-label">Questions non répondues:</span>
+                <span class="summary-value unanswered" id="unanswered-count">0</span>
+            </div>
+            
+            <div class="summary-item">
+                <span class="summary-label">Points totaux:</span>
+                <span class="summary-value" id="total-points">0.0</span>
+            </div>
+            
+            <div class="summary-item">
+                <span class="summary-label">Images jointes:</span>
+                <span class="summary-value" id="files-count">0</span>
+            </div>
+            
+            <div class="summary-item">
+                <span class="summary-label">Dernière sauvegarde:</span>
+                <span class="summary-value" id="last-save-time">À l'instant</span>
+            </div>
+            
+            <div class="modal-section" id="unanswered-section" style="display: none;">
+                <div class="modal-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong>Attention : Questions non répondues</strong>
+                        <p>Il reste <span id="unanswered-warning-count">0</span> question(s) non répondues. 
+                        Vous pouvez soumettre maintenant et compléter plus tard si le temps le permet.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-section" id="all-answered-section" style="display: none;">
+                <div class="modal-success">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <strong>Félicitations !</strong>
+                        <p>Toutes les questions sont répondues. Vous pouvez soumettre votre travail.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-section" id="files-section" style="display: none;">
+                <div class="modal-info">
+                    <i class="fas fa-images"></i>
+                    <div>
+                        <strong>Fichiers attachés</strong>
+                        <p><span id="files-count-detail">0</span> image(s) seront soumise(s) avec votre travail.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-section">
+                <div class="modal-info">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>Important</strong>
+                        <p>Une fois soumis, vous ne pourrez plus modifier vos réponses.</p>
+                        <p>Les images seront définitivement sauvegardées sur le serveur.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal-footer">
+            <button class="modal-button cancel" onclick="fermerModalSoumission()">
+                <i class="fas fa-times"></i> Annuler
+            </button>
+            <button class="modal-button submit" onclick="soumettreReponses()" id="submit-final-btn">
+                <i class="fas fa-paper-plane"></i> Confirmer la soumission
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/repondre_questions.js') }}" 
+        data-tp-id="{{ tp.id }}"
+        data-etudiant-id="{{ etudiant.id }}"></script>
+{% endblock %}
