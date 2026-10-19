@@ -598,7 +598,7 @@ body {
 
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));   /* minmax(0,…) : le contenu d'une colonne n'élargit plus la grille */
     gap: 10px;
     align-items: stretch;
 }
@@ -750,9 +750,10 @@ body {
 
 #controle-buttons .actions-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    gap: 8px;
+    flex-wrap: wrap;
+    gap: 6px;
     margin-top: 10px;
 }
 
@@ -760,8 +761,9 @@ body {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     cursor: pointer;
-    width: 45px;
-    height: 45px;
+    width: 34px;
+    height: 34px;
+    padding: 0;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -787,9 +789,10 @@ body {
     transform: none;
 }
 
-#controle-buttons .action-item img {
-    width: 18px;
-    height: 18px;
+#controle-buttons .action-item img,
+#controle-buttons .action-item svg {
+    width: 15px;
+    height: 15px;
 }
 
 /* Bloc Consigne */
@@ -981,7 +984,7 @@ select:focus {
 }
 
 .chart-nav-btn {
-    padding: 8px 8px;
+    padding: 6px 8px;
     background-color: #4a55ff;
     color: white;
     border: none;
@@ -990,7 +993,7 @@ select:focus {
     font-size: 14px;
     font-family: 'Poppins', sans-serif;
     transition: background-color 0.3s ease;
-    min-width: 40px; 
+    min-width: 36px;
 }
 
 .chart-nav-btn:hover:not(:disabled) {
@@ -1018,8 +1021,8 @@ select:focus {
 }
 
 .chart-nav-btn img {
-    width: 25px; 
-    height: 25px; 
+    width: 20px;
+    height: 20px;
     display: block;
 }
 
@@ -1496,13 +1499,13 @@ select option:disabled {
     }
     
     #controle-buttons .action-item {
-        width: 40px;
-        height: 40px;
+        width: 32px;
+        height: 32px;
     }
     
     #controle-buttons .action-item img {
-        width: 16px;
-        height: 16px;
+        width: 14px;
+        height: 14px;
     }
     
     .sidebar::-webkit-scrollbar {
