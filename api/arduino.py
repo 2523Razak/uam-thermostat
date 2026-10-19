@@ -9,7 +9,7 @@ import csv
 import io
 from utils.data_export import exporter_donnees_csv, creer_reponse_csv
 from controllers.arduino_controller import (
-    CONNECT_ATTENTE_S, ETAT_NORMAL, ETAT_PAUSE, ETAT_SUSPENDU, ETAT_URGENCE, ETAT_VERROUILLE
+    CONNECT_ATTENTE_S, ETAT_NORMAL, ETAT_PAUSE, ETAT_SUSPENDU
 )
 
 def register_arduino_routes(app, arduino_controller):
@@ -193,14 +193,6 @@ def register_arduino_routes(app, arduino_controller):
                 
                 elif action == 'start':
                     conn = arduino_controller.connexions_arduino[id_connexion]
-                    # Après un arrêt d'urgence ou une coupure watchdog/surchauffe, la reprise
-                    # passe obligatoirement par le réarmement explicite (/api/rearm).
-                    if conn.get('etat_securite') in (ETAT_URGENCE, ETAT_VERROUILLE):
-                        return jsonify({
-                            'success': False,
-                            'message': 'Réarmement requis avant de reprendre (bouton « Réarmer »).',
-                            'etat_securite': conn.get('etat_securite')
-                        })
                     # Reprise propre : PID réinitialisé (intégrale/dérivée à 0), mode renvoyé
                     arduino_controller.reinitialiser_regulation(conn)
                     conn['etat_securite'] = ETAT_NORMAL
@@ -899,64 +891,6 @@ def register_arduino_routes(app, arduino_controller):
         """Propriétaire de la connexion, ou enseignant (statut admin dans la base)."""
         return (session.get('user_id') == connexion.get('user_id')
                 or session.get('user_statut') == 'admin')
-
-    @app.route('/api/emergency_stop', methods=['POST'])
-    @login_required
-    def emergency_stop():
-        """ARRÊT D'URGENCE : STOP + PWM:0 immédiats, mode 'none', plus aucun PWM du PID
-        tant que non réarmé. Propriétaire ou enseignant. N'utilise pas le PID."""
-        try:
-            donnees = request.get_json(silent=True) or {}
-            id_connexion = donnees.get('connection_id')
-            connexion = arduino_controller.connexions_arduino.get(id_connexion)
-            if not connexion:
-                return jsonify({'success': False, 'message': 'Connexion non trouvée'}), 404
-            if not _peut_agir_sur(connexion):
-                return jsonify({'success': False, 'message': 'Accès non autorisé à cette connexion'}), 403
-
-            envoye = arduino_controller.arret_urgence(id_connexion, session.get('user_email', session.get('user_id')))
-            audit_logger.log(
-                event_type='EMERGENCY_STOP',
-                user_id=session.get('user_id'),
-                connection_id=id_connexion,
-                details=f"Arrêt d'urgence (commandes transmises à l'agent : {envoye})",
-                ip_address=request.remote_addr
-            )
-            if envoye:
-                message = "Arrêt d'urgence : STOP et PWM 0 envoyés."
-            else:
-                message = ("Arrêt d'urgence enregistré mais la commande n'a pas pu être transmise à la carte "
-                           "(liaison coupée) : la sécurité de l'Arduino coupera le chauffage de façon autonome.")
-            return jsonify({'success': True, 'commande_envoyee': envoye, 'message': message,
-                            'etat_securite': ETAT_URGENCE})
-        except Exception as e:
-            # Même en cas d'erreur inattendue : dernier recours, tenter la coupure directe
-            try:
-                arduino_controller.couper_chauffage(request.get_json(silent=True).get('connection_id'), "urgence (erreur)")
-            except Exception:
-                pass
-            print(f"❌ Erreur arrêt d'urgence: {e}")
-            return jsonify({'success': False, 'message': f'Erreur: {str(e)}'}), 500
-
-    @app.route('/api/rearm', methods=['POST'])
-    @login_required
-    @connection_ownership_required
-    def rearm():
-        """Réarmement explicite après arrêt d'urgence, watchdog ou surchauffe."""
-        try:
-            id_connexion = request.json.get('connection_id')
-            if not arduino_controller.rearmer(id_connexion):
-                return jsonify({'success': False, 'message': 'Réarmement impossible (carte non connectée)'})
-            audit_logger.log(
-                event_type='REARM',
-                user_id=session.get('user_id'),
-                connection_id=id_connexion,
-                details="Réarmement explicite",
-                ip_address=request.remote_addr
-            )
-            return jsonify({'success': True, 'message': 'Réarmé : le chauffage reprendra à la prochaine consigne.'})
-        except Exception as e:
-            return jsonify({'success': False, 'message': f'Erreur: {str(e)}'})
 
     @app.route('/api/session_leaving', methods=['POST'])
     @login_required

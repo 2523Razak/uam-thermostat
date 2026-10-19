@@ -392,3 +392,76 @@ figcaption {
   overflow-x: auto;
 }
 .section-note { margin-top: 22px; color: var(--ink-soft); font-size: 0.93rem; }
+
+
+/* ===== Version « article » : sommaire, numéros, schémas, tableaux ===== */
+.toc {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 10px;
+  max-width: 1080px; margin: 0 auto; padding: 12px 24px;
+  background: rgba(246, 244, 238, 0.94); backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+}
+.toc a { font-size: 13px; color: var(--indigo); padding: 4px 12px; border-radius: 999px; transition: background .2s, color .2s; }
+.toc a:hover { background: var(--indigo); color: #fff; }
+html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+
+.article p { color: var(--ink-soft); max-width: 70ch; margin-bottom: 16px; text-align: left; }
+.article strong { color: var(--ink); font-weight: 600; }
+.section-title .num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; margin-right: 12px; border-radius: 50%;
+  background: var(--indigo); color: #fff; font-family: 'Poppins', sans-serif; font-size: 17px; font-weight: 500;
+  vertical-align: middle;
+}
+.sub-title { font-size: 19px; margin: 34px 0 14px; }
+
+/* Schémas */
+.schema { margin: 28px 0; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 14px 12px; }
+.schema svg { width: 100%; height: auto; display: block; }
+.schema figcaption { margin-top: 10px; text-align: center; font-size: 13px; color: var(--ink-soft); font-style: italic; }
+.schema-img img { margin: 0 auto; max-height: 420px; width: auto; }
+.s-line { stroke: var(--indigo); stroke-width: 2; fill: none; }
+.s-fill { fill: var(--indigo); }
+.s-axis { stroke: #8a8576; stroke-width: 1.5; }
+.s-dash { stroke: var(--brass); stroke-width: 1.5; stroke-dasharray: 6 5; }
+.s-box { fill: var(--indigo-soft); stroke: var(--indigo); stroke-width: 1.5; }
+.s-box-main { fill: var(--indigo); }
+.s-box-heat { fill: #fbe9d7; stroke: #c4691c; }
+.s-node { fill: #fff; stroke: var(--indigo); stroke-width: 2; }
+.s-label { font: 600 15px 'Poppins', sans-serif; fill: var(--indigo); text-anchor: start; }
+.s-mid { font: 600 14px 'Poppins', sans-serif; fill: var(--indigo-deep); text-anchor: middle; }
+.s-small { font: 400 12px 'Poppins', sans-serif; fill: var(--ink-soft); text-anchor: middle; }
+.s-white { fill: #fff; }
+svg text.s-small[x="30"], svg text.s-small[x="66"] { text-anchor: start; }
+.c-lent  { stroke: #8a8576; stroke-width: 3; }
+.c-bon   { stroke: #2f855a; stroke-width: 3.5; }
+.c-fort  { stroke: #c53030; stroke-width: 3; }
+.k-lent { fill: #8a8576; } .k-bon { fill: #2f855a; } .k-fort { fill: #c53030; }
+g .s-small { text-anchor: start; }
+
+.feature-inline { display: grid; grid-template-columns: 1.25fr 1fr; gap: 28px; align-items: center; }
+.feature-inline .schema { margin: 0; }
+.photo-row { display: flex; justify-content: center; margin-top: 28px; }
+.photo-row figure { text-align: center; }
+.photo-row img { max-height: 220px; margin: 0 auto; }
+.photo-row figcaption { margin-top: 8px; font-size: 13px; font-style: italic; color: var(--ink-soft); }
+
+/* Tableaux */
+.tbl-wrap { overflow-x: auto; margin: 10px 0 18px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+.tbl th { background: var(--indigo); color: #fff; text-align: left; padding: 10px 14px; font-weight: 500; }
+.tbl td { padding: 10px 14px; border-top: 1px solid var(--line); color: var(--ink-soft); vertical-align: top; }
+.tbl tr:nth-child(even) td { background: #faf8f3; }
+
+/* Glossaire */
+.glossary { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px 28px; }
+.glossary div { border-left: 3px solid var(--brass); padding: 4px 0 4px 14px; }
+.glossary dt { font-family: 'Fraunces', serif; color: var(--indigo); font-size: 17px; }
+.glossary dd { color: var(--ink-soft); font-size: 14.5px; }
+
+@media (max-width: 800px) {
+  .toc { position: static; padding: 10px 14px; }
+  .feature-inline { grid-template-columns: 1fr; }
+  .section-title .num { width: 32px; height: 32px; font-size: 15px; }
+}

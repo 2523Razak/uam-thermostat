@@ -832,16 +832,6 @@ class SurveillanceTemperature {
             }
         });
 
-        // Arrêt d'urgence (carte « Contrôle ») et réarmement
-        const boutonUrgence = document.getElementById('emergency-stop-btn');
-        if (boutonUrgence) {
-            boutonUrgence.addEventListener('click', () => this.arretUrgence());
-        }
-        const boutonRearmer = document.getElementById('safety-rearm-btn');
-        if (boutonRearmer) {
-            boutonRearmer.addEventListener('click', () => this.rearmer());
-        }
-
         // Fermeture / rechargement de la page : prévenir le serveur (délai de grâce
         // côté serveur : un simple rechargement ne coupe rien).
         window.addEventListener('pagehide', () => this.signalerFermeturePage());
@@ -1522,60 +1512,8 @@ class SurveillanceTemperature {
     }
 
     // ============================================================
-    // SÉCURITÉ CHAUFFAGE : arrêt d'urgence, réarmement, état serveur
+    // SÉCURITÉ CHAUFFAGE : état de sécurité renvoyé par le serveur
     // ============================================================
-
-    // Arrêt d'urgence : fonctionne même si la surveillance est en pause ou le PID en erreur
-    async arretUrgence() {
-        if (!this.id_connexion) {
-            this.afficherMessage('Aucune connexion active : rien à arrêter', 'warning');
-            return;
-        }
-        try {
-            const reponse = await fetch('/api/emergency_stop', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ connection_id: this.id_connexion })
-            });
-            const resultat = await reponse.json();
-            if (resultat.success) {
-                this.afficherMessage(resultat.message, resultat.commande_envoyee ? 'warning' : 'error');
-                this.appliquerEtatSecurite('urgence', "Arrêt d'urgence activé : chauffage coupé. Réarmez pour reprendre.");
-            } else {
-                this.afficherMessage(resultat.message || "Échec de l'arrêt d'urgence", 'error');
-            }
-        } catch (erreur) {
-            console.error("Erreur arrêt d'urgence:", erreur);
-            this.afficherMessage("Serveur injoignable : l'arrêt d'urgence n'a PAS été transmis. La sécurité de l'Arduino coupera le chauffage sous quelques secondes.", 'error');
-        }
-    }
-
-    // Réarmement explicite après urgence / watchdog / surchauffe
-    async rearmer() {
-        if (!this.id_connexion) return;
-        try {
-            const reponse = await fetch('/api/rearm', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ connection_id: this.id_connexion })
-            });
-            const resultat = await reponse.json();
-            if (resultat.success) {
-                this.etat_securite = 'normal';
-                this.afficherBandeauSecurite(null);
-                this.surveillance_active = true;
-                this.basculerBoutonsSurveillance(true);
-                this.sauvegarderEtatConnexion();
-                this.demarrerSurveillanceDonnees();
-                this.afficherMessage(resultat.message, 'success');
-            } else {
-                this.afficherMessage(resultat.message, 'error');
-            }
-        } catch (erreur) {
-            console.error('Erreur réarmement:', erreur);
-            this.afficherMessage('Erreur de réarmement', 'error');
-        }
-    }
 
     // Applique l'état de sécurité renvoyé par le serveur (données, check_connection)
     appliquerEtatSecurite(etat, alerte) {
@@ -1591,18 +1529,7 @@ class SurveillanceTemperature {
             return;   // pause demandée par l'utilisateur : rien à signaler
         }
 
-        if (etat === 'verrouille') {
-            // La carte a coupé seule (watchdog) : liaison perdue, déconnexion comme avant
-            this.gererConnexionPerdue('watchdog_arduino');
-            return;
-        }
-        // urgence / suspendu : la régulation est arrêtée côté serveur
-        if (etat === 'urgence' && this.type_controleur !== 'none') {
-            // le serveur repasse en mode « none » : l'interface suit
-            this.type_controleur = 'none';
-            const selecteur = document.getElementById('controller-select');
-            if (selecteur) selecteur.value = 'none';
-        }
+        // suspendu (inactivité) : la régulation est arrêtée côté serveur, reprise par ▶
         if (this.surveillance_active) {
             this.surveillance_active = false;
             this.basculerBoutonsSurveillance(false);
@@ -1612,7 +1539,7 @@ class SurveillanceTemperature {
         this.afficherBandeauSecurite(etat, alerte);
     }
 
-    // Bandeau d'alerte + bouton « Réarmer » (pour la suspension, la reprise se fait par ▶)
+    // Bandeau d'information (suspension pour inactivité ; la reprise se fait par ▶)
     afficherBandeauSecurite(etat, alerte) {
         const bandeau = document.getElementById('safety-banner');
         if (!bandeau) return;
@@ -1623,11 +1550,6 @@ class SurveillanceTemperature {
         const texte = document.getElementById('safety-banner-text');
         if (texte) {
             texte.textContent = alerte || 'Chauffage coupé par la sécurité.';
-        }
-        const boutonRearmer = document.getElementById('safety-rearm-btn');
-        if (boutonRearmer) {
-            // Urgence et verrou exigent un réarmement ; une simple suspension se relance par ▶
-            boutonRearmer.hidden = (etat !== 'urgence');
         }
         bandeau.hidden = false;
     }
@@ -1947,8 +1869,6 @@ class SurveillanceTemperature {
         document.getElementById('start-btn').disabled = connecte;
         document.getElementById('stop-monitoring-btn').disabled = !connecte;
         document.getElementById('disconnect-btn').disabled = !connecte;
-        const boutonUrgenceEtat = document.getElementById('emergency-stop-btn');
-        if (boutonUrgenceEtat) boutonUrgenceEtat.disabled = !connecte;
     }
 
     // Basculer les boutons de surveillance

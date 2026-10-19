@@ -26,276 +26,337 @@
   <!-- ===== Hero ===== -->
   <section class="hero">
     <p class="hero-eyebrow">Mémoire de Master · Physique, option EEA</p>
-    <h1 class="hero-title">Plateforme de pilotage à distance<br>d'un système thermique à régulation PID</h1>
+    <h1 class="hero-title">Un laboratoire de régulation de température,<br>accessible depuis un navigateur</h1>
     <p class="hero-subtitle">
-      Une application web qui relie un navigateur à un montage électronique réel, pour régler,
-      mesurer et corriger une expérience de régulation de température à distance.
+      Cette plateforme permet de faire chauffer un vrai montage électronique à distance, de mesurer
+      sa température en direct et d'apprendre à la réguler avec un régulateur PI ou PID.
     </p>
     <div class="hero-rule"></div>
   </section>
 
+  <!-- ===== Sommaire ===== -->
+  <nav class="toc" aria-label="Sommaire">
+    <a href="#contexte">1. Contexte</a>
+    <a href="#principe">2. Le principe</a>
+    <a href="#montage">3. Le montage</a>
+    <a href="#architecture">4. Le trajet d'une commande</a>
+    <a href="#modes">5. Les trois modes</a>
+    <a href="#utilisation">6. Utilisation</a>
+    <a href="#securite">7. Sécurité</a>
+    <a href="#parcours">8. Parcours pédagogique</a>
+    <a href="#limites">9. Limites</a>
+    <a href="#glossaire">Glossaire</a>
+  </nav>
 
-  <!-- ===== En bref ===== -->
-  <section class="section reveal">
-    <h2 class="section-title">En bref</h2>
-    <p class="section-intro">
-      Cette plateforme permet de faire, depuis un navigateur, un vrai travail pratique d'automatique :
-      faire chauffer un petit montage, mesurer sa température et apprendre à la réguler.
+  <!-- ===== 1. Contexte ===== -->
+  <section class="section article reveal" id="contexte">
+    <h2 class="section-title"><span class="num">1</span> Contexte et objectif</h2>
+    <p>
+      En automatique, on apprend vraiment en manipulant : on règle un régulateur, on regarde la réponse
+      du système, on corrige. Mais le matériel de laboratoire coûte cher et il n'y en a pas pour tous les
+      étudiants. Les séances sont donc limitées par le nombre de montages et par les horaires de la salle.
+    </p>
+    <p>
+      Cette plateforme répond à ce problème. <strong>Un seul montage réel</strong> est installé à
+      l'université, et il peut être piloté <strong>depuis n'importe quel ordinateur connecté à Internet</strong>.
+      Ce n'est pas une simulation : chaque ordre envoyé depuis le navigateur agit sur le matériel, et chaque
+      mesure affichée vient du capteur.
     </p>
     <div class="cards-grid">
       <article class="info-card">
-        <i class="fa-solid fa-flask"></i>
-        <h3>Ce que c'est</h3>
-        <p>Un laboratoire de régulation de température accessible en ligne. Le montage (Arduino, capteur de
-        température, élément chauffant) est installé à l'université ; vous le pilotez à distance.</p>
+        <i class="fa-solid fa-user-graduate"></i>
+        <h3>Pour l'étudiant</h3>
+        <p>Il manipule, observe la courbe en direct, exporte ses mesures, puis répond aux questions du TP.</p>
       </article>
       <article class="info-card">
-        <i class="fa-solid fa-users"></i>
-        <h3>À qui elle s'adresse</h3>
-        <p>Aux étudiants, qui manipulent et répondent aux travaux pratiques, et aux enseignants, qui créent les
-        TP, suivent les manipulations, corrigent et notent.</p>
+        <i class="fa-solid fa-chalkboard-user"></i>
+        <h3>Pour l'enseignant</h3>
+        <p>Il crée les travaux pratiques, suit les manipulations, corrige les copies et attribue les notes.</p>
       </article>
       <article class="info-card">
-        <i class="fa-solid fa-chart-line"></i>
-        <h3>Ce que vous y apprenez</h3>
-        <p>Comment un système chauffe et refroidit, comment une consigne est atteinte, et comment un régulateur
-        PI ou PID corrige l'écart entre la température voulue et la température mesurée.</p>
+        <i class="fa-solid fa-building-columns"></i>
+        <h3>Pour l'établissement</h3>
+        <p>Un même montage sert à beaucoup d'étudiants, sans dépendre des horaires du laboratoire.</p>
       </article>
     </div>
   </section>
 
-  <!-- ===== 1. Présentation ===== -->
-  <section class="feature reveal">
-    <div class="feature-media">
-      <img src="static/image/thermostat.png" alt="Montage de régulation thermique">
-    </div>
-    <div class="feature-text">
-      <h2>Une expérience réelle, pilotée à distance</h2>
-      <p>
-        La plateforme met à disposition un véritable montage de régulation thermique : une carte Arduino
-        reliée à un capteur de température et à un élément chauffant. À la différence d'une simulation,
-        chaque commande envoyée depuis le navigateur agit sur le matériel installé au laboratoire, et
-        chaque mesure affichée provient directement du capteur.
-      </p>
-      <p>
-        L'accès se fait depuis n'importe quel poste connecté à Internet, sans installation particulière :
-        la création d'un compte et une vérification par email suffisent pour commencer une session de travail.
-      </p>
-    </div>
-  </section>
-
-  <!-- ===== 2. Architecture de communication ===== -->
-  <section class="section diagram-section reveal">
-    <h2 class="section-title">Quatre composants, une communication continue</h2>
+  <!-- ===== 2. Principe ===== -->
+  <section class="section article reveal" id="principe">
+    <h2 class="section-title"><span class="num">2</span> Le principe : réguler une température</h2>
     <p>
-      Le navigateur affiche l'interface et transmet les actions de l'utilisateur au serveur par des
-      requêtes HTTP. Développé avec Flask, le serveur traite ces requêtes, applique les règles de
-      régulation et interroge la base de données qui conserve les comptes, les travaux pratiques et
-      les résultats des expériences. Pour atteindre le matériel, le serveur reste connecté en permanence
-      à un agent logiciel installé sur l'ordinateur du laboratoire. Cet agent relaie les commandes à la
-      carte Arduino par liaison série, puis renvoie les mesures de température dans l'autre sens. Cette
-      séparation permet d'héberger le serveur n'importe où, tout en laissant le matériel physique au
-      laboratoire.
+      Réguler, c'est faire en sorte que la température <strong>mesurée</strong> rejoigne la
+      température <strong>voulue</strong> (la <em>consigne</em>) et s'y maintienne. Pour cela, on utilise une
+      <strong>boucle fermée</strong> : on mesure, on compare à la consigne, puis on ajuste le chauffage.
+      Ce cycle se répète sans arrêt.
     </p>
-    <div class="diagram-frame">
+
+    <figure class="schema">
+      <svg viewBox="0 0 760 250" role="img" aria-labelledby="t-boucle d-boucle">
+        <title id="t-boucle">Boucle de régulation</title>
+        <desc id="d-boucle">La consigne est comparée à la mesure ; l'écart entre dans le régulateur, qui commande le chauffage ; la température du montage est mesurée par le capteur et renvoyée vers la comparaison.</desc>
+        <defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="s-fill"/></marker></defs>
+        <text x="30" y="98" class="s-label">Consigne</text>
+        <text x="30" y="116" class="s-small">(ex. 60 °C)</text>
+        <line x1="30" y1="125" x2="108" y2="125" class="s-line" marker-end="url(#fl)"/>
+        <circle cx="125" cy="125" r="17" class="s-node"/>
+        <text x="125" y="130" class="s-mid">+</text>
+        <text x="113" y="170" class="s-small">−</text>
+        <line x1="142" y1="125" x2="205" y2="125" class="s-line" marker-end="url(#fl)"/>
+        <text x="176" y="113" class="s-small">écart e</text>
+        <rect x="207" y="95" width="130" height="60" rx="6" class="s-box s-box-main"/>
+        <text x="272" y="121" class="s-mid s-white">Régulateur</text>
+        <text x="272" y="140" class="s-small s-white">PI ou PID</text>
+        <line x1="337" y1="125" x2="400" y2="125" class="s-line" marker-end="url(#fl)"/>
+        <text x="368" y="86" class="s-small">puissance u</text>
+        <rect x="402" y="95" width="120" height="60" rx="6" class="s-box"/>
+        <text x="462" y="121" class="s-mid">Chauffage</text>
+        <text x="462" y="140" class="s-small">0 à 100 %</text>
+        <line x1="522" y1="125" x2="565" y2="125" class="s-line" marker-end="url(#fl)"/>
+        <rect x="567" y="95" width="120" height="60" rx="6" class="s-box"/>
+        <text x="627" y="121" class="s-mid">Montage</text>
+        <text x="627" y="140" class="s-small">chauffe / refroidit</text>
+        <line x1="687" y1="125" x2="730" y2="125" class="s-line"/>
+        <text x="738" y="120" class="s-label" text-anchor="end">T</text>
+        <path d="M708 125 V212 H420" class="s-line" fill="none"/>
+        <rect x="300" y="190" width="120" height="44" rx="6" class="s-box"/>
+        <text x="360" y="209" class="s-mid">Capteur</text>
+        <text x="360" y="225" class="s-small">TMP36</text>
+        <path d="M300 212 H125 V144" class="s-line" fill="none" marker-end="url(#fl)"/>
+        <text x="222" y="204" class="s-small">température mesurée</text>
+      </svg>
+      <figcaption>Figure 1 — La boucle de régulation : la mesure est comparée à la consigne, et l'écart <em>e</em> décide de la puissance de chauffe <em>u</em>.</figcaption>
+    </figure>
+
+    <p>
+      Un four est lent : il faut du temps pour chauffer, et du temps pour refroidir. Le régulateur doit donc
+      être <strong>bien réglé</strong>. S'il est trop prudent, la température monte très lentement. S'il est
+      trop brusque, elle dépasse la consigne avant de revenir. C'est précisément ce que l'étudiant apprend à
+      observer et à corriger.
+    </p>
+
+    <figure class="schema">
+      <svg viewBox="0 0 760 270" role="img" aria-labelledby="t-courbes d-courbes">
+        <title id="t-courbes">Trois réponses typiques à une consigne</title>
+        <desc id="d-courbes">Trois courbes de température dans le temps : une montée lente qui n'atteint pas la consigne, une montée bien réglée qui se stabilise sur la consigne, et une montée trop brusque qui dépasse puis revient.</desc>
+        <line x1="60" y1="20" x2="60" y2="230" class="s-axis"/>
+        <line x1="60" y1="230" x2="730" y2="230" class="s-axis"/>
+        <text x="20" y="30" class="s-small">T (°C)</text>
+        <text x="700" y="252" class="s-small">temps</text>
+        <line x1="60" y1="80" x2="730" y2="80" class="s-dash"/>
+        <text x="66" y="72" class="s-small">consigne</text>
+        <path d="M60 230 C200 215 320 190 420 170 S640 140 725 130" class="c-lent" fill="none"/>
+        <path d="M60 230 C150 200 220 120 300 92 S420 78 725 80" class="c-bon" fill="none"/>
+        <path d="M60 230 C120 170 170 60 230 40 S300 70 340 88 S420 76 450 78 S520 82 725 80" class="c-fort" fill="none"/>
+        <g transform="translate(450 14)">
+          <rect x="0" y="0" width="14" height="4" class="k-lent"/><text x="22" y="6" class="s-small">trop prudent : trop lent</text>
+          <rect x="0" y="22" width="14" height="4" class="k-bon"/><text x="22" y="28" class="s-small">bien réglé : rapide, sans dépasser</text>
+          <rect x="0" y="44" width="14" height="4" class="k-fort"/><text x="22" y="50" class="s-small">trop brusque : dépasse la consigne</text>
+        </g>
+      </svg>
+      <figcaption>Figure 2 — Trois comportements possibles (schéma illustratif, pas une mesure réelle).</figcaption>
+    </figure>
+  </section>
+
+  <!-- ===== 3. Montage ===== -->
+  <section class="section article reveal" id="montage">
+    <h2 class="section-title"><span class="num">3</span> Le montage au laboratoire</h2>
+    <p>
+      Le montage est compatible avec le banc pédagogique <em>TCLab</em>. Il est formé de quelques éléments
+      simples, tous reliés à une carte Arduino.
+    </p>
+    <div class="feature-inline">
+      <figure class="schema">
+        <svg viewBox="0 0 520 300" role="img" aria-labelledby="t-mont d-mont">
+          <title id="t-mont">Schéma du montage</title>
+          <desc id="d-mont">L'ordinateur est relié en USB à la carte Arduino. Le capteur TMP36 envoie la température à l'entrée analogique A0. La sortie PWM 9 commande un transistor MOSFET qui alimente l'élément chauffant.</desc>
+          <defs><marker id="fl2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="s-fill"/></marker></defs>
+          <rect x="10" y="110" width="110" height="70" rx="6" class="s-box"/>
+          <text x="65" y="141" class="s-mid">Ordinateur</text><text x="65" y="160" class="s-small">du laboratoire</text>
+          <line x1="120" y1="145" x2="190" y2="145" class="s-line" marker-end="url(#fl2)" marker-start="url(#fl2)"/>
+          <text x="155" y="136" class="s-small">USB</text>
+          <rect x="192" y="80" width="130" height="130" rx="8" class="s-box s-box-main"/>
+          <text x="257" y="130" class="s-mid s-white">Arduino</text><text x="257" y="150" class="s-small s-white">lit A0, écrit sur 9</text>
+          <rect x="400" y="20" width="110" height="64" rx="6" class="s-box"/>
+          <text x="455" y="48" class="s-mid">Capteur</text><text x="455" y="66" class="s-small">TMP36</text>
+          <path d="M400 52 H360 V105 H322" class="s-line" fill="none" marker-end="url(#fl2)"/>
+          <text x="338" y="44" class="s-small">entrée A0</text>
+          <rect x="400" y="116" width="110" height="52" rx="6" class="s-box"/>
+          <text x="455" y="140" class="s-mid">MOSFET</text><text x="455" y="157" class="s-small">interrupteur</text>
+          <path d="M322 145 H398" class="s-line" marker-end="url(#fl2)"/>
+          <text x="338" y="137" class="s-small">PWM 9</text>
+          <rect x="400" y="212" width="110" height="64" rx="6" class="s-box s-box-heat"/>
+          <text x="455" y="239" class="s-mid">Chauffage</text><text x="455" y="257" class="s-small">résistance</text>
+          <path d="M455 168 V210" class="s-line" marker-end="url(#fl2)"/>
+          <path d="M455 212 C 430 200 430 190 455 180" class="s-line" fill="none" opacity="0"/>
+        </svg>
+        <figcaption>Figure 3 — Le montage : un capteur qui mesure, un interrupteur électronique qui chauffe, et l'Arduino qui relie le tout.</figcaption>
+      </figure>
+      <ul class="check-list">
+        <li><strong>Le capteur TMP36</strong> donne une tension qui dépend de la température. L'Arduino la lit et la convertit en degrés.</li>
+        <li><strong>Le chauffage</strong> est une petite résistance. On règle sa puissance par un signal <em>PWM</em> : elle est allumée et éteinte très vite, et la proportion de temps « allumé » donne la puissance (0 à 100 %).</li>
+        <li><strong>Le MOSFET</strong> est l'interrupteur électronique qui permet à un signal faible de l'Arduino de commander la résistance.</li>
+        <li><strong>L'ordinateur du laboratoire</strong> relie la carte au reste de la plateforme par un câble USB.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== 4. Architecture ===== -->
+  <section class="section article reveal" id="architecture">
+    <h2 class="section-title"><span class="num">4</span> Le trajet d'une commande</h2>
+    <p>
+      Entre votre navigateur et la carte Arduino, quatre éléments se passent l'information. Chacun a un rôle précis.
+    </p>
+    <ol class="timeline">
+      <li class="timeline-step"><span class="step-number">1</span><div class="step-body"><h3>Le navigateur</h3><p>Il affiche l'interface (courbe, boutons, curseur de consigne) et envoie vos actions au serveur.</p></div></li>
+      <li class="timeline-step"><span class="step-number">2</span><div class="step-body"><h3>Le serveur (Flask)</h3><p>Il gère les comptes, les travaux pratiques et les résultats, et <strong>calcule la régulation</strong> : à partir de la température reçue, il décide quelle puissance de chauffe appliquer.</p></div></li>
+      <li class="timeline-step"><span class="step-number">3</span><div class="step-body"><h3>L'agent local</h3><p>Un petit programme installé sur l'ordinateur du laboratoire reste connecté au serveur. Il transmet les ordres à la carte et renvoie les mesures. C'est lui qui permet d'héberger le serveur n'importe où, tout en gardant le matériel au laboratoire.</p></div></li>
+      <li class="timeline-step"><span class="step-number">4</span><div class="step-body"><h3>La carte Arduino</h3><p>Elle mesure la température et applique la puissance demandée au chauffage. Elle possède aussi ses propres protections (voir la section Sécurité).</p></div></li>
+    </ol>
+    <figure class="schema schema-img">
       <img src="static/image/architecture_communication.png" alt="Schéma de communication entre le navigateur, le serveur Flask, la base de données, l'agent local et la carte Arduino">
-    </div>
-  </section>
-
-  <!-- ===== 3. Cycle de régulation ===== -->
-  <section class="feature reveal">
-    <div class="feature-media">
-      <img src="static/image/cycle_regulation.jpeg" alt="Cycle de régulation : consigne utilisateur, calcul PID, commande chauffage, mesure température">
-    </div>
-    <div class="feature-text">
-      <h2>Un cycle de régulation continu</h2>
-      <p>
-        Une fois connecté à la carte, l'utilisateur définit une consigne de température et choisit un
-        mode de régulation : boucle ouverte, proportionnel-intégral, ou proportionnel-intégral-dérivé.
-        Le serveur calcule la commande à appliquer, la transmet au montage, puis reçoit en retour la
-        température mesurée pour ajuster la commande suivante.
-      </p>
-      <p>
-        Ce cycle se répète plusieurs fois par seconde et alimente en direct la courbe affichée à l'écran,
-        pour un retour visuel proche du temps réel sur le comportement du système.
-      </p>
-    </div>
-  </section>
-
-
-  <!-- ===== Modes de régulation ===== -->
-  <section class="section reveal">
-    <h2 class="section-title">Trois façons de commander le chauffage</h2>
-    <p class="section-intro">
-      Le même montage peut être piloté de trois manières. Les comparer, sur une même consigne, est le coeur
-      de la manipulation.
+      <figcaption>Figure 4 — Architecture de communication de la plateforme.</figcaption>
+    </figure>
+    <p class="section-note">
+      Le calcul du régulateur est fait sur le serveur. Quand la connexion Internet est lente, la mesure
+      arrive donc avec un peu de retard, ce qui est normal et visible sur la courbe.
     </p>
+  </section>
+
+  <!-- ===== 5. Modes ===== -->
+  <section class="section article reveal" id="modes">
+    <h2 class="section-title"><span class="num">5</span> Les trois modes de commande</h2>
+    <p>Le même montage peut être commandé de trois façons. Les comparer, avec la même consigne, est le cœur de la manipulation.</p>
     <div class="cards-grid">
       <article class="info-card">
         <span class="mode-tag">Boucle ouverte</span>
-        <h3>Sans correction</h3>
-        <p>La valeur choisie est appliquée directement comme puissance de chauffe (de 0 à 100 %). Le système
-        ne regarde pas la température : on observe sa réponse « naturelle », avec sa lenteur et son inertie.</p>
+        <h3>On impose la puissance</h3>
+        <p>Vous choisissez directement la puissance de chauffe (0 à 100 %). Le système ne regarde pas la température : on observe sa réponse « naturelle », avec sa lenteur et son inertie.</p>
       </article>
       <article class="info-card">
         <span class="mode-tag">PI</span>
         <h3>Proportionnel-Intégral</h3>
-        <p>La puissance dépend de l'écart entre la consigne et la température (terme P) et de l'accumulation de
-        cet écart dans le temps (terme I), qui supprime l'erreur résiduelle.</p>
+        <p>La puissance dépend de l'écart <em>e</em> (terme P) et de l'écart accumulé dans le temps (terme I). Le terme I supprime l'erreur qui resterait sinon.</p>
         <p class="formula">u = Kp·e + Ki·∫e dt</p>
       </article>
       <article class="info-card">
         <span class="mode-tag">PID</span>
         <h3>Proportionnel-Intégral-Dérivé</h3>
-        <p>On ajoute la vitesse de variation de l'écart (terme D), qui anticipe et limite les dépassements.
-        Les gains Kp, Ki et Kd se règlent en ligne, et l'effet se voit tout de suite sur la courbe.</p>
-        <p class="formula">u = Kp·e + Ki·∫e dt + Kd·de/dt</p>
+        <p>On ajoute la vitesse de variation de la température (terme D), qui freine à l'approche de la consigne et limite le dépassement.</p>
+        <p class="formula">u = Kp·e + Ki·∫e dt + Kd·(variation)</p>
       </article>
     </div>
+    <h3 class="sub-title">Que fait chaque réglage ?</h3>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Réglage</th><th>Si on l'augmente…</th><th>Attention à…</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Kp</strong> (proportionnel)</td><td>La montée est plus rapide.</td><td>Trop grand : la température oscille.</td></tr>
+          <tr><td><strong>Ki</strong> (intégral)</td><td>L'écart final disparaît plus vite.</td><td>Trop grand : dépassement de la consigne.</td></tr>
+          <tr><td><strong>Kd</strong> (dérivé)</td><td>Le freinage est meilleur près de la consigne.</td><td>Trop grand : la commande devient nerveuse (sensible au bruit).</td></tr>
+        </tbody>
+      </table>
+    </div>
     <p class="section-note">
-      Ici, <em>e</em> est l'écart entre la consigne et la température mesurée, et <em>u</em> la commande de
-      chauffage (0 à 100 %), convertie en signal PWM envoyé à l'élément chauffant. Un mode « personnalisé »
-      permet aussi d'écrire son propre algorithme de régulation, directement dans le navigateur.
+      Un quatrième mode, « personnalisé », permet d'écrire son propre algorithme de régulation directement dans le navigateur.
     </p>
   </section>
 
-  <!-- ===== Ce que l'on peut faire ===== -->
-  <section class="section reveal">
-    <h2 class="section-title">Ce que vous pouvez faire sur la plateforme</h2>
-    <ul class="check-list">
-      <li><strong>Piloter</strong> : choisir une consigne, un mode de régulation et régler les gains.</li>
-      <li><strong>Observer</strong> : suivre en direct la température, la consigne, l'erreur et la commande sur une courbe que l'on peut parcourir, agrandir et réduire.</li>
-      <li><strong>Mettre en pause</strong> : arrêter la surveillance (le chauffage est alors coupé) et revoir tranquillement la courbe.</li>
-      <li><strong>Exporter</strong> : enregistrer les mesures au format CSV pour les analyser dans un tableur ou un logiciel de calcul.</li>
-      <li><strong>Programmer</strong> : tester son propre régulateur avec l'éditeur de code personnalisé.</li>
-      <li><strong>Travailler</strong> : répondre aux questions du TP, puis recevoir correction, commentaires et note de l'enseignant.</li>
-    </ul>
-  </section>
-
-  <!-- ===== 4. Comment ça fonctionne (étapes) ===== -->
-  <section class="section reveal">
-    <h2 class="section-title">Comment ça fonctionne</h2>
-    <p class="section-intro">Quatre étapes relient votre navigateur au montage physique installé au laboratoire.</p>
-
+  <!-- ===== 6. Utilisation ===== -->
+  <section class="section article reveal" id="utilisation">
+    <h2 class="section-title"><span class="num">6</span> Utiliser la plateforme, pas à pas</h2>
     <ol class="timeline">
-      <li class="timeline-step">
-        <span class="step-number">I</span>
-        <div class="step-body">
-          <h3>Un agent veille sur le matériel</h3>
-          <p>Un petit logiciel, installé sur l'ordinateur du laboratoire branché à l'Arduino, reste connecté en
-          permanence au serveur. C'est lui qui donne accès au montage, où que vous soyez.</p>
-        </div>
-      </li>
-      <li class="timeline-step">
-        <span class="step-number">II</span>
-        <div class="step-body">
-          <h3>Vous prenez la main</h3>
-          <p>Depuis la page de contrôle, vous choisissez une consigne de température et un mode de régulation
-          (boucle ouverte, PI ou PID). Votre commande part vers le serveur, puis vers l'agent, puis vers l'Arduino.</p>
-        </div>
-      </li>
-      <li class="timeline-step">
-        <span class="step-number">III</span>
-        <div class="step-body">
-          <h3>La mesure revient en direct</h3>
-          <p>Le capteur de température renvoie sa mesure en continu. La courbe affichée à l'écran se met à jour
-          plusieurs fois par seconde, pour un retour visuel proche du temps réel.</p>
-        </div>
-      </li>
-      <li class="timeline-step">
-        <span class="step-number">IV</span>
-        <div class="step-body">
-          <h3>Le travail pratique se poursuit en ligne</h3>
-          <p>Une fois la manipulation terminée, vous répondez aux questions du TP directement sur la plateforme.
-          Votre enseignant corrige, commente et note votre copie depuis son propre espace.</p>
-        </div>
-      </li>
+      <li class="timeline-step"><span class="step-number">1</span><div class="step-body"><h3>Créer un compte et se connecter</h3><p>L'inscription demande un matricule (de 5 à 10 chiffres) et une adresse email, qui est vérifiée par un code.</p></div></li>
+      <li class="timeline-step"><span class="step-number">2</span><div class="step-body"><h3>Choisir le port de la carte</h3><p>Dans « Configuration Arduino », sélectionnez le port proposé puis lancez la connexion.</p></div></li>
+      <li class="timeline-step"><span class="step-number">3</span><div class="step-body"><h3>Régler et lancer</h3><p>Choisissez le type de contrôleur, ses gains (pour PI et PID) et la consigne, puis appliquez-la. La courbe se met à jour en direct.</p></div></li>
+      <li class="timeline-step"><span class="step-number">4</span><div class="step-body"><h3>Observer, mettre en pause, exporter</h3><p>La courbe se parcourt, se zoome et se remet à zéro. La pause coupe le chauffage ; le bouton ▶ le reprend. Les mesures s'exportent en fichier CSV.</p></div></li>
+      <li class="timeline-step"><span class="step-number">5</span><div class="step-body"><h3>Se déconnecter</h3><p>Quand vous avez fini, déconnectez-vous : le chauffage est coupé et le port est libéré pour les autres.</p></div></li>
     </ol>
   </section>
 
-
-  <!-- ===== Le montage et sa sécurité ===== -->
-  <section class="section reveal">
-    <h2 class="section-title">Le montage et sa sécurité</h2>
+  <!-- ===== 7. Sécurité ===== -->
+  <section class="section article reveal" id="securite">
+    <h2 class="section-title"><span class="num">7</span> La sécurité : ne jamais chauffer pour rien</h2>
     <p>
-      Le montage est compatible avec le banc TCLab : une carte Arduino lit un capteur de température
-      (TMP36) et commande, par un signal PWM et un transistor MOSFET, un petit élément chauffant. Comme un
-      chauffage qui reste allumé sans raison est dangereux, plusieurs protections sont prévues, côté carte
-      comme côté serveur.
+      Un chauffage qui reste allumé sans personne pour le surveiller est dangereux et inutile. La plateforme
+      applique donc <strong>plusieurs protections indépendantes</strong> : si l'une échoue, une autre prend le relais.
+    </p>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Situation</th><th>Réaction</th><th>Délai (valeurs par défaut)</th></tr></thead>
+        <tbody>
+          <tr><td>Démarrage de la carte</td><td>Pas de chauffe tant qu'un utilisateur connecté n'a pas donné de consigne.</td><td>immédiat</td></tr>
+          <tr><td>Pause demandée</td><td>Le chauffage est coupé.</td><td>immédiat</td></tr>
+          <tr><td>Page fermée ou rechargée</td><td>Le chauffage est coupé si l'utilisateur ne revient pas.</td><td>environ 15 s</td></tr>
+          <tr><td>Internet coupé côté laboratoire</td><td>L'agent coupe le chauffage lui-même.</td><td>environ 8 s</td></tr>
+          <tr><td>Serveur ou agent hors service</td><td>La carte coupe seule (watchdog) et reprend dès qu'une commande valide revient.</td><td>environ 20 s</td></tr>
+          <tr><td>Aucune activité de l'utilisateur</td><td>Pause automatique, puis fermeture de la connexion et libération du port.</td><td>2 min, puis 10 min</td></tr>
+          <tr><td>Session trop longue</td><td>La session est fermée.</td><td>2 h</td></tr>
+          <tr><td>Température trop haute (&gt; 90 °C)</td><td>La carte retient le chauffage à 0, sans alerte, puis le rétablit quand la température a baissé d'environ 5 °C.</td><td>immédiat</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="section-note">
+      Ces délais sont des réglages du serveur, de l'agent et de la carte : ils peuvent être modifiés selon les besoins du laboratoire.
+    </p>
+  </section>
+
+  <!-- ===== 8. Parcours pédagogique ===== -->
+  <section class="section article reveal" id="parcours">
+    <h2 class="section-title"><span class="num">8</span> Un parcours pédagogique complet</h2>
+    <p>
+      La plateforme ne s'arrête pas à la manipulation. Elle accompagne tout le travail pratique, de la
+      lecture de l'énoncé jusqu'à la note.
     </p>
     <ul class="check-list">
-      <li><strong>Pas de chauffe au démarrage</strong> : la carte ne chauffe qu'après une consigne explicite d'un utilisateur connecté.</li>
-      <li><strong>Surveillance de la liaison</strong> : si la carte ne reçoit plus d'ordre de régulation pendant quelques secondes (serveur ou Internet coupé), elle coupe le chauffage seule et attend un réarmement.</li>
-      <li><strong>Arrêt d'urgence</strong> : un bouton rouge, toujours visible, coupe immédiatement le chauffage.</li>
-      <li><strong>Page fermée ou inactivité</strong> : le chauffage est coupé, puis le port de la carte est libéré pour les autres utilisateurs.</li>
-      <li><strong>Limite de température</strong> : au-delà de 90 °C, la carte coupe et se verrouille.</li>
+      <li><strong>Bibliothèque</strong> : documents de cours et ressources mis à disposition des étudiants.</li>
+      <li><strong>Travaux pratiques</strong> : l'enseignant crée un TP avec ses questions ; l'étudiant y répond en ligne après la manipulation.</li>
+      <li><strong>Correction</strong> : l'enseignant corrige question par question, commente et attribue une note.</li>
+      <li><strong>Suivi</strong> : les manipulations et les résultats sont conservés, ce qui aide l'évaluation et le suivi des étudiants.</li>
     </ul>
-  </section>
-
-  <!-- ===== 4. Objectifs ===== -->
-  <section class="feature reverse reveal">
-    <div class="feature-media">
-      <img src="static/image/etude.png" alt="Objectifs pédagogiques">
-    </div>
-    <div class="feature-text">
-      <h2>Objectifs du projet</h2>
-      <ul class="check-list">
-        <li>Donner accès à un système de contrôle réel, sans dépendre du nombre de cartes disponibles au laboratoire.</li>
-        <li>Permettre l'observation en direct du comportement d'un système régulé, avec enregistrement et export des données.</li>
-        <li>Intégrer le pilotage de l'expérience à un parcours pédagogique complet : travaux pratiques, questions, corrections et suivi des notes.</li>
-        <li>Proposer une base réutilisable par d'autres établissements souhaitant héberger leurs propres expériences.</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- ===== 5. Avantages ===== -->
-  <section class="feature reveal">
-    <div class="feature-media">
-      <img src="static/image/travail.png" alt="Avantages de la plateforme">
-    </div>
-    <div class="feature-text">
-      <h2>Ce que la plateforme apporte</h2>
-      <ul class="check-list">
-        <li>Un accès simultané pour plusieurs utilisateurs, chacun disposant de sa propre session de travail.</li>
-        <li>Une disponibilité qui ne dépend plus des horaires du laboratoire ni du nombre de postes équipés.</li>
-        <li>Une traçabilité complète des manipulations et des résultats, utile à l'évaluation comme au suivi pédagogique.</li>
-        <li>Une architecture modulaire, qui permet de faire évoluer l'interface, les travaux pratiques ou le matériel sans reconstruire l'application.</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- ===== Aperçu / galerie ===== -->
-  <section class="section reveal">
-    <h2 class="section-title">Interfaces principales</h2>
     <div class="plate-grid" id="plateGrid">
       <figure class="plate" data-full="static/image/Page_Accueil.png">
-        <div class="plate-frame">
-          <img src="static/image/Page_Accueil.png" alt="Page de contrôle du thermostat">
-        </div>
+        <div class="plate-frame"><img src="static/image/Page_Accueil.png" alt="Page de contrôle du thermostat"></div>
         <figcaption>Contrôle de l'expérience : consigne, mode de régulation et courbe en direct.</figcaption>
       </figure>
-
       <figure class="plate" data-full="static/image/LISTE_TP.jpg">
-        <div class="plate-frame">
-          <img src="static/image/LISTE_TP.jpg" alt="Liste des travaux pratiques">
-        </div>
+        <div class="plate-frame"><img src="static/image/LISTE_TP.jpg" alt="Liste des travaux pratiques"></div>
         <figcaption>Travaux pratiques disponibles pour un étudiant.</figcaption>
       </figure>
-
       <figure class="plate" data-full="static/image/Page_Correction.jpeg">
-        <div class="plate-frame">
-          <img src="static/image/Page_Correction.jpeg" alt="Interface de correction">
-        </div>
+        <div class="plate-frame"><img src="static/image/Page_Correction.jpeg" alt="Interface de correction"></div>
         <figcaption>Correction, avec commentaires par question et appréciation générale.</figcaption>
       </figure>
-
       <figure class="plate" data-full="static/image/page_Bibliothèque.png">
-        <div class="plate-frame">
-          <img src="static/image/page_Bibliothèque.png" alt="Bibliothèque de documentation">
-        </div>
+        <div class="plate-frame"><img src="static/image/page_Bibliothèque.png" alt="Bibliothèque de documentation"></div>
         <figcaption>Bibliothèque de documentation mise à disposition des étudiants.</figcaption>
       </figure>
     </div>
+  </section>
+
+  <!-- ===== 9. Limites ===== -->
+  <section class="section article reveal" id="limites">
+    <h2 class="section-title"><span class="num">9</span> Limites et perspectives</h2>
+    <ul class="check-list">
+      <li><strong>Un seul montage</strong> : un port ne peut être utilisé que par une personne à la fois ; les autres attendent qu'il soit libéré.</li>
+      <li><strong>Dépendance à Internet</strong> : une connexion lente retarde l'arrivée des mesures. La sécurité, elle, ne dépend pas de la qualité de la liaison.</li>
+      <li><strong>Perspectives</strong> : ajouter d'autres montages, d'autres expériences, et permettre à d'autres établissements d'héberger leurs propres laboratoires.</li>
+    </ul>
+  </section>
+
+  <!-- ===== Glossaire ===== -->
+  <section class="section article reveal" id="glossaire">
+    <h2 class="section-title">Glossaire</h2>
+    <dl class="glossary">
+      <div><dt>Consigne</dt><dd>La température que l'on veut obtenir.</dd></div>
+      <div><dt>Écart (erreur)</dt><dd>La différence entre la consigne et la température mesurée.</dd></div>
+      <div><dt>Boucle fermée</dt><dd>Le système mesure son résultat et corrige sa commande en conséquence.</dd></div>
+      <div><dt>Boucle ouverte</dt><dd>La commande est imposée, sans regarder la mesure.</dd></div>
+      <div><dt>Régulateur PI / PID</dt><dd>Algorithme qui calcule la puissance de chauffe à partir de l'écart (P), de son cumul (I) et de sa variation (D).</dd></div>
+      <div><dt>Dépassement</dt><dd>Moment où la température dépasse la consigne avant de se stabiliser.</dd></div>
+      <div><dt>PWM</dt><dd>Signal qui s'allume et s'éteint très vite ; la part de temps « allumé » règle la puissance.</dd></div>
+      <div><dt>Watchdog</dt><dd>« Chien de garde » : si la carte ne reçoit plus d'ordre à temps, elle coupe le chauffage seule.</dd></div>
+    </dl>
   </section>
 
   <!-- ===== Auteur ===== -->

@@ -44,8 +44,6 @@ ARRET_SERVEUR_ATTENTE_S = _env_float('ARRET_SERVEUR_ATTENTE_S', 2)
 ETAT_NORMAL = 'normal'
 ETAT_PAUSE = 'pause'            # "Arrêter la surveillance" : chauffage coupé, PID ignoré
 ETAT_SUSPENDU = 'suspendu'      # inactivité courte : chauffage coupé
-ETAT_URGENCE = 'urgence'        # arrêt d'urgence : aucun PWM tant que non réarmé
-ETAT_VERROUILLE = 'verrouille'  # watchdog/surchauffe de l'Arduino : réarmement requis
 
 # Durée après laquelle un agent est considéré hors-ligne s'il n'a pas donné
 AGENT_TIMEOUT = 45
@@ -463,14 +461,13 @@ class ArduinoController:
         if statut == "STOPPED":
             connexion['stop_accuse_le'] = time.time()
         elif statut in ("WATCHDOG", "VERROUILLE"):
-            # La carte a coupé seule (plus de commande de régulation) : on se comporte comme
-            # une liaison perdue -> remise à zéro de la régulation ; l'utilisateur sera
-            # déconnecté par la vérification d'état (comme avant), sans bandeau bloquant.
-            if connexion.get('etat_securite') != ETAT_VERROUILLE:
-                connexion['etat_securite'] = ETAT_VERROUILLE
-                self.reinitialiser_regulation(connexion)
-                log_bus.warning('arduino', f"{statut} ({id_connexion}) : chauffage coupé par l'Arduino")
-                self._audit(id_connexion, 'ARDUINO_' + statut, "Chauffage coupé par la sécurité de l'Arduino")
+            # La carte a coupé seule (aucune commande de régulation reçue à temps). Pas de
+            # verrou : la régulation est remise à zéro et la consigne/PWM est renvoyée
+            # immédiatement, le chauffage reprend donc dès que la liaison est rétablie.
+            self.reinitialiser_regulation(connexion)
+            connexion['dernier_envoi_regulation'] = 0
+            log_bus.warning('arduino', f"{statut} ({id_connexion}) : chauffage coupé par l'Arduino, commande renvoyée")
+            self._audit(id_connexion, 'ARDUINO_' + statut, "Chauffage coupé par la sécurité de l'Arduino (reprise automatique)")
 
     def reinitialiser_regulation(self, connexion):
         """Remet le PID dans un état cohérent avec un chauffage à 0 (intégrale et dérivée nulles)."""
@@ -542,42 +539,6 @@ class ArduinoController:
             connexion['etat_securite'] = ETAT_PAUSE
         self.reinitialiser_regulation(connexion)
         return self.couper_chauffage(id_connexion, raison)
-
-    def arret_urgence(self, id_connexion, utilisateur=None):
-        """Arrêt d'urgence : fonctionne même si le PID est en erreur (n'utilise pas le PID)."""
-        connexion = self.connexions_arduino.get(id_connexion)
-        if not connexion:
-            return False
-        # D'abord couper (priorité absolue), ensuite seulement l'état et le nettoyage
-        ok = self.couper_chauffage(id_connexion, f"ARRÊT D'URGENCE ({utilisateur})")
-        connexion['etat_securite'] = ETAT_URGENCE
-        connexion['surveillance_active'] = False
-        connexion['type_controleur'] = 'none'
-        connexion['consigne_definie'] = False
-        connexion['alerte_securite'] = "Arrêt d'urgence activé : chauffage coupé. Réarmez pour reprendre."
-        try:
-            self.reinitialiser_regulation(connexion)
-        except Exception as e:
-            log_bus.error('controle', f"Réinitialisation PID impossible pendant l'urgence ({id_connexion}) : {e}")
-        return ok
-
-    def rearmer(self, id_connexion):
-        """Réarmement explicite après urgence/verrou/pause : PID réinitialisé, ARM envoyé.
-        Le chauffage ne repart pas seul : une consigne ou un PWM valide est ensuite requis."""
-        connexion = self.connexions_arduino.get(id_connexion)
-        if not connexion or not connexion.get('connecte'):
-            return False
-        self.reinitialiser_regulation(connexion)
-        connexion['etat_securite'] = ETAT_NORMAL
-        connexion['alerte_securite'] = None
-        connexion['surveillance_active'] = True
-        connexion['depart_page_le'] = None
-        connexion['derniere_activite_ui'] = time.time()
-        ok = self.envoyer_commande_brute(id_connexion, "ARM\n")
-        # L'action de réarmement est explicite : la consigne affichée est considérée définie
-        connexion['consigne_definie'] = True
-        self.envoyer_mode_arduino(id_connexion, connexion.get('type_controleur', 'none'))
-        return ok
 
     def signaler_depart_page(self, id_connexion):
         """La page se ferme (pagehide) : démarre le délai de grâce. Si aucune activité ne

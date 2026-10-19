@@ -5,10 +5,9 @@
 {% endblock %}
 
 {% block content %}
-<!-- SÉCURITÉ CHAUFFAGE : bandeau d'alerte (arrêt d'urgence ou suspension uniquement) -->
+<!-- SÉCURITÉ CHAUFFAGE : bandeau d'information (suspension pour inactivité) -->
 <div id="safety-banner" class="safety-banner" role="alert" hidden>
     <span id="safety-banner-text"></span>
-    <button type="button" id="safety-rearm-btn" class="safety-rearm-btn" hidden>Réarmer</button>
 </div>
 
 <main class="content">
@@ -157,9 +156,6 @@
                     </button>
                     <button type="button" class="action-item" title="Éditeur de code personnalisé" id="custom-code-btn">
                         <img src="{{ url_for('static', filename='image/code.png') }}" alt="Code" width="20">
-                    </button>
-                    <button type="button" class="action-item action-urgence" title="Arrêt d'urgence : coupe immédiatement le chauffage" id="emergency-stop-btn" disabled>
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg>
                     </button>
                 </div>
             </div>

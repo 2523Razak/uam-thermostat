@@ -1603,20 +1603,7 @@ select option:disabled {
     background: #a8a8a8;
 }
 
-/* ===== SÉCURITÉ CHAUFFAGE : arrêt d'urgence et bandeau d'alerte ===== */
-/* Arrêt d'urgence : bouton de la carte « Contrôle », rouge discret */
-#controle-buttons .action-item.action-urgence {
-    color: #c53030;
-    border-color: #feb2b2;
-    background: #fff5f5;
-}
-#controle-buttons .action-item.action-urgence:hover:not(:disabled) {
-    background: #c53030;
-    color: #fff;
-    border-color: #c53030;
-}
-#controle-buttons .action-item.action-urgence:focus-visible { outline: 3px solid #fbd38d; outline-offset: 2px; }
-
+/* ===== SÉCURITÉ CHAUFFAGE : bandeau d'information ===== */
 .safety-banner {
     position: sticky;
     top: 0;
@@ -1633,13 +1620,3 @@ select option:disabled {
     text-align: center;
 }
 .safety-banner[hidden] { display: none; }
-.safety-rearm-btn {
-    padding: 8px 18px;
-    background: #fff;
-    color: #c53030;
-    border: none;
-    border-radius: 6px;
-    font-weight: 700;
-    cursor: pointer;
-}
-.safety-rearm-btn[hidden] { display: none; }
