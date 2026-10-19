@@ -29,6 +29,7 @@ HEARTBEAT_REGULATION_S = _env_float('HEARTBEAT_REGULATION_S', 2)
 # Inactivité de l'interface (aucune requête de données ni action du propriétaire)
 INACTIVITE_COURTE_S = _env_float('INACTIVITE_COURTE_S', 120)    # STOP + PWM:0, connexion "suspendue"
 INACTIVITE_LONGUE_S = _env_float('INACTIVITE_LONGUE_S', 600)    # fermeture du port + déconnexion
+CONNECT_ATTENTE_S = _env_float('CONNECT_ATTENTE_S', 20)             # attente max de la confirmation de l'agent à /api/connect
 SESSION_MAX_S = _env_float('SESSION_MAX_S', 7200)               # durée maximale de session (0 = illimitée)
 # Délai de grâce après "fermeture de page" (un rechargement ne doit pas tout couper)
 GRACE_PAGE_LEAVING_S = _env_float('GRACE_PAGE_LEAVING_S', 15)
@@ -233,6 +234,9 @@ class ArduinoController:
         """Appelée par le hub d'agents quand l'agent confirme l'ouverture/fermeture réelle du port série."""
         if id_connexion not in self.connexions_arduino:
             return
+
+        if not connecte and erreur:
+            log_bus.warning('arduino', f"Ouverture refusée par l'agent ({id_connexion}) : {erreur}")
 
         etait_connecte = self.connexions_arduino[id_connexion]['connecte']
         self.connexions_arduino[id_connexion]['connecte'] = connecte
@@ -458,18 +462,15 @@ class ArduinoController:
         statut = ligne.split(":", 1)[1].strip().upper() if ":" in ligne else ""
         if statut == "STOPPED":
             connexion['stop_accuse_le'] = time.time()
-        elif statut in ("WATCHDOG", "SURCHAUFFE", "VERROUILLE"):
+        elif statut in ("WATCHDOG", "VERROUILLE"):
+            # La carte a coupé seule (plus de commande de régulation) : on se comporte comme
+            # une liaison perdue -> remise à zéro de la régulation ; l'utilisateur sera
+            # déconnecté par la vérification d'état (comme avant), sans bandeau bloquant.
             if connexion.get('etat_securite') != ETAT_VERROUILLE:
                 connexion['etat_securite'] = ETAT_VERROUILLE
                 self.reinitialiser_regulation(connexion)
-                if statut == "SURCHAUFFE":
-                    msg = "Surchauffe détectée par l'Arduino : chauffage coupé. Réarmement requis."
-                else:
-                    msg = ("Liaison de régulation perdue : le chauffage a été coupé par la sécurité "
-                           "de l'Arduino (watchdog). Réarmement requis.")
-                connexion['alerte_securite'] = msg
                 log_bus.warning('arduino', f"{statut} ({id_connexion}) : chauffage coupé par l'Arduino")
-                self._audit(id_connexion, 'ARDUINO_' + statut, msg)
+                self._audit(id_connexion, 'ARDUINO_' + statut, "Chauffage coupé par la sécurité de l'Arduino")
 
     def reinitialiser_regulation(self, connexion):
         """Remet le PID dans un état cohérent avec un chauffage à 0 (intégrale et dérivée nulles)."""

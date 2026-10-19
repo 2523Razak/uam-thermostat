@@ -117,12 +117,12 @@ class SurveillanceTemperature {
         this.initialiserControleur();
         this.initialiserCurseurTemperature();
         
-        // Restaurer la connexion si active
+        // Pas de restauration : une connexion gardée d'une page précédente est fermée
+        // proprement (chauffage coupé, port libéré) puis l'utilisateur se reconnecte.
         if (this.est_connecte && this.id_connexion) {
-            this.restaurerConnexion();
-        } else {
-            this.demarrerVerificationServeur();
+            this.abandonnerConnexionPrecedente();
         }
+        this.demarrerVerificationServeur();
         
         console.log('SurveillanceTemperature initialisée');
         
@@ -504,58 +504,20 @@ class SurveillanceTemperature {
         }, 500);
     }
 
-    // Restaurer une connexion existante
-    async restaurerConnexion() {
-        this.mettreAJourStatutConnexion(true, 'Restauration...');
-        this.basculerBoutonsConnexion(true);
-        
-        this.initialiserControleur();
-        this.initialiserCurseurTemperature();
-        
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 3000);
-            
-            const reponse = await fetch(`/api/check_connection?connection_id=${this.id_connexion}`, {
-                signal: controller.signal
-            });
-            clearTimeout(timeoutId);
-            
-            const resultat = await reponse.json();
-            
-            if (resultat.active) {
-                // État de sécurité du serveur (avant d'envoyer le mode : urgence => mode « none »)
-                this.appliquerEtatSecurite(resultat.etat_securite, resultat.alerte_securite);
-                if (this.surveillance_active) {
-                    this.demarrerSurveillanceDonnees();
-                }
-                this.afficherMessage('Connexion restaurée', 'success');
-                this.mettreAJourStatutConnexion(true, 'Connecté');
-                
-                // Envoyer le mode contrôleur
-                await this.envoyerModeControleur();
-                
-                // Charger les données historiques
-                await this.chargerDonneesHistoriques();
-                
-                if (this.surveillance_active) {
-                    this.allerFinDonnees();
-                }
-                
-                this.demarrerVerificationServeur();
-                this.mettreAJourLegende();
-                
-                // Vérifier l'état du code personnalisé
-                if (this.type_controleur === 'custom') {
-                    await this.verifierCodePersonnaliseActif();
-                }
-            } else {
-                this.gererConnexionPerdue('restauration_check_connection_inactive');
-            }
-        } catch (erreur) {
-            console.error('Erreur restauration:', erreur);
-            this.gererConnexionPerdue('restauration_exception:' + erreur.message);
-        }
+    // Ferme la connexion laissée par une page précédente (aucune tentative de reprise)
+    abandonnerConnexionPrecedente() {
+        const ancienne = this.id_connexion;
+        this.est_connecte = false;
+        this.surveillance_active = false;
+        this.id_connexion = null;
+        this.effacerEtatConnexion();
+        this.mettreAJourStatutConnexion(false, 'Non connecté');
+        this.basculerBoutonsConnexion(false);
+        fetch('/api/disconnect', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ connection_id: ancienne, reason: 'page_rechargee' })
+        }).catch(() => {});
     }
 
     // Charger les données historiques
@@ -870,7 +832,7 @@ class SurveillanceTemperature {
             }
         });
 
-        // Arrêt d'urgence (bouton rouge toujours visible) et réarmement
+        // Arrêt d'urgence (carte « Contrôle ») et réarmement
         const boutonUrgence = document.getElementById('emergency-stop-btn');
         if (boutonUrgence) {
             boutonUrgence.addEventListener('click', () => this.arretUrgence());
@@ -1629,7 +1591,12 @@ class SurveillanceTemperature {
             return;   // pause demandée par l'utilisateur : rien à signaler
         }
 
-        // urgence / verrouille / suspendu : la régulation est arrêtée côté serveur
+        if (etat === 'verrouille') {
+            // La carte a coupé seule (watchdog) : liaison perdue, déconnexion comme avant
+            this.gererConnexionPerdue('watchdog_arduino');
+            return;
+        }
+        // urgence / suspendu : la régulation est arrêtée côté serveur
         if (etat === 'urgence' && this.type_controleur !== 'none') {
             // le serveur repasse en mode « none » : l'interface suit
             this.type_controleur = 'none';
@@ -1660,7 +1627,7 @@ class SurveillanceTemperature {
         const boutonRearmer = document.getElementById('safety-rearm-btn');
         if (boutonRearmer) {
             // Urgence et verrou exigent un réarmement ; une simple suspension se relance par ▶
-            boutonRearmer.hidden = !(etat === 'urgence' || etat === 'verrouille');
+            boutonRearmer.hidden = (etat !== 'urgence');
         }
         bandeau.hidden = false;
     }
@@ -1980,6 +1947,8 @@ class SurveillanceTemperature {
         document.getElementById('start-btn').disabled = connecte;
         document.getElementById('stop-monitoring-btn').disabled = !connecte;
         document.getElementById('disconnect-btn').disabled = !connecte;
+        const boutonUrgenceEtat = document.getElementById('emergency-stop-btn');
+        if (boutonUrgenceEtat) boutonUrgenceEtat.disabled = !connecte;
     }
 
     // Basculer les boutons de surveillance

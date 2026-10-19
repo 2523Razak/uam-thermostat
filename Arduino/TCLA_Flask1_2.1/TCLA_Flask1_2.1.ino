@@ -14,6 +14,7 @@ const String vers = "3.2.0";   // 3.2.0 : watchdog réel (HB), verrou après cou
 
 // Safety limits - TCLab standard
 const float limTemperature = 90.0;  // Limite sécurité TCLab
+const float hystSurchauffe = 5.0;   // Reprise du chauffage quand T < limTemperature - hystSurchauffe
 const int limPWM = 255;             // Limite PWM complète pour contrôle externe
 
 // Variables globales
@@ -49,6 +50,8 @@ bool watchdogDeclenche = false;
 // Verrou de sécurité : après un watchdog (ou une surchauffe) le chauffage reste
 // à 0 et PWM/SET sont REFUSÉS jusqu'à une commande ARM explicite.
 bool verrouille = false;
+bool surchauffe = false;       // Chauffage retenu à 0 tant que T > limite (reprise automatique, sans verrou)
+int pwmDemande = 0;            // Dernière puissance demandée (rejouée à la fin de la surchauffe)
 // Une consigne (SET) valide doit avoir été reçue avant tout chauffage en boucle
 // ouverte : pas de chauffe à la mise sous tension ni au simple changement de mode.
 bool consigneRecue = false;
@@ -420,7 +423,9 @@ void applyControleContinual() {
 }
 
 void setHeater(int pwmValue) {
-  currentPWM = constrain(pwmValue, 0, powerLimit);
+  // La demande est mémorisée ; en surchauffe la sortie est forcée à 0
+  pwmDemande = constrain(pwmValue, 0, powerLimit);
+  currentPWM = surchauffe ? 0 : pwmDemande;
   analogWrite(pinMOSFET, currentPWM);
 }
 
@@ -465,12 +470,15 @@ void checkWatchdog() {
 }
 
 void checkSafety() {
-  // Sécurité style TCLab : au-delà de limTemperature on coupe ET on verrouille
-  if (currentTemperature > limTemperature) {
-    if (!verrouille) {
-      analogWrite(pinLED, 10); // LED faible
-      Serial.println("ALERTE: Temperature > 90°C - Securite activee");
-      verrouiller("SURCHAUFFE");
-    }
+  // Surchauffe : au-delà de limTemperature on retient le chauffage à 0, SANS verrou ni alarme.
+  // Il reprend tout seul (dernière demande rejouée) dès que T < limTemperature - hystSurchauffe.
+  if (!surchauffe && currentTemperature > limTemperature) {
+    surchauffe = true;
+    setHeater(pwmDemande);
+    Serial.println("INFO: SURCHAUFFE_ON");
+  } else if (surchauffe && currentTemperature < limTemperature - hystSurchauffe) {
+    surchauffe = false;
+    setHeater(pwmDemande);
+    Serial.println("INFO: SURCHAUFFE_OFF");
   }
 }

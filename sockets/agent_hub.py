@@ -64,6 +64,12 @@ class AgentNamespace(Namespace):
 
     def on_status(self, data):
         data = data or {}
+        id_connexion = data.get('connection_id')
+        if data.get('connected') and id_connexion not in self.controller.connexions_arduino:
+            # Ouverture confirmée trop tard (connexion abandonnée côté plateforme) :
+            # on ordonne à l'agent de relâcher le port pour qu'il ne reste pas occupé.
+            emit('server:close_port', {'connection_id': id_connexion})
+            return
         self.controller.mettre_a_jour_statut_connexion(
             id_connexion=data.get('connection_id'),
             connecte=bool(data.get('connected')),

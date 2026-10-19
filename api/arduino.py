@@ -9,7 +9,7 @@ import csv
 import io
 from utils.data_export import exporter_donnees_csv, creer_reponse_csv
 from controllers.arduino_controller import (
-    ETAT_NORMAL, ETAT_PAUSE, ETAT_SUSPENDU, ETAT_URGENCE, ETAT_VERROUILLE
+    CONNECT_ATTENTE_S, ETAT_NORMAL, ETAT_PAUSE, ETAT_SUSPENDU, ETAT_URGENCE, ETAT_VERROUILLE
 )
 
 def register_arduino_routes(app, arduino_controller):
@@ -111,8 +111,8 @@ def register_arduino_routes(app, arduino_controller):
             )
             thread.start()
             
-            attente_maximale = 5
-            for i in range(attente_maximale * 2):
+            attente_maximale = CONNECT_ATTENTE_S
+            for i in range(int(attente_maximale * 2)):
                 if (id_connexion in arduino_controller.connexions_arduino and 
                     arduino_controller.connexions_arduino[id_connexion]['connecte']):
                     
@@ -135,6 +135,11 @@ def register_arduino_routes(app, arduino_controller):
                 time.sleep(0.5)
             
             print(f"Timeout connexion: {id_connexion}")
+
+            # Échec : la carte ne doit pas rester connectée. On ordonne à l'agent de libérer
+            # le port et on supprime l'entrée (une confirmation tardive sera refusée par le hub).
+            arduino_controller.demander_fermeture_port(id_connexion)
+            arduino_controller.connexions_arduino.pop(id_connexion, None)
             
             # Log d'échec
             audit_logger.log(
