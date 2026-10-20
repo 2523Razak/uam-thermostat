@@ -750,10 +750,10 @@ body {
 
 #controle-buttons .actions-container {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 8px;
     margin-top: 10px;
 }
 
@@ -761,8 +761,8 @@ body {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     cursor: pointer;
-    width: 34px;
-    height: 34px;
+    width: 45px;
+    height: 45px;
     padding: 0;
     border-radius: 50%;
     display: flex;
@@ -789,10 +789,9 @@ body {
     transform: none;
 }
 
-#controle-buttons .action-item img,
-#controle-buttons .action-item svg {
-    width: 15px;
-    height: 15px;
+#controle-buttons .action-item img {
+    width: 20px;
+    height: 20px;
 }
 
 /* Bloc Consigne */
@@ -1499,13 +1498,13 @@ select option:disabled {
     }
     
     #controle-buttons .action-item {
-        width: 32px;
-        height: 32px;
+        width: 40px;
+        height: 40px;
     }
     
     #controle-buttons .action-item img {
-        width: 14px;
-        height: 14px;
+        width: 18px;
+        height: 18px;
     }
     
     .sidebar::-webkit-scrollbar {

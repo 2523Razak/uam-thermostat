@@ -614,30 +614,35 @@ class ArduinoController:
             time.sleep(ARRET_SERVEUR_ATTENTE_S)   # laisse partir les émissions Socket.IO
 
     def deconnecter_avec_accuse(self, id_connexion):
-        """Déconnexion : STOP puis attente de « STATUS: STOPPED » (ACK_STOP_RETRIES essais
-        de ACK_STOP_TIMEOUT_S). Retourne (reussi, message)."""
+        """Déconnexion comme dans l'ancien code : elle réussit TOUJOURS.
+        On coupe le chauffage (STOP + PWM:0) et on attend l'accusé « STATUS: STOPPED »
+        au plus ACK_STOP_TIMEOUT_S ; sans accusé (ancien firmware, liaison lente) on ferme
+        quand même le port : l'agent écrit lui aussi STOP avant de fermer, et le watchdog
+        de la carte coupe seul en dernier recours. Retourne (True, message)."""
         connexion = self.connexions_arduino.get(id_connexion)
         if not connexion:
             return False, "Connexion non trouvée"
         if connexion.get('etat_securite') == ETAT_NORMAL:
             connexion['etat_securite'] = ETAT_PAUSE
         connexion['surveillance_active'] = False
-        self.reinitialiser_regulation(connexion)
+        try:
+            self.reinitialiser_regulation(connexion)
+        except Exception as e:
+            log_bus.error('controle', f"Réinitialisation PID impossible à la déconnexion ({id_connexion}) : {e}")
 
-        if not connexion.get('connecte'):
-            return False, ("Liaison avec la carte perdue : l'arrêt du chauffage ne peut pas être confirmé. "
-                           "La sécurité de l'Arduino coupera le chauffage de façon autonome.")
-
-        for _ in range(max(1, ACK_STOP_RETRIES)):
+        accuse = False
+        if connexion.get('connecte'):
             debut = time.time()
             self.couper_chauffage(id_connexion, "déconnexion")
             while time.time() - debut < ACK_STOP_TIMEOUT_S:
                 if connexion.get('stop_accuse_le', 0) >= debut:
-                    self.demander_fermeture_port(id_connexion)
-                    return True, "Déconnecté"
+                    accuse = True
+                    break
                 time.sleep(0.1)
-        return False, ("ALERTE : l'arrêt du chauffage n'a pas été confirmé par l'Arduino. "
-                       "La connexion reste ouverte : réessayez ou utilisez l'arrêt d'urgence.")
+            if not accuse:
+                log_bus.warning('arduino', f"Déconnexion de {id_connexion} sans accusé STOP : port fermé quand même")
+        self.demander_fermeture_port(id_connexion)
+        return True, "Déconnecté" if accuse else "Déconnecté (arrêt du chauffage non confirmé par la carte)"
 
     # ========================================================================
     # ENVOI DE COMMANDES 

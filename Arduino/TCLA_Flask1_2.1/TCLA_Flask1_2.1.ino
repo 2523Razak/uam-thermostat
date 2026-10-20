@@ -10,7 +10,7 @@ const int pinLED = 3;          // LED sur Pin 3 (LED1 du TCLab)
 
 // Configuration constants
 const long baud = 115200;
-const String vers = "3.2.0";   // 3.2.0 : watchdog réel (HB), verrou après coupure, commande ARM, pas de chauffe au démarrage
+const String vers = "3.2.0";   // 3.2.0 : watchdog réel (HB), coupure SANS verrou (reprise dès la prochaine commande), pas de chauffe au démarrage
 
 // Safety limits - TCLab standard
 const float limTemperature = 90.0;  // Limite sécurité TCLab
@@ -42,7 +42,7 @@ const unsigned long dataInterval = 1000; // Intervalle d'envoi (1s)
 // ou d'Internet.
 // Valeur de compilation (pas de variable d'environnement sur Arduino).
 // Doit rester > 3 x l'intervalle de HB du serveur (HEARTBEAT_REGULATION_S = 2 s).
-#define WATCHDOG_TIMEOUT_MS 10000UL
+#define WATCHDOG_TIMEOUT_MS 20000UL   // proposé : 20 s (liaison internet parfois lente) ; garder > 3 x HEARTBEAT_REGULATION_S
 const unsigned long watchdogTimeout = WATCHDOG_TIMEOUT_MS;
 unsigned long lastCommandeRecue = 0;
 bool watchdogDeclenche = false;
@@ -449,7 +449,8 @@ void verrouiller(const char* statut) {
   externalControl = false;
   consigneRecue = false;
   setHeater(0);
-  verrouille = true;
+  // PAS de verrou : le chauffage reste à 0 jusqu'à la prochaine commande valide
+  // (SET/PWM/Q1), donc le TP reprend dès que la liaison revient.
   Serial.print("STATUS: ");
   Serial.println(statut);
 }
@@ -458,7 +459,7 @@ void checkWatchdog() {
   // Si aucune commande de RÉGULATION valide (PWM, SET, Q1, HB) n'est arrivée
   // depuis watchdogTimeout ms alors que le chauffage peut être actif, on
   // considère la liaison serveur rompue et on coupe. Le chauffage reste à 0
-  // (verrou) jusqu'à une commande ARM explicite.
+  // jusqu'à la prochaine commande SET/PWM/Q1 valide (pas de verrou).
   if (!verrouille && (controleActif || externalControl || currentPWM > 0) &&
       (millis() - lastCommandeRecue > watchdogTimeout)) {
     if (!watchdogDeclenche) {

@@ -414,11 +414,10 @@ def register_arduino_routes(app, arduino_controller):
             print(f"🔴🔴🔴 DÉCONNEXION DEMANDÉE - Connexion: {id_connexion} - RAISON: {raison} 🔴🔴🔴")
             
             if id_connexion and id_connexion in arduino_controller.connexions_arduino:
-                # La déconnexion n'est déclarée réussie qu'après l'accusé « STATUS: STOPPED »
-                # de l'Arduino (relances, voir deconnecter_avec_accuse). Sinon : alerte,
-                # la connexion reste ouverte (chauffage bloqué) pour une nouvelle tentative.
+                # Déconnexion comme dans l'ancien code : elle aboutit toujours (STOP + fermeture
+                # du port) ; l'accusé de la carte est attendu un court instant, sans bloquer.
                 reussi, message = arduino_controller.deconnecter_avec_accuse(id_connexion)
-                if not reussi:
+                if message.startswith("Déconnecté ("):
                     audit_logger.log(
                         event_type='ARDUINO_DISCONNECT_NON_CONFIRME',
                         user_id=session.get('user_id'),
@@ -426,7 +425,6 @@ def register_arduino_routes(app, arduino_controller):
                         details=message,
                         ip_address=request.remote_addr
                     )
-                    return jsonify({'success': False, 'alerte': True, 'message': message})
                 
                 arduino_controller.connexions_arduino[id_connexion]['connecte'] = False
                 

@@ -1240,14 +1240,7 @@ class SurveillanceTemperature {
                     reason: raison
                 })
             });
-            // Le serveur ne confirme la déconnexion qu'après l'accusé « STOPPED » de
-            // l'Arduino. Sans accusé : alerte, la connexion reste ouverte (chauffage bloqué).
-            const resultat = await reponse.json().catch(() => ({}));
-            if (resultat && resultat.success === false && resultat.alerte) {
-                deconnexion_refusee = true;
-                this.afficherMessage(resultat.message, 'error');
-                window.alert(resultat.message);
-            }
+            await reponse.json().catch(() => ({}));
         } catch (erreur) {
             console.error('Erreur déconnexion:', erreur);
         } finally {
