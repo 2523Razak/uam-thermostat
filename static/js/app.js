@@ -1924,6 +1924,15 @@ class SurveillanceTemperature {
             if (resultat.success) {
                 this.consigne_actuelle = nouvelle_consigne;
                 localStorage.setItem('consigneActuelleArduino', this.consigne_actuelle.toString());
+                if (resultat.reprise) {
+                    // La surveillance était en pause : appliquer une consigne la relance
+                    this.etat_securite = 'normal';
+                    this.afficherBandeauSecurite(null);
+                    this.surveillance_active = true;
+                    this.basculerBoutonsSurveillance(true);
+                    this.sauvegarderEtatConnexion();
+                    this.demarrerSurveillanceDonnees();
+                }
                 this.afficherMessage(resultat.message, 'success');
                 document.getElementById('data-temp-cible').textContent = `${nouvelle_consigne.toFixed(1)}°C`;
             } else {

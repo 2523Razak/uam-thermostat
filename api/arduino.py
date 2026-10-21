@@ -375,14 +375,28 @@ def register_arduino_routes(app, arduino_controller):
                 arduino_controller.connexions_arduino[id_connexion]['derniere_sortie_calculee'] = 0
                 
                 conn = arduino_controller.connexions_arduino[id_connexion]
-                # La consigne n'est transmise (boucle ouverte) que si la connexion est en état normal :
-                # jamais pendant une pause, une urgence, une suspension ou un verrou.
+                reprise = False
+                # Appliquer une consigne est une action explicite de l'utilisateur présent :
+                # si la surveillance était en pause (ou suspendue pour inactivité), elle reprend,
+                # sinon la consigne resterait sans effet et sans message (le chauffage ne partirait pas).
+                if conn.get('etat_securite') in (ETAT_PAUSE, ETAT_SUSPENDU):
+                    arduino_controller.reinitialiser_regulation(conn)
+                    conn['etat_securite'] = ETAT_NORMAL
+                    conn['alerte_securite'] = None
+                    conn['surveillance_active'] = True
+                    conn['depart_page_le'] = None
+                    conn['derniere_activite_ui'] = time.time()
+                    arduino_controller.envoyer_mode_arduino(id_connexion, conn.get('type_controleur', 'none'))
+                    reprise = True
                 if conn.get('etat_securite', ETAT_NORMAL) == ETAT_NORMAL:
                     conn['consigne_definie'] = True   # consigne explicite de l'utilisateur
                     if type_controleur == 'none' and conn['connecte']:
                         arduino_controller.envoyer_commande_brute(id_connexion, f"SET:{consigne_numerique}\n")
                         conn['dernier_envoi_regulation'] = time.time()
                         print(f"Consigne envoyée à Arduino: {consigne_numerique}°C")
+                if not conn['connecte']:
+                    return jsonify({'success': False,
+                                    'message': "Liaison avec la carte perdue : la consigne n'a pas été envoyée."})
                 
                 # Log d'audit
                 audit_logger.log(
@@ -395,7 +409,7 @@ def register_arduino_routes(app, arduino_controller):
                 
                 print(f"Consigne mise à jour: {consigne}°C (Mode: {type_controleur}) pour {id_connexion}")
                 
-                return jsonify({'success': True, 'message': f'Consigne: {consigne}°C'})
+                return jsonify({'success': True, 'message': f'Consigne: {consigne}°C', 'reprise': reprise})
             
             return jsonify({'success': False, 'message': 'Connexion non trouvée'})
         except Exception as e:
